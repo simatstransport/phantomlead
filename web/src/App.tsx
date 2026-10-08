@@ -393,39 +393,145 @@ const CustomerDashboard = () => {
 };
 
 const AdminDashboard = () => {
-  const { hasActiveLicense, checkingLicense } = useHasActiveLicense(true);
+  const [stats, setStats] = useState({ customers: 0, pending: 0, activeLicenses: 0, revenue: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [
+          { count: custCount },
+          { count: pendCount },
+          { count: licCount },
+          { data: payments }
+        ] = await Promise.all([
+          supabase.from('customers').select('*', { count: 'exact', head: true }),
+          supabase.from('payments').select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
+          supabase.from('licenses').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
+          supabase.from('payments').select('amount').eq('status', 'APPROVED')
+        ]);
+        
+        const rev = (payments || []).reduce((acc, p) => acc + (p.amount || 0), 0);
+        
+        setStats({
+          customers: custCount || 0,
+          pending: pendCount || 0,
+          activeLicenses: licCount || 0,
+          revenue: rev
+        });
+      } catch (err) {
+        console.error("Error fetching stats", err);
+      }
+      setLoading(false);
+    };
+    fetchStats();
+  }, []);
 
   return (
-    <DashboardLayout title="Admin Control Panel" isAdmin={true}>
-      <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg p-4 mb-6">
-        ✓ You are logged in as a Global Administrator.
+    <DashboardLayout title="Admin Overview" isAdmin={true}>
+      <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-indigo-400 mb-1">Welcome back, Administrator!</h2>
+          <p className="text-sm text-gray-300">Here is what is happening with your license platform today.</p>
+        </div>
+        <Link to="/admin/settings" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Platform Settings</Link>
       </div>
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">Recent Installations</h2>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-gray-800 text-gray-400">
-              <th className="pb-3 font-medium">Customer</th>
-              <th className="pb-3 font-medium">Package</th>
-              <th className="pb-3 font-medium">Status</th>
-              <th className="pb-3 font-medium">Date</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            <tr className="border-b border-gray-800/50">
-              <td className="py-4 font-medium">Test User</td>
-              <td className="py-4"><span className="px-2 py-1 bg-gray-800 rounded text-xs">FULL_ACCESS</span></td>
-              <td className="py-4"><span className="text-green-400 flex items-center">● Active</span></td>
-              <td className="py-4 text-gray-400">Just now</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+          <div className="flex items-center text-gray-400 mb-2">
+            <Users className="w-5 h-5 mr-2" />
+            <h3 className="font-medium">Total Customers</h3>
+          </div>
+          <div className="text-3xl font-bold text-white">{loading ? '...' : stats.customers}</div>
+        </div>
+        
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+          <div className="flex items-center text-gray-400 mb-2">
+            <CreditCard className="w-5 h-5 mr-2" />
+            <h3 className="font-medium">Pending Approvals</h3>
+          </div>
+          <div className="text-3xl font-bold text-yellow-400">{loading ? '...' : stats.pending}</div>
+        </div>
+
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+          <div className="flex items-center text-gray-400 mb-2">
+            <Key className="w-5 h-5 mr-2" />
+            <h3 className="font-medium">Active Licenses</h3>
+          </div>
+          <div className="text-3xl font-bold text-green-400">{loading ? '...' : stats.activeLicenses}</div>
+        </div>
+
+        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+          <div className="flex items-center text-gray-400 mb-2">
+            <span className="font-medium">Total Revenue</span>
+          </div>
+          <div className="text-3xl font-bold text-white">{loading ? '...' : `₹${stats.revenue.toLocaleString()}`}</div>
+        </div>
       </div>
-      {!checkingLicense && hasActiveLicense && <GeminiApiKeyGuide />}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Quick Actions Panel */}
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <h2 className="text-lg font-bold mb-4 border-b border-gray-800 pb-2">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link to="/admin/payments" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+              <CreditCard className="w-6 h-6 text-indigo-400 mb-3 group-hover:scale-110 transition-transform" />
+              <div className="font-medium text-white mb-1">Review Payments</div>
+              <div className="text-xs text-gray-500">Approve or reject pending UPI transactions</div>
+            </Link>
+            
+            <Link to="/admin/licenses" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+              <Key className="w-6 h-6 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
+              <div className="font-medium text-white mb-1">Generate License</div>
+              <div className="text-xs text-gray-500">Manually issue a free license to a customer</div>
+            </Link>
+
+            <Link to="/admin/packages" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+              <Package className="w-6 h-6 text-purple-400 mb-3 group-hover:scale-110 transition-transform" />
+              <div className="font-medium text-white mb-1">Manage Packages</div>
+              <div className="text-xs text-gray-500">Update pricing or add new software bundles</div>
+            </Link>
+
+            <Link to="/admin/customers" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+              <Users className="w-6 h-6 text-blue-400 mb-3 group-hover:scale-110 transition-transform" />
+              <div className="font-medium text-white mb-1">Manage Users</div>
+              <div className="text-xs text-gray-500">Block, delete, or view registered customers</div>
+            </Link>
+          </div>
+        </div>
+
+        {/* System Status Panel */}
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col justify-between">
+          <div>
+            <h2 className="text-lg font-bold mb-4 border-b border-gray-800 pb-2">System Status</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Database Connection</span>
+                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Operational</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Edge Functions</span>
+                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Deployed</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">Payment Gateway (UPI)</span>
+                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Active</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400">License Encryption</span>
+                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Secured</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 pt-4 border-t border-gray-800 text-center text-xs text-gray-600">
+            Secure License Platform v1.0 &copy; 2026 Phantom Lead
+          </div>
+        </div>
+      </div>
     </DashboardLayout>
   );
-};
-
+}
 function App() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
