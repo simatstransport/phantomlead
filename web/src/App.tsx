@@ -288,7 +288,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
             <div className="w-8 h-8 bg-[#0a0a0a] rounded-full flex items-center justify-center border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]"><User className="w-4 h-4 text-green-400" /></div>
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-black/40">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto ">
           {children}
         </main>
       </div>
