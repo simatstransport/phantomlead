@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users } from 'lucide-react';
+import { AdminPayments } from './pages/admin/AdminPayments';
+import { AdminPackages } from './pages/admin/AdminPackages';
+import { AdminLicenses } from './pages/admin/AdminLicenses';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -140,6 +143,12 @@ const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNo
           <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
           <Link to={isAdmin ? "/admin/licenses" : "/dashboard/licenses"} className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> Licenses</Link>
           <Link to={isAdmin ? "/admin/packages" : "/dashboard/packages"} className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Packages</Link>
+          {isAdmin && (
+            <>
+              <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
+              <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
+            </>
+          )}
         </nav>
         <div className="p-4 border-t border-gray-800">
           <button onClick={() => supabase.auth.signOut()} className="flex items-center px-4 py-2 text-gray-400 hover:text-white w-full"><LogOut className="w-5 h-5 mr-3" /> Sign Out</button>
@@ -269,8 +278,10 @@ function App() {
           <Route path="/dashboard/packages" element={session ? <PlaceholderPage title="Software Packages" desc="Browse and purchase new software packages." isAdmin={false} /> : <Navigate to="/login" />} />
 
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-          <Route path="/admin/licenses" element={session ? (isAdmin ? <PlaceholderPage title="Global License Management" desc="Manage all customer licenses and revoke keys." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-          <Route path="/admin/packages" element={session ? (isAdmin ? <PlaceholderPage title="Package Management" desc="Create and upload new software packages and extensions." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/licenses" element={session ? (isAdmin ? <AdminLicenses /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/packages" element={session ? (isAdmin ? <AdminPackages /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/payments" element={session ? (isAdmin ? <AdminPayments /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/customers" element={session ? (isAdmin ? <PlaceholderPage title="Customer Management" desc="Manage all customer accounts." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/" element={<Navigate to={session ? "/dashboard" : "/login"} />} />
         </Routes>
       </div>
