@@ -5,6 +5,7 @@ import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users 
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
+import { CustomerPackages } from './pages/CustomerPackages';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -286,7 +287,7 @@ function App() {
           <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />
           <Route path="/dashboard" element={session ? <CustomerDashboard /> : <Navigate to="/login" />} />
           <Route path="/dashboard/licenses" element={session ? <PlaceholderPage title="My Licenses" desc="View and manage your purchased licenses." isAdmin={false} /> : <Navigate to="/login" />} />
-          <Route path="/dashboard/packages" element={session ? <PlaceholderPage title="Software Packages" desc="Browse and purchase new software packages." isAdmin={false} /> : <Navigate to="/login" />} />
+          <Route path="/dashboard/packages" element={session ? <CustomerPackages /> : <Navigate to="/login" />} />
 
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/licenses" element={session ? (isAdmin ? <AdminLicenses /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />

@@ -2,8 +2,9 @@
 
 ## 1. Supabase Initialization
 1. Create a new Supabase project.
-2. Go to the SQL Editor and run `supabase/migrations/20261008_init.sql` to create the schema, tables, and RLS policies.
-3. In the Supabase Dashboard, create a new Storage bucket named `packages`. Make sure it is private.
+2. Go to the SQL Editor and run the SQL files in `supabase/migrations/` in filename order. This creates the schema, tables, RLS policies, and customer education fields.
+3. For an existing project that already ran the initial schema, run the newer migration file to add the customer college and academic year fields.
+4. In the Supabase Dashboard, create a new Storage bucket named `packages`. Make sure it is private.
 
 ## 2. Edge Functions
 Deploy the Edge Functions to Supabase:
