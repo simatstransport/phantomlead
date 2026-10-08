@@ -191,9 +191,50 @@ const PlaceholderPage = ({ title, desc, isAdmin }: { title: string, desc: string
   </DashboardLayout>
 );
 
-const CustomerDashboard = () => (
-  <DashboardLayout title="Customer Dashboard" isAdmin={false}>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+const CustomerDashboard = () => {
+  const [hasActiveLicense, setHasActiveLicense] = useState(false);
+  const [checkingLicense, setCheckingLicense] = useState(true);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    const checkActiveLicense = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        if (isCurrent) setCheckingLicense(false);
+        return;
+      }
+
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!customer) {
+        if (isCurrent) setCheckingLicense(false);
+        return;
+      }
+
+      const { count, error } = await supabase
+        .from('licenses')
+        .select('id', { count: 'exact', head: true })
+        .eq('customer_id', customer.id)
+        .eq('status', 'ACTIVE');
+
+      if (isCurrent) {
+        setHasActiveLicense(!error && (count ?? 0) > 0);
+        setCheckingLicense(false);
+      }
+    };
+
+    checkActiveLicense();
+    return () => { isCurrent = false; };
+  }, []);
+
+  return (
+    <DashboardLayout title="Customer Dashboard" isAdmin={false}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
         <p className="text-3xl font-bold">1</p>
@@ -206,18 +247,32 @@ const CustomerDashboard = () => (
         <h3 className="text-gray-400 text-sm font-medium mb-2">Available Packages</h3>
         <p className="text-3xl font-bold text-indigo-400">View All →</p>
       </div>
-    </div>
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-      <h2 className="text-xl font-bold mb-4">Your License Key</h2>
-      <div className="flex gap-4">
-        <input type="text" readOnly value="TEST-1234" className="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 font-mono text-indigo-300" />
-        <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium inline-block text-center pt-2.5">
-          Download Installer
-        </a>
       </div>
-    </div>
-  </DashboardLayout>
-);
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 className="text-xl font-bold mb-4">Your License Key</h2>
+        <div className="flex gap-4">
+          <input type="text" readOnly value="TEST-1234" className="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 font-mono text-indigo-300" />
+          <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium inline-block text-center pt-2.5">
+            Download Installer
+          </a>
+        </div>
+      </div>
+      {!checkingLicense && hasActiveLicense && (
+        <section className="mt-8 border-t border-gray-800 pt-8" aria-labelledby="gemini-key-guide">
+          <h2 id="gemini-key-guide" className="text-xl font-bold mb-2">Generate your Gemini API key</h2>
+          <p className="text-sm text-gray-400 mb-5">You will need this key when setting up the installer.</p>
+          <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
+            <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-300 underline underline-offset-2">Google AI Studio API keys</a> and sign in to your Google account.</li>
+            <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
+            <li>Select <strong>Create API key</strong> and choose the project for the key.</li>
+            <li>Copy the generated key and keep it private. Do not share it or post it publicly.</li>
+            <li>Run SecureInstaller and paste the key into the <strong>Gemini API Key</strong> field when prompted.</li>
+          </ol>
+        </section>
+      )}
+    </DashboardLayout>
+  );
+};
 
 const AdminDashboard = () => (
   <DashboardLayout title="Admin Control Panel" isAdmin={true}>
