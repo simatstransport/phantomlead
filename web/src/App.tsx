@@ -140,13 +140,22 @@ const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNo
           <span className="font-bold text-lg">SecurePlatform</span>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
-          <Link to={isAdmin ? "/admin/licenses" : "/dashboard/licenses"} className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> Licenses</Link>
-          <Link to={isAdmin ? "/admin/packages" : "/dashboard/packages"} className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Packages</Link>
-          {isAdmin && (
+          {isAdmin ? (
             <>
+              <Link to="/admin" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><LayoutDashboard className="w-5 h-5 mr-3" /> Admin Overview</Link>
+              <Link to="/admin/licenses" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> All Licenses</Link>
+              <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
               <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
               <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
+              <div className="pt-4 mt-4 border-t border-gray-800">
+                <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
+              <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
+              <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
             </>
           )}
         </nav>
@@ -273,9 +282,9 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
         <Routes>
-          <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Login />} />
-          <Route path="/signup" element={session ? <Navigate to="/dashboard" /> : <SignUp />} />
-          <Route path="/dashboard" element={session ? (isAdmin ? <Navigate to="/admin" /> : <CustomerDashboard />) : <Navigate to="/login" />} />
+          <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
+          <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />
+          <Route path="/dashboard" element={session ? <CustomerDashboard /> : <Navigate to="/login" />} />
           <Route path="/dashboard/licenses" element={session ? <PlaceholderPage title="My Licenses" desc="View and manage your purchased licenses." isAdmin={false} /> : <Navigate to="/login" />} />
           <Route path="/dashboard/packages" element={session ? <PlaceholderPage title="Software Packages" desc="Browse and purchase new software packages." isAdmin={false} /> : <Navigate to="/login" />} />
 
@@ -284,7 +293,7 @@ function App() {
           <Route path="/admin/packages" element={session ? (isAdmin ? <AdminPackages /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/payments" element={session ? (isAdmin ? <AdminPayments /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/customers" element={session ? (isAdmin ? <PlaceholderPage title="Customer Management" desc="Manage all customer accounts." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-          <Route path="/" element={<Navigate to={session ? "/dashboard" : "/login"} />} />
+          <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
         </Routes>
       </div>
     </Router>
