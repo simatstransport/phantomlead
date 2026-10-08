@@ -63,7 +63,7 @@ export const AdminCustomers = () => {
   if (loading) return <p className="text-gray-400">Loading customers...</p>;
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
       <h2 className="text-xl font-bold mb-5">Customer Management</h2>
       {error ? (
         <p role="alert" className="text-sm text-red-400">Could not load customers: {error}</p>

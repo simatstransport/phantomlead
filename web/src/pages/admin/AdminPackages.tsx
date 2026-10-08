@@ -33,10 +33,10 @@ export const AdminPackages = () => {
   if (loading) return <div className="text-gray-400">Loading packages...</div>;
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">Package Management</h2>
-        <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium">+ New Package</button>
+        <button className="px-4 py-2 bg-green-700 hover:bg-green-800 text-white rounded-lg text-sm font-medium">+ New Package</button>
       </div>
       <table className="w-full text-left border-collapse">
         <thead>
@@ -60,7 +60,7 @@ export const AdminPackages = () => {
                 </span>
               </td>
               <td className="py-4 flex gap-2">
-                <button onClick={() => handleEditPrice(p.id, p.price)} className="text-indigo-400 hover:text-indigo-300 text-sm">Edit Price</button>
+                <button onClick={() => handleEditPrice(p.id, p.price)} className="text-green-500 hover:text-green-400 text-sm">Edit Price</button>
                 <button onClick={() => togglePackageStatus(p.id, p.active)} className="text-gray-400 hover:text-white text-sm ml-4">
                   {p.active ? 'Disable' : 'Enable'}
                 </button>

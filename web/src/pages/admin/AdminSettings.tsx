@@ -63,7 +63,7 @@ export const AdminSettings = () => {
   if (loading) return <div className="text-gray-400">Loading settings...</div>;
 
   return (
-    <div className="max-w-2xl bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div className="max-w-2xl bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
       <h2 className="text-xl font-bold mb-6">Global Platform Settings</h2>
       
       <form onSubmit={handleSave} className="space-y-6">
@@ -71,18 +71,18 @@ export const AdminSettings = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-medium text-white border-b border-gray-800 pb-2">Application Config</h3>
           
-          <div className="flex items-center justify-between p-4 bg-gray-950 rounded-lg border border-gray-800">
+          <div className="flex items-center justify-between p-4 bg-black rounded-lg border border-gray-800">
             <div>
               <div className="font-medium">Maintenance Mode</div>
               <div className="text-sm text-gray-400">Lock out customers and show a maintenance screen</div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" checked={settings.maintenance_mode} onChange={e => setSettings({...settings, maintenance_mode: e.target.checked})} />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-700"></div>
             </label>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-gray-950 rounded-lg border border-gray-800">
+          <div className="flex items-center justify-between p-4 bg-black rounded-lg border border-gray-800">
             <div>
               <div className="font-medium">Allow New Signups</div>
               <div className="text-sm text-gray-400">Let new users register accounts</div>
@@ -99,20 +99,20 @@ export const AdminSettings = () => {
           
           <div>
             <label className="block text-sm text-gray-400 mb-1">Company Name</label>
-            <input type="text" value={settings.company_name} onChange={e => setSettings({...settings, company_name: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" />
+            <input type="text" value={settings.company_name} onChange={e => setSettings({...settings, company_name: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" />
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-1">Support Email</label>
-            <input type="email" value={settings.support_email} onChange={e => setSettings({...settings, support_email: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" />
+            <input type="email" value={settings.support_email} onChange={e => setSettings({...settings, support_email: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" />
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-1">Contact Number</label>
-            <input type="text" value={settings.contact_number} onChange={e => setSettings({...settings, contact_number: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" />
+            <input type="text" value={settings.contact_number} onChange={e => setSettings({...settings, contact_number: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" />
           </div>
         </div>
 
         <div className="pt-4 border-t border-gray-800">
-          <button type="submit" disabled={saving} className="flex items-center px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium disabled:opacity-50">
+          <button type="submit" disabled={saving} className="flex items-center px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-lg font-medium disabled:opacity-50">
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Saving...' : 'Save Settings'}
           </button>

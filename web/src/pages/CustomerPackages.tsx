@@ -131,10 +131,10 @@ export const CustomerPackages = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {packages.map(pkg => (
-              <div key={pkg.id} className="bg-gray-900 border border-gray-800 rounded-2xl p-8 flex flex-col hover:border-indigo-500/50 transition-colors">
+              <div key={pkg.id} className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-8 flex flex-col hover:border-green-600/50 transition-colors">
                 <div className="mb-6 flex-1">
                   <h3 className="text-2xl font-bold text-white mb-2">{pkg.package_name}</h3>
-                  <div className="text-3xl font-black text-indigo-400 mb-4">₹{pkg.price}</div>
+                  <div className="text-3xl font-black text-green-500 mb-4">₹{pkg.price}</div>
                   <p className="text-sm font-medium text-gray-200 mb-2">What it is for</p>
                   <p className="text-gray-400 text-sm mb-5">{packageGuides[pkg.package_code]?.purpose || pkg.description}</p>
 
@@ -146,13 +146,13 @@ export const CustomerPackages = () => {
                   </div>
 
                   <details className="mt-6 border-t border-gray-800 pt-4">
-                    <summary className="cursor-pointer text-sm font-medium text-indigo-300">How to install</summary>
+                    <summary className="cursor-pointer text-sm font-medium text-green-400">How to install</summary>
                     <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-gray-400">
                       {installationSteps.map(item => <li key={item}>{item}</li>)}
                     </ol>
                   </details>
                 </div>
-                <button onClick={() => handleBuyClick(pkg)} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors">
+                <button onClick={() => handleBuyClick(pkg)} className="w-full py-3 bg-green-700 hover:bg-green-800 text-white rounded-xl font-medium transition-colors">
                   Buy Now
                 </button>
               </div>
@@ -162,46 +162,46 @@ export const CustomerPackages = () => {
       )}
 
       {step === 2 && (
-        <div className="max-w-xl mx-auto bg-gray-900 border border-gray-800 rounded-2xl p-8">
+        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-8">
           <h2 className="text-2xl font-bold mb-6">Student Details</h2>
           <p className="text-sm text-gray-400 mb-6">Purchasing: <span className="text-white">{selectedPackage?.package_name}</span> · ₹{selectedPackage?.price}</p>
           <form onSubmit={handleDetailsSubmit} className="space-y-4">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Full Name</label>
-              <input required type="text" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" />
+              <input required type="text" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Mobile Number</label>
-              <input required type="tel" inputMode="tel" autoComplete="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" />
+              <input required type="tel" inputMode="tel" autoComplete="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">College Name</label>
-              <input required type="text" value={formData.collegeName} onChange={e => setFormData({...formData, collegeName: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" />
+              <input required type="text" value={formData.collegeName} onChange={e => setFormData({...formData, collegeName: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" />
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Academic Year</label>
-              <input required type="text" value={formData.academicYear} onChange={e => setFormData({...formData, academicYear: e.target.value})} className="w-full px-4 py-2 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500" placeholder="e.g. 3rd Year" />
+              <input required type="text" value={formData.academicYear} onChange={e => setFormData({...formData, academicYear: e.target.value})} className="w-full px-4 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600" placeholder="e.g. 3rd Year" />
             </div>
             <div className="pt-4 flex gap-4">
               <button type="button" onClick={() => setStep(1)} className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium">Back</button>
-              <button type="submit" className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl font-medium">Continue to Payment</button>
+              <button type="submit" className="flex-1 py-3 bg-green-700 hover:bg-green-800 rounded-xl font-medium">Continue to Payment</button>
             </div>
           </form>
         </div>
       )}
 
       {step === 3 && (
-        <div className="max-w-xl mx-auto bg-gray-900 border border-gray-800 rounded-2xl p-8">
+        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">UPI Payment</h2>
             <p className="text-gray-400">Scan or pay to the UPI ID below to complete your purchase of {selectedPackage?.package_name}.</p>
           </div>
           
-          <div className="bg-gray-950 border border-gray-800 rounded-xl p-6 text-center mb-8">
+          <div className="bg-black border border-gray-800 rounded-xl p-6 text-center mb-8">
             <div className="text-sm text-gray-400 mb-1">Amount to Pay</div>
-            <div className="text-4xl font-black text-indigo-400 mb-6">₹{selectedPackage?.price}</div>
+            <div className="text-4xl font-black text-green-500 mb-6">₹{selectedPackage?.price}</div>
             <div className="text-sm text-gray-400 mb-1">Official UPI ID</div>
-            <div className="text-xl font-mono text-white bg-gray-900 py-3 rounded-lg border border-gray-800 select-all">
+            <div className="text-xl font-mono text-white bg-[#0a0a0a] py-3 rounded-lg border border-gray-800 select-all">
               phantomlead@upi
             </div>
           </div>
@@ -218,7 +218,7 @@ export const CustomerPackages = () => {
           <form onSubmit={handlePaymentSubmit} className="space-y-4">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Paste UPI Transaction ID (Reference Number)</label>
-              <input required type="text" value={formData.upiId} onChange={e => setFormData({...formData, upiId: e.target.value})} className="w-full px-4 py-3 bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-indigo-500 font-mono text-center text-lg" placeholder="e.g. 3201498172" />
+              <input required type="text" value={formData.upiId} onChange={e => setFormData({...formData, upiId: e.target.value})} className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 font-mono text-center text-lg" placeholder="e.g. 3201498172" />
             </div>
             <div className="pt-4 flex gap-4">
               <button type="button" onClick={() => setStep(2)} className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium">Back</button>

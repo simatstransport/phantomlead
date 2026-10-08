@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
@@ -9,6 +9,8 @@ import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminSettings } from './pages/admin/AdminSettings';
 import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerLicenses } from './pages/CustomerLicenses';
+import { OnboardingModal } from './components/OnboardingModal';
+import { MatrixBackground } from './components/MatrixBackground';
 
 const resendSignupConfirmation = (email: string) => supabase.auth.resend({
   type: 'signup',
@@ -60,11 +62,11 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-950 px-4">
-      <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-8">
+    <div className="flex items-center justify-center min-h-screen bg-black px-4">
+      <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
-          <div className="bg-indigo-500/10 p-3 rounded-full border border-indigo-500/20">
-            <Shield className="w-8 h-8 text-indigo-400" />
+          <div className="bg-green-500/10 p-3 rounded-full border border-green-500/20">
+            <Shield className="w-8 h-8 text-green-400" />
           </div>
         </div>
         <h2 className="text-2xl font-bold text-center text-white mb-2">Secure License Platform</h2>
@@ -76,7 +78,7 @@ const Login = () => {
             <input 
               type="email" required
               value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="admin@example.com"
             />
           </div>
@@ -85,25 +87,25 @@ const Login = () => {
             <input 
               type="password" required
               value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="••••••••"
             />
           </div>
           <button 
             type="submit" disabled={loading}
-            className="w-full mt-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            className="w-full mt-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
           >
             {loading ? 'Authenticating...' : 'Sign In to Portal'}
           </button>
         </form>
         {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-green-400'}`}>{notice.message}</p>}
         {showResend && (
-          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-indigo-300 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-50">
+          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-green-400 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-50">
             {resending ? 'Sending...' : 'Resend confirmation email'}
           </button>
         )}
         <div className="mt-6 text-center text-sm text-gray-400">
-          Don't have an account? <Link to="/signup" className="text-indigo-400 hover:text-indigo-300">Sign up here</Link>
+          Don't have an account? <Link to="/signup" className="text-green-400 hover:text-green-400">Sign up here</Link>
         </div>
       </div>
     </div>
@@ -149,8 +151,8 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-950 px-4">
-      <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-8">
+    <div className="flex items-center justify-center min-h-screen bg-black px-4">
+      <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
           <div className="bg-green-500/10 p-3 rounded-full border border-green-500/20">
             <User className="w-8 h-8 text-green-400" />
@@ -200,46 +202,69 @@ const SignUp = () => {
 };
 
 const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex">
-      <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b border-gray-800">
-          <Shield className="w-6 h-6 text-indigo-400 mr-2" />
-          <span className="font-bold text-lg">SecurePlatform</span>
+    <div className="min-h-screen bg-black text-white flex relative overflow-hidden">
+      <MatrixBackground />
+      
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#0a0a0a] border-r border-green-900/30 flex flex-col transition-transform duration-300 ease-in-out`}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-green-900/30 bg-black">
+          <div className="flex items-center">
+            <Shield className="w-6 h-6 text-green-500 mr-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+            <span className="font-bold text-lg tracking-wider text-green-50">S_PLATFORM</span>
+          </div>
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 relative z-10 bg-[#0a0a0a]/90">
           {isAdmin ? (
             <>
-              <Link to="/admin" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><LayoutDashboard className="w-5 h-5 mr-3" /> Admin Overview</Link>
-              <Link to="/admin/licenses" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> All Licenses</Link>
-              <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
-              <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
-              <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
-              <Link to="/admin/settings" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Settings className="w-5 h-5 mr-3" /> Settings</Link>
-              <div className="pt-4 mt-4 border-t border-gray-800">
-                <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
+              <Link to="/admin" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><LayoutDashboard className="w-5 h-5 mr-3" /> Admin Overview</Link>
+              <Link to="/admin/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> All Licenses</Link>
+              <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
+              <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
+              <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
+              <Link to="/admin/settings" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Settings className="w-5 h-5 mr-3" /> Settings</Link>
+              <div className="pt-4 mt-4 border-t border-green-900/30">
+                <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/20"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
               </div>
             </>
           ) : (
             <>
-              <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
-              <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
-              <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
+              <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
+              <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
+              <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
             </>
           )}
         </nav>
-        <div className="p-4 border-t border-gray-800">
-          <button onClick={() => supabase.auth.signOut()} className="flex items-center px-4 py-2 text-gray-400 hover:text-white w-full"><LogOut className="w-5 h-5 mr-3" /> Sign Out</button>
+        <div className="p-4 border-t border-green-900/30 bg-[#0a0a0a]">
+          <button onClick={() => supabase.auth.signOut()} className="flex items-center px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg w-full transition-colors"><LogOut className="w-5 h-5 mr-3" /> Sign Out</button>
         </div>
       </div>
-      <div className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-gray-800 flex items-center px-8 bg-gray-900/50">
-          <h1 className="text-xl font-semibold">{title}</h1>
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        <header className="h-16 border-b border-green-900/30 flex items-center px-4 md:px-8 bg-black/80 backdrop-blur shrink-0">
+          <button onClick={() => setSidebarOpen(true)} className="md:hidden mr-4 text-gray-400 hover:text-white p-2">
+            <Menu className="w-6 h-6" />
+          </button>
+          <h1 className="text-xl font-semibold text-green-50 font-mono tracking-wide">{title}</h1>
           <div className="ml-auto flex items-center gap-4">
-            <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700"><User className="w-4 h-4 text-gray-400" /></div>
+            <div className="w-8 h-8 bg-[#0a0a0a] rounded-full flex items-center justify-center border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]"><User className="w-4 h-4 text-green-400" /></div>
           </div>
         </header>
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-black/40">
           {children}
         </main>
       </div>
@@ -304,9 +329,9 @@ const useHasActiveLicense = (isAdmin: boolean) => {
 };
 
 const GeminiApiKeyGuide = () => (
-  <section className="mt-8 bg-gray-900 border border-gray-800 rounded-xl p-6" aria-labelledby="manual-guide">
+  <section className="mt-8 bg-zinc-950 border border-gray-800 rounded-xl p-6" aria-labelledby="manual-guide">
     <h2 id="manual-guide" className="text-xl font-bold mb-6 flex items-center">
-      <Key className="w-5 h-5 mr-2 text-indigo-400" /> User Manual & Installation Guide
+      <Key className="w-5 h-5 mr-2 text-green-400" /> User Manual & Installation Guide
     </h2>
     
     <div className="space-y-8">
@@ -320,9 +345,9 @@ const GeminiApiKeyGuide = () => (
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-2 text-indigo-400">Step 2: Get Your Google Gemini API Key</h3>
+        <h3 className="text-lg font-semibold mb-2 text-green-400">Step 2: Get Your Google Gemini API Key</h3>
         <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
-          <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-400 underline underline-offset-2 hover:text-indigo-300">Google AI Studio API keys</a> and sign in.</li>
+          <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-green-400 underline underline-offset-2 hover:text-green-400">Google AI Studio API keys</a> and sign in.</li>
           <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
           <li>Select <strong>Create API key</strong>, copy the generated key, and keep it private.</li>
         </ol>
@@ -349,9 +374,9 @@ const GeminiApiKeyGuide = () => (
         <h3 className="text-lg font-semibold mb-2 text-purple-400">Step 5: Using the Software</h3>
         <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
           <li>Launch <strong>Safe Exam Browser</strong>.</li>
-          <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
-          <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
-          <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
+          <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
+          <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
+          <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
         </ol>
       </div>
     </div>
@@ -364,22 +389,22 @@ const CustomerDashboard = () => {
   return (
     <DashboardLayout title="Customer Dashboard" isAdmin={false}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
           <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
           <p className="text-3xl font-bold">{checkingLicense ? '...' : activeLicenseCount}</p>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
           <h3 className="text-gray-400 text-sm font-medium mb-2">Available Packages</h3>
-          <Link to="/dashboard/packages" className="text-3xl font-bold text-indigo-400 hover:text-indigo-300">Browse packages</Link>
+          <Link to="/dashboard/packages" className="text-3xl font-bold text-green-400 hover:text-green-400">Browse packages</Link>
         </div>
       </div>
-      <section className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+      <section className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
         <h2 className="text-xl font-bold mb-2">My Licenses</h2>
         <p className="text-sm text-gray-400 mb-5">
           {checkingLicense ? 'Checking your license status...' : hasActiveLicense ? 'View your active package and license status.' : 'No active licenses yet. Your license will appear here after it is issued.'}
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium">View my licenses</Link>
+          <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium">View my licenses</Link>
           {!checkingLicense && hasActiveLicense && (
             <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="inline-flex items-center gap-2 px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg font-medium">
               <Download className="w-4 h-4" /> Download SecureInstaller.exe
@@ -429,16 +454,16 @@ const AdminDashboard = () => {
 
   return (
     <DashboardLayout title="Admin Overview" isAdmin={true}>
-      <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-indigo-400 mb-1">Welcome back, Administrator!</h2>
+          <h2 className="text-xl font-bold text-green-400 mb-1">Welcome back, Administrator!</h2>
           <p className="text-sm text-gray-300">Here is what is happening with your license platform today.</p>
         </div>
-        <Link to="/admin/settings" className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Platform Settings</Link>
+        <Link to="/admin/settings" className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Platform Settings</Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
           <div className="flex items-center text-gray-400 mb-2">
             <Users className="w-5 h-5 mr-2" />
             <h3 className="font-medium">Total Customers</h3>
@@ -446,7 +471,7 @@ const AdminDashboard = () => {
           <div className="text-3xl font-bold text-white">{loading ? '...' : stats.customers}</div>
         </div>
         
-        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
           <div className="flex items-center text-gray-400 mb-2">
             <CreditCard className="w-5 h-5 mr-2" />
             <h3 className="font-medium">Pending Approvals</h3>
@@ -454,7 +479,7 @@ const AdminDashboard = () => {
           <div className="text-3xl font-bold text-yellow-400">{loading ? '...' : stats.pending}</div>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
           <div className="flex items-center text-gray-400 mb-2">
             <Key className="w-5 h-5 mr-2" />
             <h3 className="font-medium">Active Licenses</h3>
@@ -462,7 +487,7 @@ const AdminDashboard = () => {
           <div className="text-3xl font-bold text-green-400">{loading ? '...' : stats.activeLicenses}</div>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
           <div className="flex items-center text-gray-400 mb-2">
             <span className="font-medium">Total Revenue</span>
           </div>
@@ -472,28 +497,28 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Quick Actions Panel */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
           <h2 className="text-lg font-bold mb-4 border-b border-gray-800 pb-2">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link to="/admin/payments" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
-              <CreditCard className="w-6 h-6 text-indigo-400 mb-3 group-hover:scale-110 transition-transform" />
+            <Link to="/admin/payments" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
+              <CreditCard className="w-6 h-6 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
               <div className="font-medium text-white mb-1">Review Payments</div>
               <div className="text-xs text-gray-500">Approve or reject pending UPI transactions</div>
             </Link>
             
-            <Link to="/admin/licenses" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+            <Link to="/admin/licenses" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
               <Key className="w-6 h-6 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
               <div className="font-medium text-white mb-1">Generate License</div>
               <div className="text-xs text-gray-500">Manually issue a free license to a customer</div>
             </Link>
 
-            <Link to="/admin/packages" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+            <Link to="/admin/packages" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
               <Package className="w-6 h-6 text-purple-400 mb-3 group-hover:scale-110 transition-transform" />
               <div className="font-medium text-white mb-1">Manage Packages</div>
               <div className="text-xs text-gray-500">Update pricing or add new software bundles</div>
             </Link>
 
-            <Link to="/admin/customers" className="p-4 bg-gray-950 border border-gray-800 rounded-lg hover:border-indigo-500 transition-colors group">
+            <Link to="/admin/customers" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
               <Users className="w-6 h-6 text-blue-400 mb-3 group-hover:scale-110 transition-transform" />
               <div className="font-medium text-white mb-1">Manage Users</div>
               <div className="text-xs text-gray-500">Block, delete, or view registered customers</div>
@@ -502,7 +527,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* System Status Panel */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col justify-between">
+        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6 flex flex-col justify-between">
           <div>
             <h2 className="text-lg font-bold mb-4 border-b border-gray-800 pb-2">System Status</h2>
             <div className="space-y-4">
@@ -536,6 +561,7 @@ function App() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [onboarded, setOnboarded] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -561,11 +587,12 @@ function App() {
     setLoading(false);
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-950 flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div></div>;
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full"></div></div>;
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
+      {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
+      <div className="min-h-screen bg-black text-gray-100 font-sans">
         <Routes>
           <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
           <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />

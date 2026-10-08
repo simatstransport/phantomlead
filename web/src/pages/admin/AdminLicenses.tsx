@@ -47,7 +47,7 @@ export const AdminLicenses = () => {
   if (loading) return <div className="text-gray-400">Loading licenses...</div>;
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">Global License Management</h2>
         <button onClick={handleGenerateFree} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">Generate FREE License</button>

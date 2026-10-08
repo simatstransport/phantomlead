@@ -83,7 +83,7 @@ export const CustomerLicenses = () => {
   if (loading) return <p className="text-gray-400">Loading your licenses...</p>;
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
       <h2 className="text-xl font-bold mb-2">Your licenses</h2>
       <p className="text-sm text-gray-400 mb-6">Use the key shown on your license when activating SecureInstaller.</p>
       {licenses.some(license => license.status === 'ACTIVE') && (
@@ -98,7 +98,7 @@ export const CustomerLicenses = () => {
       ) : licenses.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-gray-300 mb-4">No licenses have been issued to your account yet.</p>
-          <Link to="/dashboard/packages" className="inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium">Browse packages</Link>
+          <Link to="/dashboard/packages" className="inline-flex px-4 py-2 bg-green-700 hover:bg-green-800 rounded-lg font-medium">Browse packages</Link>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -122,12 +122,12 @@ export const CustomerLicenses = () => {
                   </td>
                   <td className="py-4 pr-5">{license.status}</td>
                   <td className="py-4 pr-5">{license.payment_type}</td>
-                  <td className="py-4 pr-5 font-mono text-xs text-indigo-300 break-all">
+                  <td className="py-4 pr-5 font-mono text-xs text-green-400 break-all">
                     {license.license_key ? license.license_key : (
                       <div className="min-w-40">
                         <span className="block mb-2">Key unavailable</span>
                         {license.status === 'ACTIVE' && (
-                          <button type="button" onClick={() => handleGenerateReplacementKey(license.id)} disabled={regeneratingLicenseId === license.id} className="font-sans text-indigo-300 underline underline-offset-2 disabled:opacity-50">
+                          <button type="button" onClick={() => handleGenerateReplacementKey(license.id)} disabled={regeneratingLicenseId === license.id} className="font-sans text-green-400 underline underline-offset-2 disabled:opacity-50">
                             {regeneratingLicenseId === license.id ? 'Generating...' : 'Generate replacement key'}
                           </button>
                         )}
