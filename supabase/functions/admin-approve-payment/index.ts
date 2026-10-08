@@ -22,9 +22,10 @@ serve(async (req) => {
     const authClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } }
     )
-    const { data: userData } = await authClient.auth.getUser()
+    const jwt = authHeader.replace('Bearer ', '')
+    const { data: userData } = await authClient.auth.getUser(jwt)
     if (!userData.user) throw new Error('Unauthorized')
 
     const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', userData.user.id).single()

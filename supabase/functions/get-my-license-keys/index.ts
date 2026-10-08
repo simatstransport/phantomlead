@@ -17,11 +17,19 @@ serve(async (req) => {
     if (!authHeader) throw new Error('Missing authorization header')
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-    const authClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
-      global: { headers: { Authorization: authHeader } }
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    if (!supabaseUrl) throw new Error('Missing SUPABASE_URL in env')
+    if (!anonKey) throw new Error('Missing SUPABASE_ANON_KEY in env')
+
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false }
     })
-    const { data: userData, error: authError } = await authClient.auth.getUser()
-    if (authError || !userData.user) throw new Error('Unauthorized')
+    
+    const jwt = authHeader.replace('Bearer ', '')
+    const { data: userData, error: authError } = await authClient.auth.getUser(jwt)
+    if (authError) throw new Error('AuthError: ' + authError.message)
+    if (!userData.user) throw new Error('Unauthorized: No user data')
 
     const encryptionSecret = Deno.env.get('LICENSE_ENCRYPTION_KEY') ?? ''
     if (!encryptionSecret) throw new Error('License encryption is not configured')

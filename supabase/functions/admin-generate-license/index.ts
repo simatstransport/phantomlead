@@ -23,9 +23,11 @@ serve(async (req) => {
     if (!encryptionSecret) throw new Error('License encryption is not configured')
 
     const authClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } }
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false }
     })
-    const { data: userData, error: authError } = await authClient.auth.getUser()
+    const jwt = authHeader.replace('Bearer ', '')
+    const { data: userData, error: authError } = await authClient.auth.getUser(jwt)
     if (authError || !userData.user) throw new Error('Unauthorized')
 
     const serviceClient = createClient(supabaseUrl, serviceRoleKey)

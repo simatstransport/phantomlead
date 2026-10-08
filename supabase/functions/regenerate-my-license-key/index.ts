@@ -17,10 +17,14 @@ serve(async (req) => {
     if (!authHeader) throw new Error('Unauthorized')
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
-    const authClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') ?? '', {
-      global: { headers: { Authorization: authHeader } }
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false }
     })
-    const { data: userData, error: authError } = await authClient.auth.getUser()
+    const jwt = authHeader.replace('Bearer ', '')
+    const { data: userData, error: authError } = await authClient.auth.getUser(jwt)
     if (authError || !userData.user) throw new Error('Unauthorized')
 
     const serviceClient = createClient(
