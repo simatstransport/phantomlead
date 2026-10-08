@@ -30,43 +30,18 @@ export const AdminLicenses = () => {
     const customerEmail = window.prompt("Enter the Customer's Email address:");
     if (!customerEmail) return;
 
-    const { data: customer } = await supabase.from('customers').select('id').eq('email', customerEmail).single();
-    if (!customer) {
-      alert("Customer not found! Please make sure they have signed up.");
-      return;
-    }
-
     const packageCode = window.prompt("Enter the Package Code (e.g., FULL_ACCESS, JAVA_VIVA):", "FULL_ACCESS");
     if (!packageCode) return;
 
-    const { data: pkg } = await supabase.from('packages').select('id').eq('package_code', packageCode).single();
-    if (!pkg) {
-      alert("Package code not found!");
-      return;
-    }
-
-    // Generate a secure hash just like the Edge Function
-    const rawLicense = crypto.randomUUID().toUpperCase();
-    const encoder = new TextEncoder();
-    const data = encoder.encode(rawLicense);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-    const { error } = await supabase.from('licenses').insert({
-      license_key_hash,
-      customer_id: customer.id,
-      package_id: pkg.id,
-      status: 'ACTIVE',
-      payment_type: 'FREE',
-      max_devices: 1
+    const { data, error } = await supabase.functions.invoke('admin-generate-license', {
+      body: { customer_email: customerEmail, package_code: packageCode }
     });
 
     if (error) alert("Error generating free license: " + error.message);
-    else {
-      alert(`Success! Generated FREE License: \n\n${rawLicense}\n\nPlease copy and securely send this to the customer.`);
+    else if (data?.license_key) {
+      alert(`FREE license created. The customer can now view this key in My Licenses:\n\n${data.license_key}`);
       fetchLicenses();
-    }
+    } else alert('License was created, but the key response was missing. Ask the customer to check My Licenses.');
   };
 
   if (loading) return <div className="text-gray-400">Loading licenses...</div>;

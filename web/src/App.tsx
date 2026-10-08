@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
@@ -342,7 +342,14 @@ const CustomerDashboard = () => {
         <p className="text-sm text-gray-400 mb-5">
           {checkingLicense ? 'Checking your license status...' : hasActiveLicense ? 'View your active package and license status.' : 'No active licenses yet. Your license will appear here after it is issued.'}
         </p>
-        <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium">View my licenses</Link>
+        <div className="flex flex-wrap gap-3">
+          <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium">View my licenses</Link>
+          {!checkingLicense && hasActiveLicense && (
+            <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="inline-flex items-center gap-2 px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg font-medium">
+              <Download className="w-4 h-4" /> Download SecureInstaller.exe
+            </a>
+          )}
+        </div>
       </section>
       {!checkingLicense && hasActiveLicense && <GeminiApiKeyGuide />}
     </DashboardLayout>

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
+import { encryptLicenseKey, hashLicenseKey } from '../_shared/license-crypto.ts'
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -37,26 +38,30 @@ serve(async (req) => {
     if (action === 'APPROVE') {
       const { data: payment } = await supabaseClient.from('payments').select('*').eq('id', payment_id).single()
       if (!payment) throw new Error('Payment not found')
-
-      await supabaseClient.from('payments').update({ status: 'APPROVED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)
+      if (payment.status !== 'PENDING') throw new Error('Payment has already been reviewed')
 
       // Generate License
       const rawLicense = crypto.randomUUID().toUpperCase()
-      
-      const encoder = new TextEncoder()
-      const data = encoder.encode(rawLicense)
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-      const hashArray = Array.from(new Uint8Array(hashBuffer))
-      const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+      const encryptionSecret = Deno.env.get('LICENSE_ENCRYPTION_KEY') ?? ''
+      if (!encryptionSecret) throw new Error('License encryption is not configured')
+      const [license_key_hash, license_key_encrypted] = await Promise.all([
+        hashLicenseKey(rawLicense),
+        encryptLicenseKey(rawLicense, encryptionSecret)
+      ])
 
-      const { data: license } = await supabaseClient.from('licenses').insert({
+      const { data: license, error: licenseError } = await supabaseClient.from('licenses').insert({
         license_key_hash,
+        license_key_encrypted,
         customer_id: payment.customer_id,
         package_id: payment.package_id,
         payment_id: payment.id,
         status: 'ACTIVE',
         payment_type: 'PAID'
       }).select().single()
+      if (licenseError) throw licenseError
+
+      const { error: paymentUpdateError } = await supabaseClient.from('payments').update({ status: 'APPROVED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)
+      if (paymentUpdateError) throw paymentUpdateError
 
       // Log it
       await supabaseClient.from('audit_logs').insert({
@@ -66,7 +71,7 @@ serve(async (req) => {
         details: { license_id: license.id }
       })
 
-      return new Response(JSON.stringify({ message: 'Payment approved, license generated', license: rawLicense }), { status: 200 })
+      return new Response(JSON.stringify({ message: 'Payment approved and license generated' }), { status: 200 })
     }
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { headers: { 'Content-Type': 'application/json' }, status: 500 })

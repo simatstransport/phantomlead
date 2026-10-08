@@ -7,13 +7,22 @@
 4. In the Supabase Dashboard, create a new Storage bucket named `packages`. Make sure it is private.
 
 ## 2. Edge Functions
-Deploy the Edge Functions to Supabase:
+Create a random secret of at least 32 characters, then set it as a Supabase Edge Function secret. Back it up securely; existing encrypted keys cannot be decrypted if this secret is lost.
+```bash
+supabase secrets set LICENSE_ENCRYPTION_KEY="<generated-random-secret>"
+```
+
+Deploy the required Edge Functions to Supabase:
 ```bash
 cd supabase
 supabase functions deploy validate-license
 supabase functions deploy get-package-manifest
-# (Deploy other functions similarly)
+supabase functions deploy admin-generate-license
+supabase functions deploy admin-approve-payment
+supabase functions deploy get-my-license-keys
 ```
+
+Run `supabase/migrations/20261009000002_encrypt_license_keys.sql` before deploying the updated functions. Existing licenses contain only hashes and must be reissued before their keys can be displayed.
 
 ## 3. Authentication Email Delivery
 1. In Supabase, open **Authentication → URL Configuration**. Set the Site URL to the deployed web app URL and add that URL and `http://localhost:5173` to the allowed redirect URLs.
