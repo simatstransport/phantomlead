@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
+import { AdminSettings } from './pages/admin/AdminSettings';
 import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerLicenses } from './pages/CustomerLicenses';
 
@@ -214,6 +215,7 @@ const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNo
               <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
               <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
               <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
+              <Link to="/admin/settings" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Settings className="w-5 h-5 mr-3" /> Settings</Link>
               <div className="pt-4 mt-4 border-t border-gray-800">
                 <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
               </div>
@@ -436,6 +438,7 @@ function App() {
           <Route path="/admin/packages" element={session ? (isAdmin ? <AdminPackages /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/payments" element={session ? (isAdmin ? <AdminPayments /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/settings" element={session ? (isAdmin ? <DashboardLayout title="Settings" isAdmin={true}><AdminSettings /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
         </Routes>
       </div>
