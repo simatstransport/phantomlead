@@ -201,7 +201,7 @@ const SignUp = () => {
   );
 };
 
-const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean }) => {
+const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean, isActualAdmin?: boolean }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   return (
@@ -245,6 +245,11 @@ const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNo
               <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
               <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
               <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
+              {isActualAdmin && (
+                <div className="pt-4 mt-4 border-t border-green-900/30">
+                  <Link to="/admin" className="flex items-center px-4 py-2.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/20"><Shield className="w-5 h-5 mr-3" /> Return to Admin</Link>
+                </div>
+              )}
             </>
           )}
         </nav>
@@ -383,11 +388,11 @@ const GeminiApiKeyGuide = () => (
   </section>
 );
 
-const CustomerDashboard = () => {
+const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
   const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
 
   return (
-    <DashboardLayout title="Customer Dashboard" isAdmin={false}>
+    <DashboardLayout title="Customer Dashboard" isAdmin={false} isActualAdmin={isActualAdmin}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
           <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
@@ -596,9 +601,9 @@ function App() {
         <Routes>
           <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
           <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />
-          <Route path="/dashboard" element={session ? <CustomerDashboard /> : <Navigate to="/login" />} />
-          <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
-          <Route path="/dashboard/packages" element={session ? <CustomerPackages /> : <Navigate to="/login" />} />
+          <Route path="/dashboard" element={session ? <CustomerDashboard isActualAdmin={isAdmin} /> : <Navigate to="/login" />} />
+          <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false} isActualAdmin={isAdmin}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
+          <Route path="/dashboard/packages" element={session ? <DashboardLayout title="Buy Packages" isAdmin={false} isActualAdmin={isAdmin}><CustomerPackages /></DashboardLayout> : <Navigate to="/login" />} />
 
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/licenses" element={session ? (isAdmin ? <AdminLicenses /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
