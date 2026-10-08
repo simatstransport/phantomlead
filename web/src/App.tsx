@@ -5,7 +5,9 @@ import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users 
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
+import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { CustomerPackages } from './pages/CustomerPackages';
+import { CustomerLicenses } from './pages/CustomerLicenses';
 
 const resendSignupConfirmation = (email: string) => supabase.auth.resend({
   type: 'signup',
@@ -243,20 +245,9 @@ const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNo
   );
 };
 
-const PlaceholderPage = ({ title, desc, isAdmin }: { title: string, desc: string, isAdmin?: boolean }) => (
-  <DashboardLayout title={title} isAdmin={isAdmin}>
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
-      <h2 className="text-2xl font-bold mb-2">{title}</h2>
-      <p className="text-gray-400">{desc}</p>
-      <p className="mt-8 text-sm text-gray-500 border border-dashed border-gray-700 p-4 rounded-lg inline-block">
-        (This database view will be fully connected in the next phase of UI design!)
-      </p>
-    </div>
-  </DashboardLayout>
-);
-
 const useHasActiveLicense = (isAdmin: boolean) => {
   const [hasActiveLicense, setHasActiveLicense] = useState(false);
+  const [activeLicenseCount, setActiveLicenseCount] = useState(0);
   const [checkingLicense, setCheckingLicense] = useState(true);
 
   useEffect(() => {
@@ -269,7 +260,10 @@ const useHasActiveLicense = (isAdmin: boolean) => {
             .from('licenses')
             .select('id', { count: 'exact', head: true })
             .eq('status', 'ACTIVE');
-          if (isCurrent) setHasActiveLicense(!error && (count ?? 0) > 0);
+          if (isCurrent) {
+            setActiveLicenseCount(error ? 0 : count ?? 0);
+            setHasActiveLicense(!error && (count ?? 0) > 0);
+          }
           return;
         }
 
@@ -289,7 +283,10 @@ const useHasActiveLicense = (isAdmin: boolean) => {
           .eq('customer_id', customer.id)
           .eq('status', 'ACTIVE');
 
-        if (isCurrent) setHasActiveLicense(!error && (count ?? 0) > 0);
+        if (isCurrent) {
+          setActiveLicenseCount(error ? 0 : count ?? 0);
+          setHasActiveLicense(!error && (count ?? 0) > 0);
+        }
       } catch (error) {
         console.error('Failed to check active license:', error);
       } finally {
@@ -301,7 +298,7 @@ const useHasActiveLicense = (isAdmin: boolean) => {
     return () => { isCurrent = false; };
   }, [isAdmin]);
 
-  return { hasActiveLicense, checkingLicense };
+  return { hasActiveLicense, activeLicenseCount, checkingLicense };
 };
 
 const GeminiApiKeyGuide = () => (
@@ -326,36 +323,28 @@ const GeminiApiKeyGuide = () => (
 );
 
 const CustomerDashboard = () => {
-  const { hasActiveLicense, checkingLicense } = useHasActiveLicense(false);
+  const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
 
   return (
     <DashboardLayout title="Customer Dashboard" isAdmin={false}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
-        <p className="text-3xl font-bold">1</p>
-      </div>
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-gray-400 text-sm font-medium mb-2">Registered Devices</h3>
-        <p className="text-3xl font-bold">1 / 1</p>
-      </div>
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h3 className="text-gray-400 text-sm font-medium mb-2">Available Packages</h3>
-        <p className="text-3xl font-bold text-indigo-400">View All →</p>
-      </div>
-      </div>
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">Your License Key</h2>
-        <div className="flex gap-4">
-          <input type="text" readOnly value="TEST-1234" className="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 font-mono text-indigo-300" />
-          <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium inline-block text-center pt-2.5">
-            Download Installer
-          </a>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
+          <p className="text-3xl font-bold">{checkingLicense ? '...' : activeLicenseCount}</p>
+        </div>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <h3 className="text-gray-400 text-sm font-medium mb-2">Available Packages</h3>
+          <Link to="/dashboard/packages" className="text-3xl font-bold text-indigo-400 hover:text-indigo-300">Browse packages</Link>
         </div>
       </div>
-      {!checkingLicense && hasActiveLicense && (
-        <GeminiApiKeyGuide />
-      )}
+      <section className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 className="text-xl font-bold mb-2">My Licenses</h2>
+        <p className="text-sm text-gray-400 mb-5">
+          {checkingLicense ? 'Checking your license status...' : hasActiveLicense ? 'View your active package and license status.' : 'No active licenses yet. Your license will appear here after it is issued.'}
+        </p>
+        <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium">View my licenses</Link>
+      </section>
+      {!checkingLicense && hasActiveLicense && <GeminiApiKeyGuide />}
     </DashboardLayout>
   );
 };
@@ -432,14 +421,14 @@ function App() {
           <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
           <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />
           <Route path="/dashboard" element={session ? <CustomerDashboard /> : <Navigate to="/login" />} />
-          <Route path="/dashboard/licenses" element={session ? <PlaceholderPage title="My Licenses" desc="View and manage your purchased licenses." isAdmin={false} /> : <Navigate to="/login" />} />
+          <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
           <Route path="/dashboard/packages" element={session ? <CustomerPackages /> : <Navigate to="/login" />} />
 
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/licenses" element={session ? (isAdmin ? <AdminLicenses /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/packages" element={session ? (isAdmin ? <AdminPackages /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/payments" element={session ? (isAdmin ? <AdminPayments /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-          <Route path="/admin/customers" element={session ? (isAdmin ? <PlaceholderPage title="Customer Management" desc="Manage all customer accounts." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
         </Routes>
       </div>
