@@ -316,10 +316,11 @@ const GeminiApiKeyGuide = () => (
     </ol>
     <h3 className="text-lg font-semibold mt-8 mb-2">After installation</h3>
     <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
+      <li>Open <strong>Task Manager</strong>, search for <strong>Safe Exam Browser</strong>, and end all running SEB tasks. Then launch SecureInstaller.</li>
       <li>Launch Safe Exam Browser after SecureInstaller finishes installing.</li>
       <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
-      <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
-      <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
+      <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
+      <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
     </ol>
   </section>
 );
