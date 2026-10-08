@@ -20,6 +20,7 @@ supabase functions deploy get-package-manifest
 supabase functions deploy admin-generate-license
 supabase functions deploy admin-approve-payment
 supabase functions deploy get-my-license-keys
+supabase functions deploy regenerate-my-license-key
 ```
 
 Before deploying the updated functions, run this SQL in the Supabase SQL Editor (or run `supabase/migrations/20261009000002_encrypt_license_keys.sql`):

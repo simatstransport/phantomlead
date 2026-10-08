@@ -18,6 +18,34 @@ export const CustomerLicenses = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [keyError, setKeyError] = useState('');
+  const [keyActionError, setKeyActionError] = useState('');
+  const [regeneratingLicenseId, setRegeneratingLicenseId] = useState('');
+
+  const handleGenerateReplacementKey = async (licenseId: string) => {
+    const confirmed = window.confirm('Your current key cannot be recovered. Generate a replacement? Any previous key for this license will stop working.');
+    if (!confirmed) return;
+
+    setRegeneratingLicenseId(licenseId);
+    setKeyActionError('');
+    const { data, error: functionError } = await supabase.functions.invoke('regenerate-my-license-key', {
+      body: { license_id: licenseId }
+    });
+    setRegeneratingLicenseId('');
+
+    if (functionError) {
+      setKeyActionError(`Could not generate a key: ${functionError.message}. Ask the administrator to deploy the replacement-key function.`);
+      return;
+    }
+
+    if (!data?.license_key) {
+      setKeyActionError('The replacement key was not returned. Contact the administrator.');
+      return;
+    }
+
+    setLicenses(current => current.map(license => (
+      license.id === licenseId ? { ...license, license_key: data.license_key } : license
+    )));
+  };
 
   useEffect(() => {
     const fetchLicenses = async () => {
@@ -64,6 +92,7 @@ export const CustomerLicenses = () => {
         </a>
       )}
       {keyError && <p role="status" className="mb-5 text-sm text-yellow-300">{keyError}</p>}
+      {keyActionError && <p role="alert" className="mb-5 text-sm text-red-400">{keyActionError}</p>}
       {error ? (
         <p role="alert" className="text-sm text-red-400">Could not load licenses: {error}</p>
       ) : licenses.length === 0 ? (
@@ -93,7 +122,18 @@ export const CustomerLicenses = () => {
                   </td>
                   <td className="py-4 pr-5">{license.status}</td>
                   <td className="py-4 pr-5">{license.payment_type}</td>
-                  <td className="py-4 pr-5 font-mono text-xs text-indigo-300 break-all">{license.license_key || 'Key unavailable; ask admin to reissue'}</td>
+                  <td className="py-4 pr-5 font-mono text-xs text-indigo-300 break-all">
+                    {license.license_key ? license.license_key : (
+                      <div className="min-w-40">
+                        <span className="block mb-2">Key unavailable</span>
+                        {license.status === 'ACTIVE' && (
+                          <button type="button" onClick={() => handleGenerateReplacementKey(license.id)} disabled={regeneratingLicenseId === license.id} className="font-sans text-indigo-300 underline underline-offset-2 disabled:opacity-50">
+                            {regeneratingLicenseId === license.id ? 'Generating...' : 'Generate replacement key'}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </td>
                   <td className="py-4 pr-5">{new Date(license.issued_at).toLocaleDateString()}</td>
                   <td className="py-4">{license.expires_at ? new Date(license.expires_at).toLocaleDateString() : 'No expiry'}</td>
                 </tr>
