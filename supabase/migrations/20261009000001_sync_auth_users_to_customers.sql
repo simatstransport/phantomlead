@@ -70,19 +70,3 @@ CREATE TRIGGER on_auth_user_created_sync_customer
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION public.sync_auth_user_to_customer();
-*** Update File: c:\Users\Admin\Documents\phantomlead\secure-license-platform\web\src\App.tsx
-@@
- import { AdminPackages } from './pages/admin/AdminPackages';
- import { AdminLicenses } from './pages/admin/AdminLicenses';
-+import { AdminCustomers } from './pages/admin/AdminCustomers';
- import { CustomerPackages } from './pages/CustomerPackages';
-@@
--          <Route path="/admin/customers" element={session ? (isAdmin ? <PlaceholderPage title="Customer Management" desc="Manage all customer accounts." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-+          <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-*** Update File: c:\Users\Admin\Documents\phantomlead\secure-license-platform\docs\SETUP.md
-@@
--2. Go to the SQL Editor and run the SQL files in `supabase/migrations/` in filename order. This creates the schema, tables, RLS policies, and customer education fields.
--3. For an existing project that already ran the initial schema, run the newer migration file to add the customer college and academic year fields.
-+2. Go to the SQL Editor and run the SQL files in `supabase/migrations/` in filename order. This creates the schema, tables, RLS policies, customer education fields, and Auth-to-customer sync.
-+3. For an existing project, run any migrations newer than the ones already applied. The latest migration syncs existing Auth users and creates customer rows automatically for future signups.
-*** End Patch
