@@ -17,24 +17,34 @@ export const CustomerLicenses = () => {
   const [licenses, setLicenses] = useState<CustomerLicense[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [keyError, setKeyError] = useState('');
 
   useEffect(() => {
     const fetchLicenses = async () => {
-      const [{ data, error: queryError }, { data: keyData, error: keyError }] = await Promise.all([
-        supabase
+      const { data, error: queryError } = await supabase
         .from('licenses')
         .select('id, status, payment_type, issued_at, expires_at, packages(package_name, package_code)')
-        .order('issued_at', { ascending: false }),
-        supabase.functions.invoke('get-my-license-keys', { method: 'GET' })
-      ]);
+        .order('issued_at', { ascending: false });
 
-      if (queryError || keyError) setError(queryError?.message || keyError?.message || 'Unable to load license keys');
-      else {
-        const keys = new Map<string, string | null>((keyData?.keys || []).map((entry: { license_id: string; license_key: string | null }) => [entry.license_id, entry.license_key]));
-        setLicenses((data || []).map(license => ({
+      if (queryError) {
+        setError(queryError.message);
+      } else {
+        const licenseRows = (data || []).map(license => ({
           ...(license as Omit<CustomerLicense, 'license_key'>),
-          license_key: keys.get(license.id) || null
-        })));
+          license_key: null
+        }));
+        setLicenses(licenseRows);
+
+        const { data: keyData, error: keyQueryError } = await supabase.functions.invoke('get-my-license-keys', { method: 'GET' });
+        if (keyQueryError) {
+          setKeyError('License records loaded, but activation keys are unavailable. Ask the administrator to deploy the license-key function and configure its encryption secret.');
+        } else {
+        const keys = new Map<string, string | null>((keyData?.keys || []).map((entry: { license_id: string; license_key: string | null }) => [entry.license_id, entry.license_key]));
+          setLicenses(licenseRows.map(license => ({
+            ...license,
+            license_key: keys.get(license.id) || null
+          })));
+        }
       }
       setLoading(false);
     };
@@ -53,6 +63,7 @@ export const CustomerLicenses = () => {
           <Download className="w-4 h-4" /> Download SecureInstaller.exe
         </a>
       )}
+      {keyError && <p role="status" className="mb-5 text-sm text-yellow-300">{keyError}</p>}
       {error ? (
         <p role="alert" className="text-sm text-red-400">Could not load licenses: {error}</p>
       ) : licenses.length === 0 ? (
@@ -82,7 +93,7 @@ export const CustomerLicenses = () => {
                   </td>
                   <td className="py-4 pr-5">{license.status}</td>
                   <td className="py-4 pr-5">{license.payment_type}</td>
-                  <td className="py-4 pr-5 font-mono text-xs text-indigo-300 break-all">{license.license_key || 'Contact admin to reissue'}</td>
+                  <td className="py-4 pr-5 font-mono text-xs text-indigo-300 break-all">{license.license_key || 'Key unavailable; ask admin to reissue'}</td>
                   <td className="py-4 pr-5">{new Date(license.issued_at).toLocaleDateString()}</td>
                   <td className="py-4">{license.expires_at ? new Date(license.expires_at).toLocaleDateString() : 'No expiry'}</td>
                 </tr>

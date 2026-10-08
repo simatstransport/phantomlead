@@ -22,7 +22,12 @@ supabase functions deploy admin-approve-payment
 supabase functions deploy get-my-license-keys
 ```
 
-Run `supabase/migrations/20261009000002_encrypt_license_keys.sql` before deploying the updated functions. Existing licenses contain only hashes and must be reissued before their keys can be displayed.
+Before deploying the updated functions, run this SQL in the Supabase SQL Editor (or run `supabase/migrations/20261009000002_encrypt_license_keys.sql`):
+```sql
+ALTER TABLE public.licenses
+	ADD COLUMN IF NOT EXISTS license_key_encrypted TEXT;
+```
+Then deploy `get-my-license-keys`; otherwise the customer page can show license records but cannot retrieve their keys. Existing licenses contain only hashes and must be reissued before their keys can be displayed.
 
 ## 3. Authentication Email Delivery
 1. In Supabase, open **Authentication → URL Configuration**. Set the Site URL to the deployed web app URL and add that URL and `http://localhost:5173` to the allowed redirect URLs.
