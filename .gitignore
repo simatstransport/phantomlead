@@ -1,0 +1,10 @@
+node_modules
+dist
+dist_packages
+.env
+.env.local
+.DS_Store
+staging
+__pycache__
+*.pyc
+.venv

@@ -1,0 +1,74 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' } })
+  }
+
+  try {
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) throw new Error('Missing authorization header')
+
+    const { payment_id, action } = await req.json() // action = 'APPROVE' or 'REJECT'
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    // Verify Admin
+    const authClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    )
+    const { data: userData } = await authClient.auth.getUser()
+    if (!userData.user) throw new Error('Unauthorized')
+
+    const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', userData.user.id).single()
+    if (!profile || profile.role !== 'admin') throw new Error('Forbidden')
+
+    if (action === 'REJECT') {
+      await supabaseClient.from('payments').update({ status: 'REJECTED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)
+      return new Response(JSON.stringify({ message: 'Payment rejected' }), { status: 200 })
+    }
+
+    if (action === 'APPROVE') {
+      const { data: payment } = await supabaseClient.from('payments').select('*').eq('id', payment_id).single()
+      if (!payment) throw new Error('Payment not found')
+
+      await supabaseClient.from('payments').update({ status: 'APPROVED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)
+
+      // Generate License
+      const rawLicense = crypto.randomUUID().toUpperCase()
+      
+      const encoder = new TextEncoder()
+      const data = encoder.encode(rawLicense)
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+      const { data: license } = await supabaseClient.from('licenses').insert({
+        license_key_hash,
+        customer_id: payment.customer_id,
+        package_id: payment.package_id,
+        payment_id: payment.id,
+        status: 'ACTIVE',
+        payment_type: 'PAID'
+      }).select().single()
+
+      // Log it
+      await supabaseClient.from('audit_logs').insert({
+        action: 'PAYMENT_APPROVED',
+        actor_id: userData.user.id,
+        target_id: payment.id,
+        details: { license_id: license.id }
+      })
+
+      return new Response(JSON.stringify({ message: 'Payment approved, license generated', license: rawLicense }), { status: 200 })
+    }
+  } catch (error) {
+    return new Response(JSON.stringify({ error: error.message }), { headers: { 'Content-Type': 'application/json' }, status: 500 })
+  }
+})

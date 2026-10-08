@@ -1,0 +1,6 @@
+requests==2.31.0
+pyinstaller==6.3.0
+colorama==0.4.6
+wmi==1.5.1
+pywin32==306
+cryptography==41.0.7
