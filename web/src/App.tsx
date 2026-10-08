@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, Settings, User } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
