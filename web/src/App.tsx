@@ -12,6 +12,7 @@ import { CustomerLicenses } from './pages/CustomerLicenses';
 import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
+import { AnimatedGlow } from './components/AnimatedGlow';
 
 const resendSignupConfirmation = (email: string) => supabase.auth.resend({
   type: 'signup',
@@ -63,7 +64,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black px-4">
+    <div className="flex items-center justify-center min-h-screen px-4 relative z-10">
       <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
           <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
@@ -150,7 +151,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black px-4">
+    <div className="flex items-center justify-center min-h-screen px-4 relative z-10">
       <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
           <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
@@ -217,7 +218,8 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
   }, []);
   
   return (
-    <div className="min-h-screen bg-black text-white flex relative overflow-hidden">
+    <div className="min-h-screen bg-[#030805] text-white flex relative overflow-hidden">
+      <AnimatedGlow />
       <MatrixBackground />
       
       {/* Mobile Sidebar Overlay */}
@@ -615,7 +617,8 @@ function App() {
     <Router>
       <PageTransitionLoader />
       {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
-      <div className="min-h-screen bg-black text-gray-100 font-sans">
+      <div className="min-h-screen bg-[#030805] text-gray-100 font-sans relative overflow-hidden">
+        <AnimatedGlow />
         <Routes>
           <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
           <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />
