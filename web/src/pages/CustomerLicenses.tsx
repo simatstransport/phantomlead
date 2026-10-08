@@ -10,7 +10,8 @@ type CustomerLicense = {
   issued_at: string;
   expires_at: string | null;
   license_key: string | null;
-  packages: { package_name: string; package_code: string }[];
+  packages: { package_name: string; package_code: string };
+  customers: { full_name: string };
 };
 
 export const CustomerLicenses = () => {
@@ -51,14 +52,14 @@ export const CustomerLicenses = () => {
     const fetchLicenses = async () => {
       const { data, error: queryError } = await supabase
         .from('licenses')
-        .select('id, status, payment_type, issued_at, expires_at, packages(package_name, package_code)')
+        .select('id, status, payment_type, issued_at, expires_at, packages(package_name, package_code), customers(full_name)')
         .order('issued_at', { ascending: false });
 
       if (queryError) {
         setError(queryError.message);
       } else {
         const licenseRows = (data || []).map(license => ({
-          ...(license as Omit<CustomerLicense, 'license_key'>),
+          ...(license as any as Omit<CustomerLicense, 'license_key'>),
           license_key: null
         }));
         setLicenses(licenseRows);
@@ -106,6 +107,7 @@ export const CustomerLicenses = () => {
             <thead>
               <tr className="border-b border-gray-800 text-gray-400">
                 <th className="pb-3 pr-5 font-medium">Package</th>
+                <th className="pb-3 pr-5 font-medium">Owner</th>
                 <th className="pb-3 pr-5 font-medium">Status</th>
                 <th className="pb-3 pr-5 font-medium">Type</th>
                 <th className="pb-3 pr-5 font-medium">License Key</th>
@@ -117,8 +119,11 @@ export const CustomerLicenses = () => {
               {licenses.map(license => (
                 <tr key={license.id} className="border-b border-gray-800/50">
                   <td className="py-4 pr-5">
-                    <div className="font-medium text-white">{license.packages?.[0]?.package_name || 'Package'}</div>
-                    <div className="text-xs text-gray-500">{license.packages?.[0]?.package_code || ''}</div>
+                    <div className="font-medium text-white">{license.packages?.package_name || 'Package'}</div>
+                    <div className="text-xs text-gray-500">{license.packages?.package_code || ''}</div>
+                  </td>
+                  <td className="py-4 pr-5">
+                    <div className="text-sm text-gray-300">{license.customers?.full_name || 'You'}</div>
                   </td>
                   <td className="py-4 pr-5">{license.status}</td>
                   <td className="py-4 pr-5">{license.payment_type}</td>
