@@ -1,0 +1,17 @@
+[
+  {
+    "package_code": "FULL_ACCESS",
+    "zip_path": "dist_packages\\FULL_ACCESS_version-1.0.0.zip",
+    "sha256": "e0074832ce635f479a4a46fc6d149e3a4631ce2a8470c5c096ab514f9653f06b"
+  },
+  {
+    "package_code": "JAVA_VIVA",
+    "zip_path": "dist_packages\\JAVA_VIVA_version-1.0.0.zip",
+    "sha256": "2202b05c9fcb99491cb9b2a1fbc76a56f95d1a6f294d8a24606f311f8786044d"
+  },
+  {
+    "package_code": "QA_PLACEMENT",
+    "zip_path": "dist_packages\\QA_PLACEMENT_version-1.0.0.zip",
+    "sha256": "2e5a1265c34817a6c86444c3113c53cbbcda7fa724be9d4e62f00b8983f321a2"
+  }
+]
