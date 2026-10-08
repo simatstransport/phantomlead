@@ -25,13 +25,57 @@ export const AdminLicenses = () => {
     if (!error) fetchLicenses();
   };
 
+  const handleGenerateFree = async () => {
+    // In a full production UI, this would be a dropdown modal.
+    const customerEmail = window.prompt("Enter the Customer's Email address:");
+    if (!customerEmail) return;
+
+    const { data: customer } = await supabase.from('customers').select('id').eq('email', customerEmail).single();
+    if (!customer) {
+      alert("Customer not found! Please make sure they have signed up.");
+      return;
+    }
+
+    const packageCode = window.prompt("Enter the Package Code (e.g., FULL_ACCESS, JAVA_VIVA):", "FULL_ACCESS");
+    if (!packageCode) return;
+
+    const { data: pkg } = await supabase.from('packages').select('id').eq('package_code', packageCode).single();
+    if (!pkg) {
+      alert("Package code not found!");
+      return;
+    }
+
+    // Generate a secure hash just like the Edge Function
+    const rawLicense = crypto.randomUUID().toUpperCase();
+    const encoder = new TextEncoder();
+    const data = encoder.encode(rawLicense);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    const { error } = await supabase.from('licenses').insert({
+      license_key_hash,
+      customer_id: customer.id,
+      package_id: pkg.id,
+      status: 'ACTIVE',
+      payment_type: 'FREE',
+      max_devices: 1
+    });
+
+    if (error) alert("Error generating free license: " + error.message);
+    else {
+      alert(`Success! Generated FREE License: \n\n${rawLicense}\n\nPlease copy and securely send this to the customer.`);
+      fetchLicenses();
+    }
+  };
+
   if (loading) return <div className="text-gray-400">Loading licenses...</div>;
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold">Global License Management</h2>
-        <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">Generate FREE License</button>
+        <button onClick={handleGenerateFree} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">Generate FREE License</button>
       </div>
       <table className="w-full text-left border-collapse">
         <thead>

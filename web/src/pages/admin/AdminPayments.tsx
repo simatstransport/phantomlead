@@ -21,10 +21,10 @@ export const AdminPayments = () => {
   };
 
   const handleApproval = async (id: string, status: 'APPROVED' | 'REJECTED') => {
-    // We should call the Edge Function for Admin Payment Approval instead of direct DB write
-    // so it generates the license key safely on the backend!
+    // Convert status to edge function action format
+    const actionStr = status === 'APPROVED' ? 'APPROVE' : 'REJECT';
     const { error } = await supabase.functions.invoke('admin-approve-payment', {
-      body: { payment_id: id, action: status }
+      body: { payment_id: id, action: actionStr }
     });
     
     if (error) {

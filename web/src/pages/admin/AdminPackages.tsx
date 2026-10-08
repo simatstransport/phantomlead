@@ -21,6 +21,15 @@ export const AdminPackages = () => {
     if (!error) fetchPackages();
   };
 
+  const handleEditPrice = async (id: string, currentPrice: number) => {
+    const newPrice = window.prompt(`Enter new price (INR):`, currentPrice.toString());
+    if (newPrice && !isNaN(Number(newPrice))) {
+      const { error } = await supabase.from('packages').update({ price: Number(newPrice) }).eq('id', id);
+      if (error) alert(error.message);
+      else fetchPackages();
+    }
+  };
+
   if (loading) return <div className="text-gray-400">Loading packages...</div>;
 
   return (
@@ -51,7 +60,7 @@ export const AdminPackages = () => {
                 </span>
               </td>
               <td className="py-4 flex gap-2">
-                <button className="text-indigo-400 hover:text-indigo-300 text-sm">Edit Price</button>
+                <button onClick={() => handleEditPrice(p.id, p.price)} className="text-indigo-400 hover:text-indigo-300 text-sm">Edit Price</button>
                 <button onClick={() => togglePackageStatus(p.id, p.active)} className="text-gray-400 hover:text-white text-sm ml-4">
                   {p.active ? 'Disable' : 'Enable'}
                 </button>
