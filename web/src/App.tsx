@@ -191,7 +191,7 @@ const PlaceholderPage = ({ title, desc, isAdmin }: { title: string, desc: string
   </DashboardLayout>
 );
 
-const CustomerDashboard = () => {
+const useHasActiveLicense = (isAdmin: boolean) => {
   const [hasActiveLicense, setHasActiveLicense] = useState(false);
   const [checkingLicense, setCheckingLicense] = useState(true);
 
@@ -199,38 +199,63 @@ const CustomerDashboard = () => {
     let isCurrent = true;
 
     const checkActiveLicense = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      try {
+        if (isAdmin) {
+          const { count, error } = await supabase
+            .from('licenses')
+            .select('id', { count: 'exact', head: true })
+            .eq('status', 'ACTIVE');
+          if (isCurrent) setHasActiveLicense(!error && (count ?? 0) > 0);
+          return;
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: customer } = await supabase
+          .from('customers')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!customer) return;
+
+        const { count, error } = await supabase
+          .from('licenses')
+          .select('id', { count: 'exact', head: true })
+          .eq('customer_id', customer.id)
+          .eq('status', 'ACTIVE');
+
+        if (isCurrent) setHasActiveLicense(!error && (count ?? 0) > 0);
+      } catch (error) {
+        console.error('Failed to check active license:', error);
+      } finally {
         if (isCurrent) setCheckingLicense(false);
-        return;
-      }
-
-      const { data: customer } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!customer) {
-        if (isCurrent) setCheckingLicense(false);
-        return;
-      }
-
-      const { count, error } = await supabase
-        .from('licenses')
-        .select('id', { count: 'exact', head: true })
-        .eq('customer_id', customer.id)
-        .eq('status', 'ACTIVE');
-
-      if (isCurrent) {
-        setHasActiveLicense(!error && (count ?? 0) > 0);
-        setCheckingLicense(false);
       }
     };
 
     checkActiveLicense();
     return () => { isCurrent = false; };
-  }, []);
+  }, [isAdmin]);
+
+  return { hasActiveLicense, checkingLicense };
+};
+
+const GeminiApiKeyGuide = () => (
+  <section className="mt-8 border-t border-gray-800 pt-8" aria-labelledby="gemini-key-guide">
+    <h2 id="gemini-key-guide" className="text-xl font-bold mb-2">Generate your Gemini API key</h2>
+    <p className="text-sm text-gray-400 mb-5">You will need this key when setting up the installer.</p>
+    <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
+      <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-300 underline underline-offset-2">Google AI Studio API keys</a> and sign in to your Google account.</li>
+      <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
+      <li>Select <strong>Create API key</strong> and choose the project for the key.</li>
+      <li>Copy the generated key and keep it private. Do not share it or post it publicly.</li>
+      <li>Run SecureInstaller and paste the key into the <strong>Gemini API Key</strong> field when prompted.</li>
+    </ol>
+  </section>
+);
+
+const CustomerDashboard = () => {
+  const { hasActiveLicense, checkingLicense } = useHasActiveLicense(false);
 
   return (
     <DashboardLayout title="Customer Dashboard" isAdmin={false}>
@@ -258,50 +283,45 @@ const CustomerDashboard = () => {
         </div>
       </div>
       {!checkingLicense && hasActiveLicense && (
-        <section className="mt-8 border-t border-gray-800 pt-8" aria-labelledby="gemini-key-guide">
-          <h2 id="gemini-key-guide" className="text-xl font-bold mb-2">Generate your Gemini API key</h2>
-          <p className="text-sm text-gray-400 mb-5">You will need this key when setting up the installer.</p>
-          <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
-            <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-300 underline underline-offset-2">Google AI Studio API keys</a> and sign in to your Google account.</li>
-            <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
-            <li>Select <strong>Create API key</strong> and choose the project for the key.</li>
-            <li>Copy the generated key and keep it private. Do not share it or post it publicly.</li>
-            <li>Run SecureInstaller and paste the key into the <strong>Gemini API Key</strong> field when prompted.</li>
-          </ol>
-        </section>
+        <GeminiApiKeyGuide />
       )}
     </DashboardLayout>
   );
 };
 
-const AdminDashboard = () => (
-  <DashboardLayout title="Admin Control Panel" isAdmin={true}>
-    <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg p-4 mb-6">
-      ✓ You are logged in as a Global Administrator.
-    </div>
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-      <h2 className="text-xl font-bold mb-4">Recent Installations</h2>
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="border-b border-gray-800 text-gray-400">
-            <th className="pb-3 font-medium">Customer</th>
-            <th className="pb-3 font-medium">Package</th>
-            <th className="pb-3 font-medium">Status</th>
-            <th className="pb-3 font-medium">Date</th>
-          </tr>
-        </thead>
-        <tbody className="text-sm">
-          <tr className="border-b border-gray-800/50">
-            <td className="py-4 font-medium">Test User</td>
-            <td className="py-4"><span className="px-2 py-1 bg-gray-800 rounded text-xs">FULL_ACCESS</span></td>
-            <td className="py-4"><span className="text-green-400 flex items-center">● Active</span></td>
-            <td className="py-4 text-gray-400">Just now</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </DashboardLayout>
-);
+const AdminDashboard = () => {
+  const { hasActiveLicense, checkingLicense } = useHasActiveLicense(true);
+
+  return (
+    <DashboardLayout title="Admin Control Panel" isAdmin={true}>
+      <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg p-4 mb-6">
+        ✓ You are logged in as a Global Administrator.
+      </div>
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 className="text-xl font-bold mb-4">Recent Installations</h2>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-gray-800 text-gray-400">
+              <th className="pb-3 font-medium">Customer</th>
+              <th className="pb-3 font-medium">Package</th>
+              <th className="pb-3 font-medium">Status</th>
+              <th className="pb-3 font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody className="text-sm">
+            <tr className="border-b border-gray-800/50">
+              <td className="py-4 font-medium">Test User</td>
+              <td className="py-4"><span className="px-2 py-1 bg-gray-800 rounded text-xs">FULL_ACCESS</span></td>
+              <td className="py-4"><span className="text-green-400 flex items-center">● Active</span></td>
+              <td className="py-4 text-gray-400">Just now</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {!checkingLicense && hasActiveLicense && <GeminiApiKeyGuide />}
+    </DashboardLayout>
+  );
+};
 
 function App() {
   const [session, setSession] = useState<any>(null);
