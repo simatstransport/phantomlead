@@ -10,6 +10,7 @@ import { AdminSettings } from './pages/admin/AdminSettings';
 import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerLicenses } from './pages/CustomerLicenses';
 import { OnboardingModal } from './components/OnboardingModal';
+import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
 
 const resendSignupConfirmation = (email: string) => supabase.auth.resend({
@@ -65,9 +66,7 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen bg-black px-4">
       <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
-          <div className="bg-green-500/10 p-3 rounded-full border border-green-500/20">
-            <Shield className="w-8 h-8 text-green-400" />
-          </div>
+          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
         </div>
         <h2 className="text-2xl font-bold text-center text-white mb-2">Secure License Platform</h2>
         <p className="text-gray-400 text-center mb-8 text-sm">Sign in to manage your software access</p>
@@ -154,9 +153,7 @@ const SignUp = () => {
     <div className="flex items-center justify-center min-h-screen bg-black px-4">
       <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
-          <div className="bg-green-500/10 p-3 rounded-full border border-green-500/20">
-            <User className="w-8 h-8 text-green-400" />
-          </div>
+          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
         </div>
         <h2 className="text-2xl font-bold text-center text-white mb-2">Create an Account</h2>
         <p className="text-gray-400 text-center mb-8 text-sm">Join to access your software packages</p>
@@ -220,7 +217,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#0a0a0a] border-r border-green-900/30 flex flex-col transition-transform duration-300 ease-in-out`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-green-900/30 bg-black">
           <div className="flex items-center">
-            <Shield className="w-6 h-6 text-green-500 mr-2 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+            <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.5)] mr-2 object-cover" />
             <span className="font-bold text-lg tracking-wider text-green-50">S_PLATFORM</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
@@ -596,6 +593,7 @@ function App() {
 
   return (
     <Router>
+      <PageTransitionLoader />
       {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
       <div className="min-h-screen bg-black text-gray-100 font-sans">
         <Routes>
