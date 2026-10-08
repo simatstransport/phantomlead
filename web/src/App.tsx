@@ -304,24 +304,57 @@ const useHasActiveLicense = (isAdmin: boolean) => {
 };
 
 const GeminiApiKeyGuide = () => (
-  <section className="mt-8 border-t border-gray-800 pt-8" aria-labelledby="gemini-key-guide">
-    <h2 id="gemini-key-guide" className="text-xl font-bold mb-2">Generate your Gemini API key</h2>
-    <p className="text-sm text-gray-400 mb-5">You will need this key when setting up the installer.</p>
-    <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
-      <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-300 underline underline-offset-2">Google AI Studio API keys</a> and sign in to your Google account.</li>
-      <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
-      <li>Select <strong>Create API key</strong> and choose the project for the key.</li>
-      <li>Copy the generated key and keep it private. Do not share it or post it publicly.</li>
-      <li>Run SecureInstaller and paste the key into the <strong>Gemini API Key</strong> field when prompted.</li>
-    </ol>
-    <h3 className="text-lg font-semibold mt-8 mb-2">After installation</h3>
-    <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
-      <li>Open <strong>Task Manager</strong>, search for <strong>Safe Exam Browser</strong>, and end all running SEB tasks. Then launch SecureInstaller.</li>
-      <li>Launch Safe Exam Browser after SecureInstaller finishes installing.</li>
-      <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
-      <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
-      <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
-    </ol>
+  <section className="mt-8 bg-gray-900 border border-gray-800 rounded-xl p-6" aria-labelledby="manual-guide">
+    <h2 id="manual-guide" className="text-xl font-bold mb-6 flex items-center">
+      <Key className="w-5 h-5 mr-2 text-indigo-400" /> User Manual & Installation Guide
+    </h2>
+    
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-red-400 flex items-center">
+          <Shield className="w-4 h-4 mr-2" /> Step 1: Before Installation
+        </h3>
+        <ul className="list-disc pl-6 text-sm text-gray-300 space-y-1">
+          <li><strong>IMPORTANT:</strong> Turn off your Antivirus and Windows Device Protections (Windows Defender) before downloading or installing the software.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-indigo-400">Step 2: Get Your Google Gemini API Key</h3>
+        <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
+          <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-indigo-400 underline underline-offset-2 hover:text-indigo-300">Google AI Studio API keys</a> and sign in.</li>
+          <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
+          <li>Select <strong>Create API key</strong>, copy the generated key, and keep it private.</li>
+        </ol>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-green-400">Step 3: Close Background Processes</h3>
+        <ul className="list-disc pl-6 text-sm text-gray-300 space-y-1">
+          <li>Open <strong>Task Manager</strong>, search for <strong>Safe Exam Browser</strong>, and end all running SEB tasks.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-blue-400">Step 4: How to run SecureInstaller</h3>
+        <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
+          <li>Download the SecureInstaller file using the green button above.</li>
+          <li>Run the downloaded `.exe` file. (If a warning appears, click "More info" &gt; "Run anyway").</li>
+          <li>When prompted, paste your <strong>Gemini API Key</strong> and your <strong>License Key</strong> (found in My Licenses).</li>
+          <li>Wait for SecureInstaller to completely finish the setup process.</li>
+        </ol>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mb-2 text-purple-400">Step 5: Using the Software</h3>
+        <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
+          <li>Launch <strong>Safe Exam Browser</strong>.</li>
+          <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
+          <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
+          <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-950 px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
+        </ol>
+      </div>
+    </div>
   </section>
 );
 
