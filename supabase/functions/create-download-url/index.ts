@@ -33,19 +33,20 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Unauthorized or invalid license' }), { headers: { 'Content-Type': 'application/json' }, status: 403 })
     }
 
-    // Determine zip path based on package code and version
-    const zipPath = `${licenseData.packages.package_code}/version-${licenseData.packages.version}.zip`
+    const githubUrls: Record<string, string> = {
+      'FULL_ACCESS': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/FULL_ACCESS_version-1.0.0.zip',
+      'JAVA_VIVA': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/JAVA_VIVA_version-1.0.0.zip',
+      'QA_PLACEMENT': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/QA_PLACEMENT_version-1.0.0.zip'
+    }
 
-    // Generate signed URL (e.g., valid for 15 minutes)
-    const { data: storageData, error: storageError } = await supabaseClient
-      .storage
-      .from('packages')
-      .createSignedUrl(zipPath, 15 * 60)
+    const downloadUrl = githubUrls[licenseData.packages.package_code]
 
-    if (storageError) throw storageError
+    if (!downloadUrl) {
+      return new Response(JSON.stringify({ error: 'Download URL not found for package' }), { headers: { 'Content-Type': 'application/json' }, status: 404 })
+    }
 
     return new Response(
-      JSON.stringify({ url: storageData.signedUrl }),
+      JSON.stringify({ url: downloadUrl }),
       { headers: { 'Content-Type': 'application/json' }, status: 200 }
     )
   } catch (error) {
