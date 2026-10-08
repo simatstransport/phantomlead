@@ -201,7 +201,9 @@ const CustomerDashboard = () => (
       <h2 className="text-xl font-bold mb-4">Your License Key</h2>
       <div className="flex gap-4">
         <input type="text" readOnly value="TEST-1234" className="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-4 py-2 font-mono text-indigo-300" />
-        <button className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium">Download Installer</button>
+        <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium inline-block text-center pt-2.5">
+          Download Installer
+        </a>
       </div>
     </div>
   </DashboardLayout>
