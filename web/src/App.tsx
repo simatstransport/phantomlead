@@ -128,7 +128,7 @@ const SignUp = () => {
   );
 };
 
-const DashboardLayout = ({ children, title }: { children: React.ReactNode, title: string }) => {
+const DashboardLayout = ({ children, title, isAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean }) => {
   return (
     <div className="min-h-screen bg-gray-950 text-white flex">
       <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
@@ -137,9 +137,9 @@ const DashboardLayout = ({ children, title }: { children: React.ReactNode, title
           <span className="font-bold text-lg">SecurePlatform</span>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <a href="#" className="flex items-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</a>
-          <a href="#" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg"><Key className="w-5 h-5 mr-3" /> Licenses</a>
-          <a href="#" className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg"><Package className="w-5 h-5 mr-3" /> Packages</a>
+          <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center px-4 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
+          <Link to={isAdmin ? "/admin/licenses" : "/dashboard/licenses"} className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> Licenses</Link>
+          <Link to={isAdmin ? "/admin/packages" : "/dashboard/packages"} className="flex items-center px-4 py-2.5 text-gray-400 hover:bg-gray-800 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Packages</Link>
         </nav>
         <div className="p-4 border-t border-gray-800">
           <button onClick={() => supabase.auth.signOut()} className="flex items-center px-4 py-2 text-gray-400 hover:text-white w-full"><LogOut className="w-5 h-5 mr-3" /> Sign Out</button>
@@ -160,8 +160,20 @@ const DashboardLayout = ({ children, title }: { children: React.ReactNode, title
   );
 };
 
+const PlaceholderPage = ({ title, desc, isAdmin }: { title: string, desc: string, isAdmin?: boolean }) => (
+  <DashboardLayout title={title} isAdmin={isAdmin}>
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
+      <h2 className="text-2xl font-bold mb-2">{title}</h2>
+      <p className="text-gray-400">{desc}</p>
+      <p className="mt-8 text-sm text-gray-500 border border-dashed border-gray-700 p-4 rounded-lg inline-block">
+        (This database view will be fully connected in the next phase of UI design!)
+      </p>
+    </div>
+  </DashboardLayout>
+);
+
 const CustomerDashboard = () => (
-  <DashboardLayout title="Customer Dashboard">
+  <DashboardLayout title="Customer Dashboard" isAdmin={false}>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
@@ -187,7 +199,7 @@ const CustomerDashboard = () => (
 );
 
 const AdminDashboard = () => (
-  <DashboardLayout title="Admin Control Panel">
+  <DashboardLayout title="Admin Control Panel" isAdmin={true}>
     <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg p-4 mb-6">
       ✓ You are logged in as a Global Administrator.
     </div>
@@ -252,8 +264,13 @@ function App() {
         <Routes>
           <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Login />} />
           <Route path="/signup" element={session ? <Navigate to="/dashboard" /> : <SignUp />} />
-          <Route path="/dashboard" element={session ? (isAdmin ? <AdminDashboard /> : <CustomerDashboard />) : <Navigate to="/login" />} />
+          <Route path="/dashboard" element={session ? (isAdmin ? <Navigate to="/admin" /> : <CustomerDashboard />) : <Navigate to="/login" />} />
+          <Route path="/dashboard/licenses" element={session ? <PlaceholderPage title="My Licenses" desc="View and manage your purchased licenses." isAdmin={false} /> : <Navigate to="/login" />} />
+          <Route path="/dashboard/packages" element={session ? <PlaceholderPage title="Software Packages" desc="Browse and purchase new software packages." isAdmin={false} /> : <Navigate to="/login" />} />
+
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/licenses" element={session ? (isAdmin ? <PlaceholderPage title="Global License Management" desc="Manage all customer licenses and revoke keys." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/packages" element={session ? (isAdmin ? <PlaceholderPage title="Package Management" desc="Create and upload new software packages and extensions." isAdmin={true} /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/" element={<Navigate to={session ? "/dashboard" : "/login"} />} />
         </Routes>
       </div>
