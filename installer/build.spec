@@ -32,7 +32,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='SecureInstaller_Final',
+    name='SecureInstaller_v1.0',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

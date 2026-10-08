@@ -19,14 +19,12 @@ def _replace_api_key(file_path, new_key):
         content = f.read()
 
     # 2. Find and replace declaration safely
-    # We look for exactly `const DEFAULT_API_KEY = "...";`
-    # Allows for optional spaces, single or double quotes
-    pattern = r'(const\s+DEFAULT_API_KEY\s*=\s*)(["\']).*?(\2\s*;)'
+    pattern = r'(const\s+DEFAULT_API_KEY\s*=\s*["\']).*?(["\']\s*;)'
     
     if not re.search(pattern, content):
         return False # Pattern not found
 
-    new_content = re.sub(pattern, rf'\g<1>"{new_key}"\g<3>', content)
+    new_content = re.sub(pattern, rf'\g<1>{new_key}\g<2>', content)
 
     # 3. Write to temp file
     fd, temp_path = tempfile.mkstemp(text=True)
