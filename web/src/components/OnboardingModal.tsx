@@ -77,7 +77,7 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="w-full max-w-md bg-[#0a0a0a] border border-green-500/30 rounded-xl p-8 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
         <h2 className="text-2xl font-bold text-green-400 mb-2">Complete Your Profile</h2>
-        <p className="text-sm text-gray-400 mb-6">Welcome to SecurePlatform. Please provide your student details to activate your dashboard.</p>
+        <p className="text-sm text-gray-400 mb-6">Welcome to PhantomLead. Please provide your student details to activate your dashboard.</p>
         
         {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded">{error}</div>}
 

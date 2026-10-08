@@ -68,7 +68,7 @@ const Login = () => {
         <div className="flex justify-center mb-6">
           <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
         </div>
-        <h2 className="text-2xl font-bold text-center text-white mb-2">Secure License Platform</h2>
+        <h2 className="text-2xl font-bold text-center text-white mb-2">PhantomLead Platform</h2>
         <p className="text-gray-400 text-center mb-8 text-sm">Sign in to manage your software access</p>
         
         <form onSubmit={handleLogin} className="space-y-4">
@@ -200,6 +200,21 @@ const SignUp = () => {
 
 const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean, isActualAdmin?: boolean }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from('customers').select('full_name').eq('user_id', user.id).single().then(({ data }) => {
+          if (data && data.full_name) {
+            setUserName(data.full_name);
+          } else {
+            setUserName(user.email?.split('@')[0] || 'User');
+          }
+        });
+      }
+    });
+  }, []);
   
   return (
     <div className="min-h-screen bg-black text-white flex relative overflow-hidden">
@@ -217,8 +232,12 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#0a0a0a] border-r border-green-900/30 flex flex-col transition-transform duration-300 ease-in-out`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-green-900/30 bg-black">
           <div className="flex items-center">
-            <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded-full border border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.5)] mr-2 object-cover" />
-            <span className="font-bold text-lg tracking-wider text-green-50">S_PLATFORM</span>
+            <div className="relative w-8 h-8 mr-3">
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border-2 border-green-500/50 object-cover relative z-10" />
+              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-green-400 border-l-green-400/30 animate-spin z-0"></div>
+              <div className="absolute inset-[-6px] rounded-full border border-green-900/50 animate-[spin_3s_linear_reverse_infinite] z-0"></div>
+            </div>
+            <span className="font-bold text-lg tracking-wider text-green-50">PhantomLead</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
             <X className="w-5 h-5" />
@@ -262,7 +281,8 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
             <Menu className="w-6 h-6" />
           </button>
           <h1 className="text-xl font-semibold text-green-50 font-mono tracking-wide">{title}</h1>
-          <div className="ml-auto flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-3">
+            <span className="text-sm font-medium text-green-400 hidden sm:block">{userName}</span>
             <div className="w-8 h-8 bg-[#0a0a0a] rounded-full flex items-center justify-center border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]"><User className="w-4 h-4 text-green-400" /></div>
           </div>
         </header>
@@ -552,7 +572,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="mt-6 pt-4 border-t border-gray-800 text-center text-xs text-gray-600">
-            Secure License Platform v1.0 &copy; 2026 Phantom Lead
+            PhantomLead Platform v1.0 &copy; 2026 Phantom Lead
           </div>
         </div>
       </div>
