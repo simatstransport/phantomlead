@@ -251,6 +251,13 @@ const GeminiApiKeyGuide = () => (
       <li>Copy the generated key and keep it private. Do not share it or post it publicly.</li>
       <li>Run SecureInstaller and paste the key into the <strong>Gemini API Key</strong> field when prompted.</li>
     </ol>
+    <h3 className="text-lg font-semibold mt-8 mb-2">After installation</h3>
+    <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-300">
+      <li>Launch Safe Exam Browser after SecureInstaller finishes installing.</li>
+      <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
+      <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
+      <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-gray-900 px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
+    </ol>
   </section>
 );
 
