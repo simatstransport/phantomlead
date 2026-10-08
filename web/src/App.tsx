@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
 import { Shield, Key, Package, LogOut, LayoutDashboard, User } from 'lucide-react';
@@ -55,6 +55,74 @@ const Login = () => {
             {loading ? 'Authenticating...' : 'Sign In to Portal'}
           </button>
         </form>
+        <div className="mt-6 text-center text-sm text-gray-400">
+          Don't have an account? <Link to="/signup" className="text-indigo-400 hover:text-indigo-300">Sign up here</Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({ email, password });
+    setLoading(false);
+    
+    if (error) {
+      alert(error.message);
+    } else {
+      alert('Account created successfully! You can now log in.');
+      navigate('/login');
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-950 px-4">
+      <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-xl shadow-2xl p-8">
+        <div className="flex justify-center mb-6">
+          <div className="bg-green-500/10 p-3 rounded-full border border-green-500/20">
+            <User className="w-8 h-8 text-green-400" />
+          </div>
+        </div>
+        <h2 className="text-2xl font-bold text-center text-white mb-2">Create an Account</h2>
+        <p className="text-gray-400 text-center mb-8 text-sm">Join to access your software packages</p>
+        
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+            <input 
+              type="email" required
+              value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Create Password</label>
+            <input 
+              type="password" required
+              value={password} onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="••••••••"
+            />
+          </div>
+          <button 
+            type="submit" disabled={loading}
+            className="w-full mt-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+          >
+            {loading ? 'Creating...' : 'Create Account'}
+          </button>
+        </form>
+        <div className="mt-6 text-center text-sm text-gray-400">
+          Already have an account? <Link to="/login" className="text-green-400 hover:text-green-300">Sign in</Link>
+        </div>
       </div>
     </div>
   );
@@ -183,6 +251,7 @@ function App() {
       <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
         <Routes>
           <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/signup" element={session ? <Navigate to="/dashboard" /> : <SignUp />} />
           <Route path="/dashboard" element={session ? (isAdmin ? <AdminDashboard /> : <CustomerDashboard />) : <Navigate to="/login" />} />
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/" element={<Navigate to={session ? "/dashboard" : "/login"} />} />
