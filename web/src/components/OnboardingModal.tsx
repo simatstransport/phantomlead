@@ -50,17 +50,19 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
     }
 
     try {
-      // Upsert the customer record
-      const { error: upsertError } = await supabase.from('customers').upsert({
-        user_id: session.user.id,
-        email: session.user.email,
+      // Update the existing customer record (created by trigger)
+      const { data, error: updateError } = await supabase.from('customers').update({
         full_name: formData.full_name,
         college_name: formData.college_name,
         academic_year: formData.academic_year,
         updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id' });
+      }).eq('user_id', session.user.id).select();
 
-      if (upsertError) throw upsertError;
+      if (updateError) throw updateError;
+      
+      if (!data || data.length === 0) {
+        throw new Error('Customer record not found. Please contact support.');
+      }
 
       setNeedsOnboarding(false);
       onComplete();
