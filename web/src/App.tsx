@@ -7,10 +7,19 @@ import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
 import { CustomerPackages } from './pages/CustomerPackages';
 
+const resendSignupConfirmation = (email: string) => supabase.auth.resend({
+  type: 'signup',
+  email,
+  options: { emailRedirectTo: window.location.origin }
+});
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [showResend, setShowResend] = useState(false);
+  const [notice, setNotice] = useState<{ kind: 'error' | 'success'; message: string } | null>(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -18,8 +27,33 @@ const Login = () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) alert(error.message);
-    else navigate('/dashboard');
+    if (error) {
+      const needsConfirmation = error.message.toLowerCase().includes('email not confirmed');
+      setShowResend(needsConfirmation);
+      setNotice({
+        kind: 'error',
+        message: needsConfirmation
+          ? 'Confirm your email before signing in. Check your inbox and spam folder, or resend the confirmation email below.'
+          : error.message
+      });
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      setNotice({ kind: 'error', message: 'Enter your email address first.' });
+      return;
+    }
+
+    setResending(true);
+    const { error } = await resendSignupConfirmation(normalizedEmail);
+    setResending(false);
+    setNotice(error
+      ? { kind: 'error', message: `Could not resend confirmation: ${error.message}` }
+      : { kind: 'success', message: 'Confirmation email requested. Check your inbox and spam folder.' });
   };
 
   return (
@@ -59,6 +93,12 @@ const Login = () => {
             {loading ? 'Authenticating...' : 'Sign In to Portal'}
           </button>
         </form>
+        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-green-400'}`}>{notice.message}</p>}
+        {showResend && (
+          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-indigo-300 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-50">
+            {resending ? 'Sending...' : 'Resend confirmation email'}
+          </button>
+        )}
         <div className="mt-6 text-center text-sm text-gray-400">
           Don't have an account? <Link to="/signup" className="text-indigo-400 hover:text-indigo-300">Sign up here</Link>
         </div>
@@ -71,20 +111,38 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [confirmationPending, setConfirmationPending] = useState(false);
+  const [notice, setNotice] = useState<{ kind: 'error' | 'success'; message: string } | null>(null);
   const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: window.location.origin }
+    });
     setLoading(false);
     
     if (error) {
-      alert(error.message);
+      setNotice({ kind: 'error', message: error.message });
+    } else if (data.session) {
+      navigate('/dashboard');
     } else {
-      alert('Account created successfully! You can now log in.');
-      navigate('/login');
+      setConfirmationPending(true);
+      setNotice({ kind: 'success', message: 'Account created. Confirm your email before signing in. Check your inbox and spam folder.' });
     }
+  };
+
+  const handleResendConfirmation = async () => {
+    setResending(true);
+    const { error } = await resendSignupConfirmation(email.trim());
+    setResending(false);
+    setNotice(error
+      ? { kind: 'error', message: `Could not resend confirmation: ${error.message}` }
+      : { kind: 'success', message: 'Confirmation email requested. Check your inbox and spam folder.' });
   };
 
   return (
@@ -124,6 +182,12 @@ const SignUp = () => {
             {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
+        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-green-400'}`}>{notice.message}</p>}
+        {confirmationPending && (
+          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-green-300 hover:text-green-200 underline underline-offset-2 disabled:opacity-50">
+            {resending ? 'Sending...' : 'Resend confirmation email'}
+          </button>
+        )}
         <div className="mt-6 text-center text-sm text-gray-400">
           Already have an account? <Link to="/login" className="text-green-400 hover:text-green-300">Sign in</Link>
         </div>
