@@ -389,10 +389,12 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             let installerName = 'SecureInstaller_L.exe';
             
             if (licenseDetails) {
-              if (licenseDetails.duration_months !== null) {
-                installerName = 'SecureInstaller_T.exe';
-              } else if (licenseDetails.payment_type === 'FREE') {
-                installerName = 'SecureInstaller_A.exe';
+              if (licenseDetails.duration_months > 0) {
+                installerName = 'SecureInstaller_T.exe'; // Time-Bomb
+              } else if (licenseDetails.duration_months === 0) {
+                installerName = 'SecureInstaller_A.exe'; // Admin Controlled (Free)
+              } else {
+                installerName = 'SecureInstaller_L.exe'; // True Lifetime (-1 or null)
               }
             }
 

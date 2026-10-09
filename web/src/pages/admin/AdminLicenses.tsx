@@ -145,14 +145,15 @@ export const AdminLicenses = () => {
                 <label className="block text-sm font-medium text-gray-300 mb-1">License Duration</label>
                 <select 
                   required
-                  value={duration === null ? 'null' : String(duration)} 
-                  onChange={e => setDuration(e.target.value === 'null' ? null : parseInt(e.target.value))}
+                  value={duration === null ? '-1' : String(duration)} 
+                  onChange={e => setDuration(parseInt(e.target.value))}
                   className="w-full px-3 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-500 text-white mb-4"
                 >
-                  <option value="null">Permanent / Lifetime Access</option>
-                  <option value="1">1 Month (Time-Bomb)</option>
-                  <option value="2">2 Months (Time-Bomb)</option>
-                  <option value="3">3 Months (Time-Bomb)</option>
+                  <option value="-1">Permanent (True Lifetime - SecureInstaller_L)</option>
+                  <option value="0">Permanent (Admin Controlled - SecureInstaller_A)</option>
+                  <option value="1">1 Month (Time-Bomb - SecureInstaller_T)</option>
+                  <option value="2">2 Months (Time-Bomb - SecureInstaller_T)</option>
+                  <option value="3">3 Months (Time-Bomb - SecureInstaller_T)</option>
                 </select>
               </div>
 
