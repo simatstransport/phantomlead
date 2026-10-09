@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download } from 'lucide-react';
+import { Download, Copy, Check } from 'lucide-react';
 import { supabase } from '../services/supabase';
 
 type CustomerLicense = {
@@ -21,6 +21,13 @@ export const CustomerLicenses = () => {
   const [keyError, setKeyError] = useState('');
   const [keyActionError, setKeyActionError] = useState('');
   const [regeneratingLicenseId, setRegeneratingLicenseId] = useState('');
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleCopyKey = (key: string) => {
+    navigator.clipboard.writeText(key);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
 
   const handleGenerateReplacementKey = async (licenseId: string) => {
     const confirmed = window.confirm('Your current key cannot be recovered. Generate a replacement? Any previous key for this license will stop working.');
@@ -141,8 +148,32 @@ export const CustomerLicenses = () => {
                   </td>
                   <td className="py-4 pr-5">{license.status}</td>
                   <td className="py-4 pr-5">{license.payment_type}</td>
-                  <td className="py-4 pr-5 font-mono text-xs text-green-400 break-all">
-                    {license.license_key ? license.license_key : (
+                  <td className="py-4 pr-5 font-mono text-xs">
+                    {license.license_key ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-400 font-bold tracking-wider select-all break-all">
+                          {license.license_key}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyKey(license.license_key!)}
+                          title="Copy License Key"
+                          className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-all flex items-center gap-1 text-xs font-sans shrink-0 border border-gray-700 cursor-pointer"
+                        >
+                          {copiedKey === license.license_key ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-green-400" />
+                              <span className="text-green-400 font-medium">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-gray-400" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
                       <div className="min-w-40">
                         <span className="block mb-2">Key unavailable</span>
                         {license.status === 'ACTIVE' && (
