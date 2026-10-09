@@ -2,17 +2,9 @@ import os
 import sys
 import urllib.request
 import json
-import uuid
 import winreg
-
-# ==========================================
-# SecureInstaller: ADMIN CONTROLLED (FREE/PAID)
-# Features:
-# 1. No expiry date (permanent).
-# 2. Registers a hidden startup script (Heartbeat).
-# 3. Heartbeat checks server for REVOKE only.
-# 4. Automatically deletes files if Admin revokes.
-# ==========================================
+import shutil
+import time
 
 API_URL = "https://wgxxitydatuoyjnxuvqw.supabase.co/functions/v1/validate-license"
 
@@ -20,27 +12,6 @@ def get_hwid():
     import subprocess
     output = subprocess.check_output('wmic csproduct get uuid').decode('utf-8').split('\n')[1].strip()
     return output
-
-def install_seb_files():
-    seb_dir = os.path.join(os.environ["ProgramData"], "SafeExamBrowser")
-    os.makedirs(seb_dir, exist_ok=True)
-    config_path = os.path.join(seb_dir, "SebClientSettings.seb")
-    with open(config_path, "w") as f:
-        f.write("<!-- SEB CONFIG INSTALLED -->\n")
-    print("[+] Safe Exam Browser configured successfully.")
-
-def create_heartbeat(license_key):
-    appdata = os.environ["AppData"]
-    phantom_dir = os.path.join(appdata, "PhantomLead")
-    os.makedirs(phantom_dir, exist_ok=True)
-    
-    heartbeat_script = os.path.join(phantom_dir, "sys_admin_health.pyw")
-    
-    script_content = f"""import os, urllib.request, json, winreg, shutil, sys
-
-API_URL = "{API_URL}"
-LICENSE_KEY = "{license_key}"
-HWID = "{get_hwid()}"
 
 def self_destruct():
     try:
@@ -56,32 +27,75 @@ def self_destruct():
     
     phantom_dir = os.path.join(os.environ["AppData"], "PhantomLead")
     if os.path.exists(phantom_dir):
-        shutil.rmtree(phantom_dir)
+        shutil.rmtree(phantom_dir, ignore_errors=True)
     sys.exit(0)
 
-# Check Online Admin Kill Switch Only
-try:
-    req = urllib.request.Request(API_URL, data=json.dumps({{"license_key": LICENSE_KEY, "device_id": HWID}}).encode('utf-8'), headers={{'Content-Type': 'application/json'}})
-    response = urllib.request.urlopen(req, timeout=5)
-    data = json.loads(response.read().decode())
+def run_heartbeat():
+    phantom_dir = os.path.join(os.environ["AppData"], "PhantomLead")
+    config_path = os.path.join(phantom_dir, "config.dat")
     
-    if data.get("status") == "REVOKED":
-        self_destruct()
-except:
-    pass
-"""
-    with open(heartbeat_script, "w") as f:
-        f.write(script_content)
+    if not os.path.exists(config_path):
+        sys.exit(0)
+        
+    with open(config_path, "r") as f:
+        license_key = f.read().strip()
+        
+    hwid = get_hwid()
+    
+    # Infinite background loop checking every 30 minutes
+    while True:
+        try:
+            req = urllib.request.Request(API_URL, data=json.dumps({"license_key": license_key, "device_id": hwid}).encode('utf-8'), headers={'Content-Type': 'application/json'})
+            response = urllib.request.urlopen(req, timeout=10)
+            data = json.loads(response.read().decode())
+            
+            # Auto-Delete if Admin revoked the license!
+            if data.get("status") == "REVOKED":
+                self_destruct()
+        except:
+            pass
+            
+        time.sleep(1800) # Sleep 30 minutes
 
+def install_seb_files():
+    seb_dir = os.path.join(os.environ["ProgramData"], "SafeExamBrowser")
+    os.makedirs(seb_dir, exist_ok=True)
+    config_path = os.path.join(seb_dir, "SebClientSettings.seb")
+    with open(config_path, "w") as f:
+        f.write("<!-- SEB CONFIG INSTALLED -->\n")
+    print("[+] Safe Exam Browser configured successfully.")
+
+def create_heartbeat(license_key):
+    appdata = os.environ["AppData"]
+    phantom_dir = os.path.join(appdata, "PhantomLead")
+    os.makedirs(phantom_dir, exist_ok=True)
+    
+    # Save license key for the heartbeat to read
+    with open(os.path.join(phantom_dir, "config.dat"), "w") as f:
+        f.write(license_key)
+        
+    # Copy the currently running .exe to the hidden folder
+    updater_exe = os.path.join(phantom_dir, "SecurityUpdater.exe")
+    shutil.copyfile(sys.executable, updater_exe)
+    
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
-        winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'pythonw "{heartbeat_script}"')
+        # Register it to run silently on startup with the --heartbeat flag
+        winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{updater_exe}" --heartbeat')
         winreg.CloseKey(key)
         print("[+] Admin Remote Control activated.")
+        
+        # Start the heartbeat right now so it doesn't wait for a reboot!
+        import subprocess
+        subprocess.Popen([updater_exe, "--heartbeat"], creationflags=subprocess.CREATE_NO_WINDOW)
     except Exception as e:
         print("[-] Failed to register startup task.")
 
 def main():
+    if "--heartbeat" in sys.argv:
+        run_heartbeat()
+        return
+
     print("==============================================")
     print(" PhantomLead SecureInstaller (Admin Ctrl Mode)")
     print("==============================================\n")
