@@ -200,8 +200,65 @@ const SignUp = () => {
   );
 };
 
+const useHasActiveLicense = (isAdmin: boolean) => {
+  const [hasActiveLicense, setHasActiveLicense] = useState(false);
+  const [activeLicenseCount, setActiveLicenseCount] = useState(0);
+  const [checkingLicense, setCheckingLicense] = useState(true);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    const checkActiveLicense = async () => {
+      try {
+        if (isAdmin) {
+          const { count, error } = await supabase
+            .from('licenses')
+            .select('id', { count: 'exact', head: true })
+            .eq('status', 'ACTIVE');
+          if (isCurrent) {
+            setActiveLicenseCount(error ? 0 : count ?? 0);
+            setHasActiveLicense(!error && (count ?? 0) > 0);
+          }
+          return;
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: customer } = await supabase
+          .from('customers')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!customer) return;
+
+        const { count, error } = await supabase
+          .from('licenses')
+          .select('id', { count: 'exact', head: true })
+          .eq('customer_id', customer.id)
+          .eq('status', 'ACTIVE');
+
+        if (isCurrent) {
+          setActiveLicenseCount(error ? 0 : count ?? 0);
+          setHasActiveLicense(!error && (count ?? 0) > 0);
+        }
+      } catch (error) {
+        console.error('Failed to check active license:', error);
+      } finally {
+        if (isCurrent) setCheckingLicense(false);
+      }
+    };
+
+    checkActiveLicense();
+    return () => { isCurrent = false; };
+  }, [isAdmin]);
+
+  return { hasActiveLicense, activeLicenseCount, checkingLicense };
+};
+
 const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean, isActualAdmin?: boolean }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { hasActiveLicense } = useHasActiveLicense(isAdmin || false);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
@@ -264,7 +321,9 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
               <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
               <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
-              <Link to="/dashboard/install" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><BookOpen className="w-5 h-5 mr-3" /> Installation Guide</Link>
+              {hasActiveLicense && (
+                <Link to="/dashboard/install" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><BookOpen className="w-5 h-5 mr-3" /> Installation Guide</Link>
+              )}
               {isActualAdmin && (
                 <div className="pt-4 mt-4 border-t border-green-900/30">
                   <Link to="/admin" className="flex items-center px-4 py-2.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/20"><Shield className="w-5 h-5 mr-3" /> Return to Admin</Link>
@@ -298,61 +357,6 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
   );
 };
 
-const useHasActiveLicense = (isAdmin: boolean) => {
-  const [hasActiveLicense, setHasActiveLicense] = useState(false);
-  const [activeLicenseCount, setActiveLicenseCount] = useState(0);
-  const [checkingLicense, setCheckingLicense] = useState(true);
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    const checkActiveLicense = async () => {
-      try {
-        if (isAdmin) {
-          const { count, error } = await supabase
-            .from('licenses')
-            .select('id', { count: 'exact', head: true })
-            .eq('status', 'ACTIVE');
-          if (isCurrent) {
-            setActiveLicenseCount(error ? 0 : count ?? 0);
-            setHasActiveLicense(!error && (count ?? 0) > 0);
-          }
-          return;
-        }
-
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: customer } = await supabase
-          .from('customers')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        if (!customer) return;
-
-        const { count, error } = await supabase
-          .from('licenses')
-          .select('id', { count: 'exact', head: true })
-          .eq('customer_id', customer.id)
-          .eq('status', 'ACTIVE');
-
-        if (isCurrent) {
-          setActiveLicenseCount(error ? 0 : count ?? 0);
-          setHasActiveLicense(!error && (count ?? 0) > 0);
-        }
-      } catch (error) {
-        console.error('Failed to check active license:', error);
-      } finally {
-        if (isCurrent) setCheckingLicense(false);
-      }
-    };
-
-    checkActiveLicense();
-    return () => { isCurrent = false; };
-  }, [isAdmin]);
-
-  return { hasActiveLicense, activeLicenseCount, checkingLicense };
-};
 
 
 const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
