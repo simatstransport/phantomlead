@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X, BookOpen } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminSettings } from './pages/admin/AdminSettings';
 import { CustomerPackages } from './pages/CustomerPackages';
+import { CustomerInstallation } from './pages/CustomerInstallation';
 import { CustomerLicenses } from './pages/CustomerLicenses';
 import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
@@ -263,6 +264,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
               <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
               <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
+              <Link to="/dashboard/install" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><BookOpen className="w-5 h-5 mr-3" /> Installation Guide</Link>
               {isActualAdmin && (
                 <div className="pt-4 mt-4 border-t border-green-900/30">
                   <Link to="/admin" className="flex items-center px-4 py-2.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/20"><Shield className="w-5 h-5 mr-3" /> Return to Admin</Link>
@@ -352,60 +354,6 @@ const useHasActiveLicense = (isAdmin: boolean) => {
   return { hasActiveLicense, activeLicenseCount, checkingLicense };
 };
 
-const GeminiApiKeyGuide = () => (
-  <section className="mt-8 bg-zinc-950 border border-gray-800 rounded-xl p-6" aria-labelledby="manual-guide">
-    <h2 id="manual-guide" className="text-xl font-bold mb-6 flex items-center">
-      <Key className="w-5 h-5 mr-2 text-green-400" /> User Manual & Installation Guide
-    </h2>
-    
-    <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-semibold mb-2 text-red-400 flex items-center">
-          <Shield className="w-4 h-4 mr-2" /> Step 1: Before Installation
-        </h3>
-        <ul className="list-disc pl-6 text-sm text-gray-300 space-y-1">
-          <li><strong>IMPORTANT:</strong> Turn off your Antivirus and Windows Device Protections (Windows Defender) before downloading or installing the software.</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-semibold mb-2 text-green-400">Step 2: Get Your Google Gemini API Key</h3>
-        <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
-          <li>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-green-400 underline underline-offset-2 hover:text-green-400">Google AI Studio API keys</a> and sign in.</li>
-          <li>Select a Google Cloud project, or create one if Google AI Studio asks you to.</li>
-          <li>Select <strong>Create API key</strong>, copy the generated key, and keep it private.</li>
-        </ol>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-semibold mb-2 text-green-400">Step 3: Close Background Processes</h3>
-        <ul className="list-disc pl-6 text-sm text-gray-300 space-y-1">
-          <li>Open <strong>Task Manager</strong>, search for <strong>Safe Exam Browser</strong>, and end all running SEB tasks.</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-semibold mb-2 text-blue-400">Step 4: How to run SecureInstaller</h3>
-        <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
-          <li>Download the SecureInstaller file using the green button above.</li>
-          <li>Run the downloaded `.exe` file. (If a warning appears, click "More info" &gt; "Run anyway").</li>
-          <li>When prompted, paste your <strong>Gemini API Key</strong> and your <strong>License Key</strong> (found in My Licenses).</li>
-          <li>Wait for SecureInstaller to completely finish the setup process.</li>
-        </ol>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-semibold mb-2 text-purple-400">Step 5: Using the Software</h3>
-        <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-2">
-          <li>Launch <strong>Safe Exam Browser</strong>.</li>
-          <li>For Java coding, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">K</kbd>.</li>
-          <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">L</kbd>.</li>
-          <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl</kbd> + <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">J</kbd>.</li>
-        </ol>
-      </div>
-    </div>
-  </section>
-);
 
 const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
   const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
@@ -436,7 +384,6 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
           )}
         </div>
       </section>
-      {!checkingLicense && hasActiveLicense && <GeminiApiKeyGuide />}
     </DashboardLayout>
   );
 };
@@ -625,6 +572,7 @@ function App() {
           <Route path="/dashboard" element={session ? <CustomerDashboard isActualAdmin={isAdmin} /> : <Navigate to="/login" />} />
           <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false} isActualAdmin={isAdmin}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
           <Route path="/dashboard/packages" element={session ? <DashboardLayout title="Buy Packages" isAdmin={false} isActualAdmin={isAdmin}><CustomerPackages /></DashboardLayout> : <Navigate to="/login" />} />
+          <Route path="/dashboard/install" element={session ? <DashboardLayout title="Installation Guide" isAdmin={false} isActualAdmin={isAdmin}><CustomerInstallation /></DashboardLayout> : <Navigate to="/login" />} />
 
           <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/licenses" element={session ? (isAdmin ? <DashboardLayout title="All Licenses" isAdmin={true}><AdminLicenses /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
