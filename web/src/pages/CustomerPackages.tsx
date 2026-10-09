@@ -89,14 +89,12 @@ export const CustomerPackages = () => {
     if (!user) return alert("Must be logged in");
 
     // Upsert customer details
-    const { error: custError } = await supabase.from('customers').upsert({
-      user_id: user.id,
-      email: user.email,
+    const { error: custError } = await supabase.from('customers').update({
       full_name: formData.fullName,
       phone: formData.phone,
       college_name: formData.collegeName,
       academic_year: formData.academicYear
-    }, { onConflict: 'user_id' });
+    }).eq('user_id', user.id);
 
     if (custError) {
       alert("Error saving details: " + custError.message);
