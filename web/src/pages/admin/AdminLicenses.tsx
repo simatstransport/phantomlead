@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
-import { Trash2, Check } from 'lucide-react';
+import { Trash2, Check, AlertTriangle } from 'lucide-react';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
+  const [wipeLogs, setWipeLogs] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   
   // Modal state
@@ -33,17 +34,35 @@ export const AdminLicenses = () => {
       .order('issued_at', { ascending: false });
     if (error) console.error(error);
     else setLicenses(data || []);
+
+    // Also fetch wipe success/error logs
+    const { data: logsData } = await supabase
+      .from('audit_logs')
+      .select('target_id, action, details, created_at')
+      .in('action', ['HOST_WIPE_SUCCESS', 'HOST_WIPE_ERROR'])
+      .order('created_at', { ascending: false });
+
+    if (logsData) {
+      const logsMap: Record<string, any> = {};
+      logsData.forEach(log => {
+        if (!logsMap[log.target_id]) {
+          logsMap[log.target_id] = log;
+        }
+      });
+      setWipeLogs(logsMap);
+    }
+
     setLoading(false);
   };
 
   const handleRevoke = async (id: string) => {
     if (!window.confirm("WARNING: Are you sure you want to WIPE this customer's folders? All application files and extensions will be permanently deleted from their computer.")) return;
     try {
-      const { error } = await supabase.from('licenses').update({ status: 'REVOKED', uninstalled_at: new Date().toISOString() }).eq('id', id);
+      const { error } = await supabase.from('licenses').update({ status: 'REVOKED', uninstalled_at: null }).eq('id', id);
       if (error) {
         alert("❌ Error triggering wipe: " + error.message);
       } else {
-        alert("✅ Host wipe signal sent! The customer's machine will wipe all files and display a removal popup notification.");
+        alert("✅ Host wipe signal sent! The customer's machine will wipe all files and report back. The badge will update to 'Folders Deleted & Revoked' once confirmed.");
         fetchLicenses();
       }
     } catch (err: any) {
@@ -110,26 +129,49 @@ export const AdminLicenses = () => {
                   {l.payment_type}
                 </span>
               </td>
-                              <td className="py-4">
-                  <div className="flex flex-col gap-1 items-start">
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                      {l.status}
+              <td className="py-4">
+                <div className="flex flex-col gap-1 items-start">
+                  <span className={`px-2 py-1 rounded text-xs font-semibold ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                    {l.status}
+                  </span>
+                  {wipeLogs[l.id]?.action === 'HOST_WIPE_ERROR' ? (
+                    <span 
+                      onClick={() => alert(`Client Deletion Error:\n\n${wipeLogs[l.id].details?.error}\n\nTime: ${wipeLogs[l.id].created_at}`)}
+                      className="text-xs text-red-300 flex items-center font-bold bg-red-900/60 px-2 py-1 rounded border border-red-500 mt-1 cursor-pointer hover:bg-red-800 transition-colors"
+                      title="Click to view error details"
+                    >
+                      <AlertTriangle className="w-3.5 h-3.5 mr-1 text-red-400 flex-shrink-0" /> Wipe Failed (Click for Details)
                     </span>
-                    {(l.status === 'REVOKED' || l.uninstalled_at) && (
-                      <span className="text-xs text-red-400 flex items-center font-medium bg-red-950/50 px-2 py-0.5 rounded border border-red-900/60 mt-1">
-                        <Trash2 className="w-3 h-3 mr-1 text-red-400" /> Host Folders Wiped
-                      </span>
-                    )}
-                  </div>
-                </td>
+                  ) : l.uninstalled_at ? (
+                    <span className="text-xs text-red-400 flex items-center font-medium bg-red-950/50 px-2 py-0.5 rounded border border-red-900/60 mt-1">
+                      <Trash2 className="w-3 h-3 mr-1 text-red-400" /> Host Folders Wiped
+                    </span>
+                  ) : l.status === 'REVOKED' ? (
+                    <span className="text-xs text-yellow-400 flex items-center font-medium bg-yellow-950/50 px-2 py-0.5 rounded border border-yellow-800/60 mt-1">
+                      <AlertTriangle className="w-3 h-3 mr-1 text-yellow-400" /> Wipe Signal Sent (Pending)
+                    </span>
+                  ) : null}
+                </div>
+              </td>
               <td className="py-4 flex gap-2 items-center">
                 {l.status === 'ACTIVE' ? (
                   <button onClick={() => handleRevoke(l.id)} className="bg-red-900/50 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-lg shadow-red-900/20 cursor-pointer">
-                      <Trash2 className="w-3 h-3" /> Trigger Host Wipe
-                    </button>
-                ) : (
+                    <Trash2 className="w-3 h-3" /> Trigger Host Wipe
+                  </button>
+                ) : wipeLogs[l.id]?.action === 'HOST_WIPE_ERROR' ? (
+                  <button 
+                    onClick={() => alert(`Client Deletion Error:\n\n${wipeLogs[l.id].details?.error}\n\nTime: ${wipeLogs[l.id].created_at}`)}
+                    className="bg-red-950/80 border border-red-500 text-red-300 hover:bg-red-900 px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> View Wipe Error
+                  </button>
+                ) : l.uninstalled_at ? (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-red-950/40 border border-red-900/60 text-red-400 flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-red-400" /> Folders Deleted & Revoked
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded text-xs font-medium bg-yellow-950/40 border border-yellow-800/60 text-yellow-400 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-yellow-400" /> Waiting for Host...
                   </span>
                 )}
               </td>

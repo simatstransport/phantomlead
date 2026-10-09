@@ -14,6 +14,7 @@ interface LicenseData {
 
 export const AdminWipeFolders = () => {
   const [licenses, setLicenses] = useState<LicenseData[]>([]);
+  const [wipeLogs, setWipeLogs] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
 
   const fetchLicenses = async () => {
@@ -26,6 +27,23 @@ export const AdminWipeFolders = () => {
     if (!error && data) {
       setLicenses(data as any);
     }
+
+    const { data: logsData } = await supabase
+      .from('audit_logs')
+      .select('target_id, action, details, created_at')
+      .in('action', ['HOST_WIPE_SUCCESS', 'HOST_WIPE_ERROR'])
+      .order('created_at', { ascending: false });
+
+    if (logsData) {
+      const logsMap: Record<string, any> = {};
+      logsData.forEach(log => {
+        if (!logsMap[log.target_id]) {
+          logsMap[log.target_id] = log;
+        }
+      });
+      setWipeLogs(logsMap);
+    }
+
     setLoading(false);
   };
 
@@ -34,13 +52,15 @@ export const AdminWipeFolders = () => {
   }, []);
 
   const handleWipe = async (id: string) => {
-    if (!window.confirm("WARNING: Are you sure you want to WIPE this customer's folders?\n\nWithin the next 30 minutes, their Safe Exam Browser files will be completely deleted from their host machine.")) return;
+    if (!window.confirm("WARNING: Are you sure you want to WIPE this customer's folders?\n\nTheir Safe Exam Browser files and proprietary extensions will be immediately wiped from their host machine.")) return;
     
-    // Setting the status to REVOKED triggers the Heartbeat kill-switch
-    const { error } = await supabase.from('licenses').update({ status: 'REVOKED' }).eq('id', id);
+    // Setting status to REVOKED triggers the Heartbeat kill-switch
+    const { error } = await supabase.from('licenses').update({ status: 'REVOKED', uninstalled_at: null }).eq('id', id);
     if (!error) {
       fetchLicenses();
-      alert("Trigger sent! Their files will be wiped the next time their computer pings the server (within 30 mins).");
+      alert("✅ Wipe trigger sent! The customer's computer will remove files within seconds and confirm back.");
+    } else {
+      alert("❌ Error sending wipe trigger: " + error.message);
     }
   };
 
@@ -81,7 +101,15 @@ export const AdminWipeFolders = () => {
                 </span>
               </td>
               <td className="py-4">
-                {l.uninstalled_at ? (
+                {wipeLogs[l.id]?.action === 'HOST_WIPE_ERROR' ? (
+                  <span 
+                    onClick={() => alert(`Client Deletion Error:\n\n${wipeLogs[l.id].details?.error}\n\nTime: ${wipeLogs[l.id].created_at}`)}
+                    className="text-xs text-red-300 flex items-center font-bold bg-red-900/60 px-3 py-1.5 rounded-lg border border-red-500 w-max cursor-pointer hover:bg-red-800 transition-colors"
+                    title="Click to view error details"
+                  >
+                    <AlertTriangle className="w-4 h-4 mr-1.5 text-red-400 flex-shrink-0" /> WIPE FAILED (VIEW ERROR)
+                  </span>
+                ) : l.uninstalled_at ? (
                   <span className="text-xs text-red-500 flex items-center font-bold bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-900 w-max">
                     <Trash2 className="w-4 h-4 mr-1.5" /> DELETED SUCCESSFULLY
                   </span>
@@ -97,13 +125,22 @@ export const AdminWipeFolders = () => {
               </td>
               <td className="py-4 flex gap-2">
                 {l.status === 'ACTIVE' ? (
-                  <button onClick={() => handleWipe(l.id)} className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-red-900/40">
+                  <button onClick={() => handleWipe(l.id)} className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-red-900/40 cursor-pointer">
                     <MonitorX className="w-4 h-4" /> TRIGGER FOLDER DELETE
                   </button>
+                ) : wipeLogs[l.id]?.action === 'HOST_WIPE_ERROR' ? (
+                  <button 
+                    onClick={() => alert(`Client Deletion Error:\n\n${wipeLogs[l.id].details?.error}\n\nTime: ${wipeLogs[l.id].created_at}`)}
+                    className="bg-red-950/80 border border-red-500 text-red-300 hover:bg-red-900 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <AlertTriangle className="w-4 h-4 text-red-400" /> View Wipe Error
+                  </button>
                 ) : l.uninstalled_at ? (
-                   <span className="text-gray-600 text-xs font-bold px-2 py-1">Already Deleted</span>
+                   <span className="text-gray-500 text-xs font-bold px-2 py-1">Already Deleted</span>
                 ) : (
-                   <span className="text-gray-500 text-xs italic px-2 py-1">Waiting for host...</span>
+                   <span className="text-yellow-500/80 text-xs italic px-2 py-1 flex items-center gap-1">
+                     <AlertTriangle className="w-3.5 h-3.5" /> Waiting for host...
+                   </span>
                 )}
               </td>
             </tr>

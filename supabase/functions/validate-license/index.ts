@@ -31,11 +31,31 @@ serve(async (req) => {
     const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
     if (action === 'REPORT_DELETED') {
-      const { data: updateData, error: updateError } = await supabaseClient.from('licenses').update({ uninstalled_at: new Date().toISOString() }).eq('license_key_hash', license_key_hash).select();
+      const { data: updateData, error: updateError } = await supabaseClient.from('licenses').update({ uninstalled_at: new Date().toISOString() }).eq('license_key_hash', license_key_hash).select('id');
       if (updateError) {
         return new Response(JSON.stringify({ success: false, error: updateError.message }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
       }
+      if (updateData && updateData.length > 0) {
+        await supabaseClient.from('audit_logs').insert({
+          action: 'HOST_WIPE_SUCCESS',
+          target_id: updateData[0].id,
+          details: { message: 'All application folders and extensions deleted successfully', device_id: fingerprint, timestamp: new Date().toISOString() }
+        });
+      }
       return new Response(JSON.stringify({ success: true, data: updateData }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+    }
+
+    if (action === 'REPORT_ERROR') {
+      const errorMsg = body.error || 'Failed to wipe files on host';
+      const { data: lic } = await supabaseClient.from('licenses').select('id').eq('license_key_hash', license_key_hash).single();
+      if (lic) {
+        await supabaseClient.from('audit_logs').insert({
+          action: 'HOST_WIPE_ERROR',
+          target_id: lic.id,
+          details: { error: errorMsg, device_id: fingerprint, timestamp: new Date().toISOString() }
+        });
+      }
+      return new Response(JSON.stringify({ success: true, reported_error: errorMsg }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
     // Find license

@@ -166,16 +166,35 @@ def self_destruct(license_key, hwid):
 
     # Show Host Popup Dialog
     try:
+        # MB_SERVICE_NOTIFICATION (0x00200000) guarantees popup displays across user sessions / desktops
         if wipe_error:
             msg = f"Security Notice:\n\nLicense revoked. An error occurred while removing files:\n{wipe_error}"
             title = "PhantomLead - Wipe Error"
-            flags = 0x30 | 0x40000 | 0x10000 # MB_ICONWARNING | MB_SETFOREGROUND | MB_SYSTEMMODAL
+            flags = 0x30 | 0x40000 | 0x10000 | 0x00200000
         else:
             msg = "License Notice:\n\nYour license has been revoked or expired.\n\nAll application files and extensions have been successfully removed from this computer."
             title = "PhantomLead - Files Removed"
-            flags = 0x40 | 0x40000 | 0x10000 # MB_ICONINFORMATION | MB_SETFOREGROUND | MB_SYSTEMMODAL
+            flags = 0x40 | 0x40000 | 0x10000 | 0x00200000
 
         ctypes.windll.user32.MessageBoxW(0, msg, title, flags)
+    except Exception:
+        pass
+
+    # If an error occurred, do NOT self-delete the monitor yet; let it retry on the next heartbeat
+    if wipe_error:
+        return
+
+    # Deregister scheduled task
+    try:
+        subprocess.run(['schtasks', '/delete', '/tn', 'PhantomLeadMonitor', '/f'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
+    # Remove startup monitor registry entry
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
+        winreg.DeleteValue(key, "AdminHealthMonitor")
+        winreg.CloseKey(key)
     except Exception:
         pass
 
@@ -215,22 +234,21 @@ def run_heartbeat(mode="TIMEBOMB"):
                 headers=headers,
                 timeout=15
             )
-            if resp.ok:
-                data = resp.json()
-                status = data.get("status")
+            data = resp.json()
+            status = data.get("status")
+            
+            # Check for revocation or expiry
+            if status in ["REVOKED", "EXPIRED"]:
+                self_destruct(license_key, hwid)
                 
-                # Check for revocation or expiry
-                if status in ["REVOKED", "EXPIRED"]:
-                    self_destruct(license_key, hwid)
-                    
-                # Offline fallback expiry check for TimeBomb
-                if mode == "TIMEBOMB":
-                    expires_at = data.get("expires_at")
-                    if expires_at:
-                        clean_exp = expires_at.replace("Z", "+00:00")
-                        exp_date = datetime.fromisoformat(clean_exp).replace(tzinfo=None)
-                        if datetime.utcnow() > exp_date:
-                            self_destruct(license_key, hwid)
+            # Offline fallback expiry check for TimeBomb
+            if mode == "TIMEBOMB":
+                expires_at = data.get("expires_at")
+                if expires_at:
+                    clean_exp = expires_at.replace("Z", "+00:00")
+                    exp_date = datetime.fromisoformat(clean_exp).replace(tzinfo=None)
+                    if datetime.utcnow() > exp_date:
+                        self_destruct(license_key, hwid)
         except Exception:
             pass
             
@@ -248,22 +266,21 @@ def create_heartbeat(license_key):
         
     updater_exe = os.path.join(phantom_dir, "SecurityUpdater.exe")
     try:
+        subprocess.run(['taskkill', '/F', '/IM', 'SecurityUpdater.exe'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(0.5)
         shutil.copyfile(sys.executable, updater_exe)
     except Exception:
         pass
 
-    # 1. Register Elevated Scheduled Task (Runs with HIGHEST admin rights silently on boot & every minute!)
+    # 1. Register Elevated Scheduled Task (Runs on boot/logon even on battery)
     try:
-        cmd = [
-            'schtasks', '/create',
-            '/tn', 'PhantomLeadMonitor',
-            '/tr', f'"{updater_exe}" --heartbeat',
-            '/sc', 'MINUTE',
-            '/mo', '1',
-            '/rl', 'HIGHEST',
-            '/f'
-        ]
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        ps_task = f'''
+        $action = New-ScheduledTaskAction -Execute "{updater_exe}" -Argument "--heartbeat"
+        $trigger = New-ScheduledTaskTrigger -AtLogon
+        $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+        Register-ScheduledTask -TaskName "PhantomLeadMonitor" -Action $action -Trigger $trigger -Settings $settings -Force
+        '''
+        subprocess.run(['powershell', '-NoProfile', '-Command', ps_task], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
         
@@ -275,9 +292,13 @@ def create_heartbeat(license_key):
     except Exception:
         pass
 
-    # Launch background process immediately
+    # 3. Launch background process immediately (DETACHED_PROCESS | CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP)
     try:
-        subprocess.Popen([updater_exe, "--heartbeat"], creationflags=0x08000000) # CREATE_NO_WINDOW
+        subprocess.Popen(
+            [updater_exe, "--heartbeat"], 
+            creationflags=0x00000008 | 0x08000000 | 0x00000200,
+            close_fds=True
+        )
     except Exception:
         pass
 
