@@ -23,7 +23,6 @@ for script, exe_name in TARGETS:
         VENV_PYINSTALLER,
         "--onefile",
         "--windowed",
-        "--uac-admin",
         "--name", exe_name,
         "--hidden-import", "wmi",
         "--hidden-import", "requests",
