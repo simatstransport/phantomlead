@@ -1,4 +1,4 @@
-import { Key, Shield, Download, BookOpen } from 'lucide-react';
+import { Key, Shield, Download, BookOpen , AlertTriangle } from 'lucide-react';
 
 export const CustomerInstallation = () => {
   return (
@@ -7,6 +7,24 @@ export const CustomerInstallation = () => {
         <h2 className="text-2xl font-bold mb-8 flex items-center text-green-50">
           <BookOpen className="w-6 h-6 mr-3 text-green-400" /> User Manual & Complete Installation Guide
         </h2>
+
+          <div className="mt-8 mb-8 bg-red-950/30 border border-red-900/50 rounded-xl p-6">
+            <h3 className="text-lg font-bold text-red-400 mb-3 flex items-center">
+              <AlertTriangle className="w-6 h-6 mr-2" /> CRITICAL: Anti-Piracy & Auto-Deletion Warning
+            </h3>
+            <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+              PhantomLead uses military-grade DRM (Digital Rights Management) to protect our exam environments. Please be fully aware of the following protocols before installing:
+            </p>
+            <ul className="list-disc pl-5 space-y-3 text-sm text-gray-400">
+              <li>
+                <strong className="text-red-300">Time-Bomb Expiry (Temporary Licenses):</strong> If you purchased a temporary package (1, 2, or 3 months), your installer contains an automated time-bomb. On the exact date of your expiry, it will automatically and permanently delete the exam configuration files from your computer.
+              </li>
+              <li>
+                <strong className="text-red-300">Admin Kill-Switch (All Monitored Licenses):</strong> Any suspicious activity, sharing of license keys, or violation of our terms will result in an immediate Admin Revoke. If revoked, a remote kill-switch will trigger the next time your computer turns on, instantly wiping the software and configurations from your host machine.
+              </li>
+            </ul>
+          </div>
+
         
         <div className="space-y-10">
           <section>
