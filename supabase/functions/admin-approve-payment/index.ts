@@ -2,9 +2,14 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import { encryptLicenseKey, hashLicenseKey } from '../_shared/license-crypto.ts'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' } })
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
@@ -33,11 +38,11 @@ serve(async (req) => {
 
     if (action === 'REJECT') {
       await supabaseClient.from('payments').update({ status: 'REJECTED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)
-      return new Response(JSON.stringify({ message: 'Payment rejected' }), { status: 200 })
+      return new Response(JSON.stringify({ message: 'Payment rejected' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
     if (action === 'APPROVE') {
-      const { data: payment } = await supabaseClient.from('payments').select('*').eq('id', payment_id).single()
+      const { data: payment } = await supabaseClient.from('payments').select('*, packages(*)').eq('id', payment_id).single()
       if (!payment) throw new Error('Payment not found')
       if (payment.status !== 'PENDING') throw new Error('Payment has already been reviewed')
 
@@ -50,11 +55,18 @@ serve(async (req) => {
         encryptLicenseKey(rawLicense, encryptionSecret)
       ])
 
-      let expires_at = null
-      if (payment.duration_months) {
-        const date = new Date()
-        date.setMonth(date.getMonth() + payment.duration_months)
-        expires_at = date.toISOString()
+      // Determine duration from the package or payment (default to -1 lifetime for paid packages unless specified)
+      let duration_months = -1; // -1 = Lifetime
+      let expires_at = null;
+      
+      // If we stored duration in the payments table, use it. Otherwise assume lifetime for Paid.
+      if (payment.duration_months !== undefined && payment.duration_months !== null) {
+          duration_months = payment.duration_months;
+          if (duration_months > 0) {
+              const date = new Date()
+              date.setMonth(date.getMonth() + duration_months)
+              expires_at = date.toISOString()
+          }
       }
 
       const { data: license, error: licenseError } = await supabaseClient.from('licenses').insert({
@@ -65,9 +77,10 @@ serve(async (req) => {
         payment_id: payment.id,
         status: 'ACTIVE',
         payment_type: 'PAID',
-        duration_months: payment.duration_months,
+        duration_months: duration_months,
         expires_at: expires_at
       }).select().single()
+      
       if (licenseError) throw licenseError
 
       const { error: paymentUpdateError } = await supabaseClient.from('payments').update({ status: 'APPROVED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)
@@ -81,9 +94,9 @@ serve(async (req) => {
         details: { license_id: license.id }
       })
 
-      return new Response(JSON.stringify({ message: 'Payment approved and license generated' }), { status: 200 })
+      return new Response(JSON.stringify({ message: 'Payment approved and license generated' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { headers: { 'Content-Type': 'application/json' }, status: 500 })
+    return new Response(JSON.stringify({ error: error.message }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 })
   }
 })
