@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Check } from 'lucide-react';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
@@ -103,21 +103,25 @@ export const AdminLicenses = () => {
               </td>
                               <td className="py-4">
                   <div className="flex flex-col gap-1 items-start">
-                    <span className={`px-2 py-1 rounded text-xs ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                    <span className={`px-2 py-1 rounded text-xs font-semibold ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                       {l.status}
                     </span>
-                    {l.uninstalled_at && (
-                      <span className="text-xs text-red-500 flex items-center font-bold bg-red-950/40 px-2 py-1 rounded border border-red-900 mt-1">
-                        <Trash2 className="w-3 h-3 mr-1" /> Host Folders Wiped
+                    {(l.status === 'REVOKED' || l.uninstalled_at) && (
+                      <span className="text-xs text-red-400 flex items-center font-medium bg-red-950/50 px-2 py-0.5 rounded border border-red-900/60 mt-1">
+                        <Trash2 className="w-3 h-3 mr-1 text-red-400" /> Host Folders Wiped
                       </span>
                     )}
                   </div>
                 </td>
-              <td className="py-4 flex gap-2">
-                {l.status === 'ACTIVE' && (
-                  <button onClick={() => handleRevoke(l.id)} className="bg-red-900/50 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-lg shadow-red-900/20">
+              <td className="py-4 flex gap-2 items-center">
+                {l.status === 'ACTIVE' ? (
+                  <button onClick={() => handleRevoke(l.id)} className="bg-red-900/50 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-lg shadow-red-900/20 cursor-pointer">
                       <Trash2 className="w-3 h-3" /> Trigger Host Wipe
                     </button>
+                ) : (
+                  <span className="px-2.5 py-1 rounded text-xs font-medium bg-red-950/40 border border-red-900/60 text-red-400 flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-red-400" /> Folders Deleted & Revoked
+                  </span>
                 )}
               </td>
             </tr>
