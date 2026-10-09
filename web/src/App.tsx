@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X, BookOpen , AlertTriangle } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X, BookOpen , AlertTriangle , MonitorX } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminSettings } from './pages/admin/AdminSettings';
+import { AdminWipeFolders } from './pages/admin/AdminWipeFolders';
 import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerInstallation } from './pages/CustomerInstallation';
 import { CustomerLicenses } from './pages/CustomerLicenses';
@@ -617,6 +618,7 @@ function App() {
           <Route path="/admin/packages" element={session ? (isAdmin ? <DashboardLayout title="All Packages" isAdmin={true}><AdminPackages /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/payments" element={session ? (isAdmin ? <DashboardLayout title="Payments" isAdmin={true}><AdminPayments /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+            <Route path="/admin/wipe-folders" element={session ? (isAdmin ? <DashboardLayout title="Delete User Folders" isAdmin={true}><AdminWipeFolders /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/admin/settings" element={session ? (isAdmin ? <DashboardLayout title="Settings" isAdmin={true}><AdminSettings /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
           <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
         </Routes>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
+import { Trash2 } from 'lucide-react';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
