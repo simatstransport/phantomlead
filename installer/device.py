@@ -1,11 +1,13 @@
 import hashlib
 import platform
 import subprocess
-import wmi
 
 def get_device_fingerprint():
     """Generates a hardware-based fingerprint for the current Windows device."""
     try:
+        import pythoncom
+        pythoncom.CoInitialize()
+        import wmi
         c = wmi.WMI()
         system_info = c.Win32_ComputerSystemProduct()[0]
         cpu_info = c.Win32_Processor()[0]

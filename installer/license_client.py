@@ -1,3 +1,4 @@
+import platform
 import requests
 from config import API_VALIDATE_LICENSE, API_ACTIVATE_LICENSE, API_GET_MANIFEST, API_GET_DOWNLOAD_URL, SUPABASE_ANON_KEY
 
@@ -11,7 +12,12 @@ def validate_license(license_key, fingerprint):
     """Validates license and device fingerprint."""
     resp = requests.post(
         API_VALIDATE_LICENSE,
-        json={"license_key": license_key, "fingerprint": fingerprint},
+        json={
+            "license_key": license_key, 
+            "fingerprint": fingerprint,
+            "device_id": fingerprint,
+            "hostname": platform.node()
+        },
         headers=_get_headers()
     )
     if not resp.ok:
