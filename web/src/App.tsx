@@ -382,8 +382,10 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         <p className="text-sm text-gray-400 mb-5">
           {checkingLicense ? 'Checking your license status...' : hasActiveLicense ? 'View your active package and license status.' : 'No active licenses yet. Your license will appear here after it is issued.'}
         </p>
-        <div className="flex flex-wrap gap-3">
-          <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium">View my licenses</Link>
+        <div className="flex flex-col items-start gap-6">
+            <Link to="/dashboard/licenses" className="inline-flex items-center px-6 py-2 bg-[#00ff00]/10 border border-[#00ff00] text-[#00ff00] hover:bg-[#00ff00]/20 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] rounded-full font-bold uppercase tracking-wider text-xs transition-all w-max">
+              View my licenses
+            </Link>
           {!checkingLicense && hasActiveLicense && (() => {
             const licenseDetails = (window as any).activeLicenseDetails;
             let installerName = 'SecureInstaller_L.exe';
