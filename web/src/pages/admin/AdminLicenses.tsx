@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
-import { Trash2, Check, AlertTriangle } from 'lucide-react';
+import { Trash2, Check, AlertTriangle, Clock } from 'lucide-react';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
@@ -19,6 +19,8 @@ export const AdminLicenses = () => {
   useEffect(() => {
     fetchLicenses();
     fetchPackages();
+    const interval = setInterval(fetchLicenses, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchPackages = async () => {
@@ -166,12 +168,12 @@ export const AdminLicenses = () => {
                     <AlertTriangle className="w-3.5 h-3.5 text-red-400" /> View Wipe Error
                   </button>
                 ) : l.uninstalled_at ? (
-                  <span className="px-2.5 py-1 rounded text-xs font-medium bg-red-950/40 border border-red-900/60 text-red-400 flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-red-400" /> Folders Deleted & Revoked
+                  <span className="px-2.5 py-1 rounded text-xs font-medium bg-green-950/40 border border-green-800/60 text-green-400 flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-green-400" /> Folders Deleted & Revoked
                   </span>
                 ) : (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-yellow-950/40 border border-yellow-800/60 text-yellow-400 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-yellow-400" /> Waiting for Host...
+                    <Clock className="w-3.5 h-3.5 text-yellow-400 animate-spin" /> Wiping on Host...
                   </span>
                 )}
               </td>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
-import { Trash2, AlertTriangle, MonitorX } from 'lucide-react';
+import { AlertTriangle, MonitorX, Check, Clock } from 'lucide-react';
 
 interface LicenseData {
   id: string;
@@ -49,6 +49,8 @@ export const AdminWipeFolders = () => {
 
   useEffect(() => {
     fetchLicenses();
+    const interval = setInterval(fetchLicenses, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleWipe = async (id: string) => {
@@ -110,12 +112,12 @@ export const AdminWipeFolders = () => {
                     <AlertTriangle className="w-4 h-4 mr-1.5 text-red-400 flex-shrink-0" /> WIPE FAILED (VIEW ERROR)
                   </span>
                 ) : l.uninstalled_at ? (
-                  <span className="text-xs text-red-500 flex items-center font-bold bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-900 w-max">
-                    <Trash2 className="w-4 h-4 mr-1.5" /> DELETED SUCCESSFULLY
+                  <span className="text-xs text-green-400 flex items-center font-bold bg-green-950/40 px-3 py-1.5 rounded-lg border border-green-800 w-max">
+                    <Check className="w-4 h-4 mr-1.5 text-green-400" /> DELETED SUCCESSFULLY
                   </span>
                 ) : l.status === 'REVOKED' ? (
-                  <span className="text-xs text-yellow-500 flex items-center font-bold bg-yellow-950/40 px-3 py-1.5 rounded-lg border border-yellow-900 w-max">
-                    <AlertTriangle className="w-4 h-4 mr-1.5" /> WIPE PENDING...
+                  <span className="text-xs text-yellow-400 flex items-center font-bold bg-yellow-950/40 px-3 py-1.5 rounded-lg border border-yellow-800 w-max">
+                    <Clock className="w-4 h-4 mr-1.5 text-yellow-400 animate-spin" /> WIPE IN PROGRESS...
                   </span>
                 ) : (
                   <span className="text-xs text-green-500 flex items-center font-bold bg-green-950/40 px-3 py-1.5 rounded-lg border border-green-900 w-max">

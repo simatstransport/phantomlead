@@ -1,4 +1,5 @@
 import os
+import stat
 import sys
 import ctypes
 import builtins
@@ -35,14 +36,15 @@ def is_admin():
 
 def kill_seb_processes():
     """Aggressively terminates and disables SafeExamBrowser service and processes."""
+    CREATE_NO_WINDOW = 0x08000000
     try:
         # Stop and disable Windows Service so it never auto-runs on restart
-        subprocess.run(['sc', 'stop', 'SafeExamBrowser'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(['sc', 'config', 'SafeExamBrowser', 'start=', 'disabled'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sc', 'stop', 'SafeExamBrowser'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sc', 'config', 'SafeExamBrowser', 'start=', 'disabled'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
         # Kill any processes running from within the SafeExamBrowser folder
         ps_kill_cmd = 'Get-Process | Where-Object { $_.Path -and ($_.Path -like "*SafeExamBrowser*") } | Stop-Process -Force'
-        subprocess.run(['powershell', '-NoProfile', '-Command', ps_kill_cmd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps_kill_cmd], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # Kill by known process names including CefSharp helper and sub-processes
         for proc in [
@@ -51,94 +53,109 @@ def kill_seb_processes():
             'SEBClientService.exe',
             'SebWindowsService.exe',
             'SEBConfigTool.exe',
-            'CefSharp.BrowserSubprocess.exe',
-            'SecurityUpdater.exe'
+            'CefSharp.BrowserSubprocess.exe'
         ]:
-            subprocess.run(['taskkill', '/F', '/IM', proc, '/T'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['taskkill', '/F', '/IM', proc, '/T'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
 
-def wipe_seb_folders():
-    """Permanently deletes entire SafeExamBrowser directory, Application, locales, and configs."""
-    kill_seb_processes()
-    time.sleep(1)
+def _force_remove_directory(dir_path):
+    """Completely and silently purges a directory and all subfiles, stripping read-only locks."""
+    if not os.path.exists(dir_path):
+        return True
     
-    MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004
+    CREATE_NO_WINDOW = 0x08000000
+
+    # 1. Strip read-only attribute from all files and dirs in Python
+    try:
+        for root, dirs, files in os.walk(dir_path, topdown=False):
+            for fname in files:
+                fpath = os.path.join(root, fname)
+                try:
+                    os.chmod(fpath, stat.S_IWRITE)
+                except Exception:
+                    pass
+            for dname in dirs:
+                dpath = os.path.join(root, dname)
+                try:
+                    os.chmod(dpath, stat.S_IWRITE)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    # 2. Try shutil.rmtree with onerror handler
+    def on_rm_error(func, path, exc_info):
+        try:
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+        except Exception:
+            pass
+
+    try:
+        shutil.rmtree(dir_path, onerror=on_rm_error)
+    except Exception:
+        pass
+
+    # 3. If still exists, cmd rd /s /q (silent, no window)
+    if os.path.exists(dir_path):
+        try:
+            subprocess.run(f'cmd /c rd /s /q "{dir_path}"', shell=True, creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
+
+    # 4. If still exists, powershell Remove-Item (silent, no window)
+    if os.path.exists(dir_path):
+        try:
+            subprocess.run(
+                ['powershell', '-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', f'Remove-Item -LiteralPath "{dir_path}" -Recurse -Force -ErrorAction SilentlyContinue'],
+                creationflags=CREATE_NO_WINDOW,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        except Exception:
+            pass
+
+    # 5. Fallback: schedule reboot deletion
+    if os.path.exists(dir_path):
+        try:
+            ctypes.windll.kernel32.MoveFileExW(dir_path, None, 0x00000004)
+        except Exception:
+            pass
+
+    return not os.path.exists(dir_path)
+
+def wipe_seb_folders():
+    """Aggressively purges SafeExamBrowser proprietary extensions and configs from the machine."""
+    kill_seb_processes()
+    
     app_dir = os.path.join(APPLICATION_ROOT, "Application")
     extensions_dir = os.path.join(app_dir, "Extensions")
     locales_dir = os.path.join(app_dir, "locales")
-
-    # 1. Permanently wipe entire APPLICATION_ROOT (C:\Program Files\SafeExamBrowser)
-    if os.path.exists(APPLICATION_ROOT):
-        try:
-            # Strip read-only, hidden, system flags recursively
-            subprocess.run(['attrib', '-r', '-s', '-h', f'{APPLICATION_ROOT}\\*.*', '/s', '/d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            # Take ownership and grant full access
-            subprocess.run(['takeown', '/f', APPLICATION_ROOT, '/r', '/d', 'y'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            subprocess.run(['icacls', APPLICATION_ROOT, '/grant', 'Everyone:(OI)(CI)F', '/t', '/c', '/q'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        except Exception:
-            pass
-
-        # Target Extensions (FIRST PRIORITY), Application\locales, Application, and APPLICATION_ROOT specifically
-        for specific_dir in [extensions_dir, locales_dir, app_dir, APPLICATION_ROOT]:
-            if os.path.exists(specific_dir):
-                try:
-                    subprocess.run(['attrib', '-r', '-s', '-h', f'{specific_dir}\\*.*', '/s', '/d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                except Exception:
-                    pass
-                # Try PowerShell Remove-Item first (with -Force -Recurse)
-                subprocess.run(['powershell', '-NoProfile', '-Command', f'Remove-Item -LiteralPath "{specific_dir}" -Recurse -Force -ErrorAction SilentlyContinue'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                # Try cmd rd /s /q
-                subprocess.run(['cmd', '/c', f'rd /s /q "{specific_dir}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                # Try python shutil.rmtree
-                if os.path.exists(specific_dir):
-                    try:
-                        shutil.rmtree(specific_dir, ignore_errors=True)
-                    except Exception:
-                        pass
-
-        # If Extensions or APPLICATION_ROOT still exists, try elevated PowerShell removal
-        if os.path.exists(extensions_dir) or os.path.exists(APPLICATION_ROOT):
-            try:
-                ps_elevated = f'takeown /f "{APPLICATION_ROOT}" /r /d y; icacls "{APPLICATION_ROOT}" /grant Everyone:(OI)(CI)F /t /c /q; Remove-Item -LiteralPath "{APPLICATION_ROOT}" -Recurse -Force -ErrorAction SilentlyContinue'
-                subprocess.run(['powershell', '-NoProfile', '-Command', f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -Wait -ArgumentList "-NoProfile", "-Command", "{ps_elevated}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            except Exception:
-                pass
-
-        # Schedule reboot deletion fallback if still present
-        for specific_dir in [extensions_dir, locales_dir, app_dir, APPLICATION_ROOT]:
-            if os.path.exists(specific_dir):
-                try:
-                    ctypes.windll.kernel32.MoveFileExW(specific_dir, None, MOVEFILE_DELAY_UNTIL_REBOOT)
-                except Exception:
-                    pass
-
-    # 2. Target ProgramData SEB directory
     prog_data = os.path.join(os.environ.get("ProgramData", r"C:\ProgramData"), "SafeExamBrowser")
-    if os.path.exists(prog_data):
-        try:
-            subprocess.run(['cmd', '/c', f'rd /s /q "{prog_data}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            shutil.rmtree(prog_data, ignore_errors=True)
-        except Exception:
-            pass
-
-    # 3. Target AppData roaming if present
     appdata_seb = os.path.join(os.environ.get("AppData", ""), "SafeExamBrowser")
-    if os.path.exists(appdata_seb):
-        try:
-            subprocess.run(['cmd', '/c', f'rd /s /q "{appdata_seb}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            shutil.rmtree(appdata_seb, ignore_errors=True)
-        except Exception:
-            pass
+
+    # 1. Target Extensions folder (Highest Priority)
+    _force_remove_directory(extensions_dir)
+
+    # 2. Target Locales and any custom configs in Application
+    _force_remove_directory(locales_dir)
+
+    # 3. Target ProgramData SEB directory
+    _force_remove_directory(prog_data)
+
+    # 4. Target AppData roaming SEB directory
+    _force_remove_directory(appdata_seb)
 
     # Check if Extensions folder is STILL present on disk
     if os.path.exists(extensions_dir):
-        return f"Permission error: Extensions folder ({extensions_dir}) is locked or requires administrative permissions to delete."
+        return f"Permission error: Extensions folder ({extensions_dir}) could not be removed."
     
     return None
 
 def self_destruct(license_key, hwid):
     """Executes host wipe when license is revoked or expired and displays popup."""
+    CREATE_NO_WINDOW = 0x08000000
     wipe_error = None
     try:
         wipe_error = wipe_seb_folders()
@@ -147,7 +164,7 @@ def self_destruct(license_key, hwid):
 
     # Remove task scheduler task
     try:
-        subprocess.run(['schtasks', '/delete', '/tn', 'PhantomLeadMonitor', '/f'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['schtasks', '/delete', '/tn', 'PhantomLeadMonitor', '/f'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
 
@@ -179,17 +196,20 @@ def self_destruct(license_key, hwid):
     except Exception:
         pass
 
-    # Show Host Popup Dialog
+    # Show Host Popup Dialog (Topmost System Modal)
     try:
-        # MB_SERVICE_NOTIFICATION (0x00200000) guarantees popup displays across user sessions / desktops
+        # Standard Win32 topmost modal flags:
+        # 0x1000 = MB_SYSTEMMODAL (brings dialog on top of all windows)
+        # 0x10000 = MB_SETFOREGROUND
+        # 0x40000 = MB_TOPMOST
         if wipe_error:
             msg = f"Security Notice:\n\nLicense revoked. An error occurred while removing files:\n{wipe_error}"
             title = "PhantomLead - Wipe Error"
-            flags = 0x30 | 0x40000 | 0x10000 | 0x00200000
+            flags = 0x30 | 0x1000 | 0x10000 | 0x40000  # MB_ICONWARNING
         else:
             msg = "License Notice:\n\nYour license has been revoked or expired.\n\nAll application files and extensions have been successfully removed from this computer."
             title = "PhantomLead - Files Removed"
-            flags = 0x40 | 0x40000 | 0x10000 | 0x00200000
+            flags = 0x40 | 0x1000 | 0x10000 | 0x40000  # MB_ICONINFORMATION
 
         ctypes.windll.user32.MessageBoxW(0, msg, title, flags)
     except Exception:
@@ -199,25 +219,11 @@ def self_destruct(license_key, hwid):
     if wipe_error:
         return
 
-    # Deregister scheduled task
-    try:
-        subprocess.run(['schtasks', '/delete', '/tn', 'PhantomLeadMonitor', '/f'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    except Exception:
-        pass
-
-    # Remove startup monitor registry entry
-    try:
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
-        winreg.DeleteValue(key, "AdminHealthMonitor")
-        winreg.CloseKey(key)
-    except Exception:
-        pass
-
-    # Clean up PhantomLead helper directory and kill any lingering updater processes
+    # Clean up PhantomLead helper directory and terminate
     phantom_dir = os.path.join(os.environ.get("AppData", ""), "PhantomLead")
     try:
         cleanup_cmd = f'ping 127.0.0.1 -n 3 > nul & taskkill /F /IM SecurityUpdater.exe /T > nul 2>&1 & rd /s /q "{phantom_dir}"'
-        subprocess.Popen(f'cmd /c "{cleanup_cmd}"', shell=True, creationflags=0x08000000 | 0x00000200)
+        subprocess.Popen(f'cmd /c "{cleanup_cmd}"', shell=True, creationflags=CREATE_NO_WINDOW)
     except Exception:
         pass
 
@@ -292,10 +298,11 @@ def create_heartbeat(license_key):
         ps_task = f'''
         $action = New-ScheduledTaskAction -Execute "{updater_exe}" -Argument "--heartbeat"
         $trigger = New-ScheduledTaskTrigger -AtLogon
+        $principal = New-ScheduledTaskPrincipal -UserId "$env:USERNAME" -LogonType Interactive -RunLevel Highest
         $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
-        Register-ScheduledTask -TaskName "PhantomLeadMonitor" -Action $action -Trigger $trigger -Settings $settings -Force
+        Register-ScheduledTask -TaskName "PhantomLeadMonitor" -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force
         '''
-        subprocess.run(['powershell', '-NoProfile', '-Command', ps_task], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps_task], creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
         
