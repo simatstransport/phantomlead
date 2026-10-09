@@ -100,11 +100,18 @@ export const AdminLicenses = () => {
                   {l.payment_type}
                 </span>
               </td>
-              <td className="py-4">
-                <span className={`px-2 py-1 rounded text-xs ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                  {l.status}
-                </span>
-              </td>
+                              <td className="py-4">
+                  <div className="flex flex-col gap-1 items-start">
+                    <span className={`px-2 py-1 rounded text-xs ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                      {l.status}
+                    </span>
+                    {l.uninstalled_at && (
+                      <span className="text-xs text-red-500 flex items-center font-bold bg-red-950/40 px-2 py-1 rounded border border-red-900 mt-1">
+                        <Trash2 className="w-3 h-3 mr-1" /> Host Folders Wiped
+                      </span>
+                    )}
+                  </div>
+                </td>
               <td className="py-4 flex gap-2">
                 {l.status === 'ACTIVE' && (
                   <button onClick={() => handleRevoke(l.id)} className="text-red-400 hover:text-red-300 text-sm">Revoke</button>

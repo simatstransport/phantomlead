@@ -22,7 +22,7 @@ def get_hwid():
     output = subprocess.check_output('wmic csproduct get uuid').decode('utf-8').split('\n')[1].strip()
     return output
 
-def self_destruct():
+def self_destruct(license_key, hwid):
     kill_seb_processes()
     import time
     time.sleep(1)
@@ -34,6 +34,13 @@ def self_destruct():
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
         winreg.DeleteValue(key, "AdminHealthMonitor")
         winreg.CloseKey(key)
+        
+        # Report success back to Supabase
+        try:
+            req = urllib.request.Request(API_URL, data=json.dumps({"license_key": license_key, "device_id": hwid, "action": "REPORT_DELETED"}).encode('utf-8'), headers={'Content-Type': 'application/json'})
+            urllib.request.urlopen(req, timeout=5)
+        except:
+            pass
     except:
         pass
     
@@ -62,14 +69,14 @@ def run_heartbeat():
             
             # Online Kill Switch or Expiry Check
             if data.get("status") in ["REVOKED", "EXPIRED"]:
-                self_destruct()
+                self_destruct(license_key, hwid)
                 
             # Offline Expiry Check Fallback
             expires_at = data.get("expires_at")
             if expires_at:
                 exp_date = datetime.fromisoformat(expires_at.replace("Z", "+00:00")).replace(tzinfo=None)
                 if datetime.utcnow() > exp_date:
-                    self_destruct()
+                    self_destruct(license_key, hwid)
         except:
             pass
             
