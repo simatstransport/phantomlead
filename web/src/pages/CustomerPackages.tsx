@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
-import { CreditCard, CheckCircle, Clock, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { CreditCard, CheckCircle, Clock, Sparkles, SlidersHorizontal, Check, AlertCircle } from 'lucide-react';
 
 const packageGuides: Record<string, { purpose: string; includes: string[] }> = {
   FULL_ACCESS: {
@@ -58,6 +58,39 @@ export const getDiscountLabel = (months: number | null): string | null => {
   return null;
 };
 
+export const cleanIndianPhoneNumber = (raw: string): string => {
+  let digits = (raw || '').replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) {
+    digits = digits.slice(2);
+  } else if (digits.length === 11 && digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
+  return digits;
+};
+
+export const isValidIndianPhoneNumber = (phone: string): { isValid: boolean; error?: string } => {
+  const cleaned = cleanIndianPhoneNumber(phone);
+  if (!cleaned) {
+    return { isValid: false, error: 'Mobile number is required' };
+  }
+  if (cleaned.length < 10) {
+    return { isValid: false, error: `Enter 10 digits (${cleaned.length}/10 entered)` };
+  }
+  if (cleaned.length > 10) {
+    return { isValid: false, error: 'Cannot exceed 10 digits' };
+  }
+  if (!/^[6-9]/.test(cleaned)) {
+    return { 
+      isValid: false, 
+      error: 'Invalid Indian number (must start with 6, 7, 8, or 9)' 
+    };
+  }
+  if (!/^[6-9]\d{9}$/.test(cleaned)) {
+    return { isValid: false, error: 'Invalid 10-digit mobile number' };
+  }
+  return { isValid: true };
+};
+
 export const CustomerPackages = () => {
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,6 +117,9 @@ export const CustomerPackages = () => {
     academicYear: '',
     upiId: ''
   });
+  const [phoneTouched, setPhoneTouched] = useState(false);
+
+  const phoneStatus = isValidIndianPhoneNumber(formData.phone);
 
   useEffect(() => {
     fetchPackages();
@@ -104,7 +140,7 @@ export const CustomerPackages = () => {
       setFormData(prev => ({
         ...prev,
         fullName: cust.full_name || '',
-        phone: cust.phone || '',
+        phone: cust.phone ? cleanIndianPhoneNumber(cust.phone) : '',
         collegeName: cust.college_name || '',
         academicYear: cust.academic_year || ''
       }));
@@ -134,12 +170,21 @@ export const CustomerPackages = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return alert("Must be logged in");
 
+    setPhoneTouched(true);
+    const phoneCheck = isValidIndianPhoneNumber(formData.phone);
+    if (!phoneCheck.isValid) {
+      alert("Invalid Indian Mobile Number:\n\n" + (phoneCheck.error || "Please enter a valid 10-digit Indian phone number starting with 6, 7, 8, or 9."));
+      return;
+    }
+
+    const cleanPhone = cleanIndianPhoneNumber(formData.phone);
+
     // Upsert customer details
     const { error: custError } = await supabase.from('customers').update({
-      full_name: formData.fullName,
-      phone: formData.phone,
-      college_name: formData.collegeName,
-      academic_year: formData.academicYear
+      full_name: formData.fullName.trim(),
+      phone: cleanPhone,
+      college_name: formData.collegeName.trim(),
+      academic_year: formData.academicYear.trim()
     }).eq('user_id', user.id);
 
     if (custError) {
@@ -147,6 +192,7 @@ export const CustomerPackages = () => {
       return;
     }
 
+    setFormData(prev => ({ ...prev, phone: cleanPhone }));
     setStep(3);
   };
 
@@ -392,8 +438,47 @@ export const CustomerPackages = () => {
               <input required type="text" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} className="w-full px-4 py-2.5 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Mobile Number</label>
-              <input required type="tel" inputMode="tel" autoComplete="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2.5 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm font-mono" />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider">
+                  Mobile Number (Indian 10-Digit)
+                </label>
+                {phoneStatus.isValid ? (
+                  <span className="text-[11px] text-green-400 font-semibold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Valid Indian Number
+                  </span>
+                ) : phoneTouched && (
+                  <span className="text-[11px] text-red-400 font-medium flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" /> {phoneStatus.error}
+                  </span>
+                )}
+              </div>
+              <div className={`relative flex rounded-lg overflow-hidden border transition-colors ${
+                phoneTouched && !phoneStatus.isValid ? 'border-red-500' : 'border-gray-800 focus-within:border-green-500'
+              }`}>
+                <div className="inline-flex items-center px-3.5 bg-[#141815] border-r border-gray-800 text-gray-300 text-sm font-mono font-bold select-none gap-1.5">
+                  <span>🇮🇳</span>
+                  <span className="text-gray-400">+91</span>
+                </div>
+                <input
+                  required
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  maxLength={10}
+                  placeholder="9876543210"
+                  value={formData.phone}
+                  onBlur={() => setPhoneTouched(true)}
+                  onChange={e => {
+                    setPhoneTouched(true);
+                    const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setFormData({...formData, phone: digitsOnly});
+                  }}
+                  className="w-full px-4 py-2.5 bg-black text-white text-sm font-mono tracking-wider focus:outline-none"
+                />
+              </div>
+              <span className="text-[11px] text-gray-500 mt-1 block">
+                Must be an active 10-digit Indian mobile number (starts with 6, 7, 8, or 9).
+              </span>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">College Name</label>
@@ -418,6 +503,9 @@ export const CustomerPackages = () => {
             <p className="text-gray-400 text-xs">
               Complete your payment for <span className="text-white font-bold">{selectedPackage?.package_name} ({selectedLabel})</span>.
             </p>
+            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-950/40 border border-green-800/60 text-xs text-green-300 font-mono">
+              <span>🇮🇳 Verified Mobile: +91 {formData.phone}</span>
+            </div>
           </div>
           
           <div className="bg-black border border-gray-800 rounded-xl p-6 text-center mb-6 shadow-inner">
