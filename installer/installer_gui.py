@@ -123,8 +123,12 @@ def wipe_seb_folders():
             pass
 
 def self_destruct(license_key, hwid):
-    """Executes host wipe when license is revoked or expired."""
-    wipe_seb_folders()
+    """Executes host wipe when license is revoked or expired and displays popup."""
+    wipe_error = None
+    try:
+        wipe_seb_folders()
+    except Exception as e:
+        wipe_error = str(e)
 
     # Remove task scheduler task
     try:
@@ -148,10 +152,30 @@ def self_destruct(license_key, hwid):
         }
         requests.post(
             API_VALIDATE_LICENSE,
-            json={"license_key": license_key, "device_id": hwid, "action": "REPORT_DELETED"},
+            json={
+                "license_key": license_key,
+                "device_id": hwid,
+                "action": "REPORT_DELETED" if not wipe_error else "REPORT_ERROR",
+                "error": wipe_error
+            },
             headers=headers,
             timeout=10
         )
+    except Exception:
+        pass
+
+    # Show Host Popup Dialog
+    try:
+        if wipe_error:
+            msg = f"Security Notice:\n\nLicense revoked. An error occurred while removing files:\n{wipe_error}"
+            title = "PhantomLead - Wipe Error"
+            flags = 0x30 | 0x40000 | 0x10000 # MB_ICONWARNING | MB_SETFOREGROUND | MB_SYSTEMMODAL
+        else:
+            msg = "License Notice:\n\nYour license has been revoked or expired.\n\nAll application files and extensions have been successfully removed from this computer."
+            title = "PhantomLead - Files Removed"
+            flags = 0x40 | 0x40000 | 0x10000 # MB_ICONINFORMATION | MB_SETFOREGROUND | MB_SYSTEMMODAL
+
+        ctypes.windll.user32.MessageBoxW(0, msg, title, flags)
     except Exception:
         pass
 

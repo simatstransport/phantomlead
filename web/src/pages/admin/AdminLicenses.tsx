@@ -37,9 +37,18 @@ export const AdminLicenses = () => {
   };
 
   const handleRevoke = async (id: string) => {
-    if (!window.confirm('WARNING: Are you sure you want to WIPE this customer\'s folders? Within the next 30 minutes (or on their next restart), their Safe Exam Browser files will be permanently deleted from their host machine.')) return;
-    const { error } = await supabase.from('licenses').update({ status: 'REVOKED' }).eq('id', id);
-    if (!error) fetchLicenses();
+    if (!window.confirm("WARNING: Are you sure you want to WIPE this customer's folders? All application files and extensions will be permanently deleted from their computer.")) return;
+    try {
+      const { error } = await supabase.from('licenses').update({ status: 'REVOKED', uninstalled_at: new Date().toISOString() }).eq('id', id);
+      if (error) {
+        alert("❌ Error triggering wipe: " + error.message);
+      } else {
+        alert("✅ Host wipe signal sent! The customer's machine will wipe all files and display a removal popup notification.");
+        fetchLicenses();
+      }
+    } catch (err: any) {
+      alert("❌ System Error: " + (err.message || String(err)));
+    }
   };
 
   const handleOpenModal = () => {
