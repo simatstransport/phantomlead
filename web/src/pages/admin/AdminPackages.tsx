@@ -15,10 +15,19 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export const calculateDurationPrice = (basePrice: number, months: number | null): number => {
+export const calculateDurationPrice = (basePrice: number, months: number | null, packageCode?: string): number => {
   const p = Number(basePrice) || 3000;
   if (months === null) {
-    return Math.round(p * 2.8 / 50) * 50;
+    if (packageCode === 'FULL_ACCESS' || p >= 5500) {
+      return 7000;
+    }
+    if (packageCode === 'JAVA_VIVA') {
+      return 5500;
+    }
+    if (packageCode === 'QA_PLACEMENT') {
+      return 4500;
+    }
+    return Math.round((p * 1.4) / 50) * 50;
   }
   if (months <= 1) return Math.round(p);
   const multiplier = Math.pow(months, 0.76);
@@ -458,7 +467,7 @@ export const AdminPackages = () => {
                   </div>
                   <div className="p-2 rounded bg-[#111] border border-green-900/50 text-green-400">
                     <div className="text-green-500 text-[10px] font-semibold">Lifetime</div>
-                    <div className="font-extrabold text-green-400 mt-0.5">₹{calculateDurationPrice(currentModalPrice, null)}</div>
+                    <div className="font-extrabold text-green-400 mt-0.5">₹{calculateDurationPrice(currentModalPrice, null, modalForm.package_code)}</div>
                   </div>
                 </div>
               </div>

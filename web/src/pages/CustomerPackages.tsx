@@ -23,11 +23,20 @@ const installationSteps = [
   'Enter your Gemini API key when prompted, then let the installer validate and install the authorized tools.'
 ];
 
-export const calculateDurationPrice = (basePrice: number, months: number | null): number => {
+export const calculateDurationPrice = (basePrice: number, months: number | null, packageCode?: string): number => {
   const p = Number(basePrice) || 3000;
   if (months === null) {
-    // Lifetime full access (~2.8x base monthly price)
-    return Math.round(p * 2.8 / 50) * 50;
+    // Default Lifetime Full Access amount is exactly 7000
+    if (packageCode === 'FULL_ACCESS' || p >= 5500) {
+      return 7000;
+    }
+    if (packageCode === 'JAVA_VIVA') {
+      return 5500;
+    }
+    if (packageCode === 'QA_PLACEMENT') {
+      return 4500;
+    }
+    return Math.round((p * 1.4) / 50) * 50;
   }
   if (months <= 1) return Math.round(p);
   const multiplier = Math.pow(months, 0.76);
@@ -110,7 +119,7 @@ export const CustomerPackages = () => {
 
   const handleBuyClick = (pkg: any) => {
     const duration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
-    const price = calculateDurationPrice(pkg.price, duration);
+    const price = calculateDurationPrice(pkg.price, duration, pkg.package_code);
     const label = getDurationLabel(duration);
     
     setSelectedPackage(pkg);
@@ -192,7 +201,7 @@ export const CustomerPackages = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
-              const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration);
+              const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
               const discount = getDiscountLabel(currentDuration);
               const includesList = getPackageIncludes(pkg);
               const isSliderOpen = customSliderActive[pkg.id] || false;
