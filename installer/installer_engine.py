@@ -89,7 +89,7 @@ def run_installation(zip_path, manifest, api_key):
     except Exception as e:
         print(f"Installation failed: {e}")
         rollback_installation(backup_dir)
-        return False
+        raise Exception(f"Deployment failed: {e}")
     finally:
         # Cleanup staging
         if os.path.exists(STAGING_DIR):
