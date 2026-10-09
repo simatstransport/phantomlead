@@ -9,6 +9,7 @@ export const AdminLicenses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customerEmail, setCustomerEmail] = useState('');
   const [packageCode, setPackageCode] = useState('FULL_ACCESS');
+  const [duration, setDuration] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalMessage, setModalMessage] = useState({ type: '', text: '' });
   const [availablePackages, setAvailablePackages] = useState<any[]>([]);
@@ -55,7 +56,7 @@ export const AdminLicenses = () => {
     setModalMessage({ type: '', text: '' });
 
     const { data, error } = await supabase.functions.invoke('admin-generate-license', {
-      body: { customer_email: customerEmail.trim(), package_code: packageCode }
+      body: { customer_email: customerEmail.trim(), package_code: packageCode, duration_months: duration }
     });
 
     setIsSubmitting(false);
@@ -140,6 +141,21 @@ export const AdminLicenses = () => {
                 />
               </div>
               
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">License Duration</label>
+                <select 
+                  required
+                  value={duration === null ? 'null' : String(duration)} 
+                  onChange={e => setDuration(e.target.value === 'null' ? null : parseInt(e.target.value))}
+                  className="w-full px-3 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-500 text-white mb-4"
+                >
+                  <option value="null">Permanent / Lifetime Access</option>
+                  <option value="1">1 Month (Time-Bomb)</option>
+                  <option value="2">2 Months (Time-Bomb)</option>
+                  <option value="3">3 Months (Time-Bomb)</option>
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Package</label>
                 <select 
