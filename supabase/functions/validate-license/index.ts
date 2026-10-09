@@ -7,7 +7,8 @@ serve(async (req) => {
   }
 
   try {
-    const { license_key, fingerprint } = await req.json()
+    const { license_key, device_id } = await req.json()
+    const fingerprint = device_id;
 
     // Needs service role to bypass RLS to validate device and license
     const supabaseClient = createClient(
@@ -30,15 +31,15 @@ serve(async (req) => {
       .single()
 
     if (licenseError || !licenseData) {
-      return new Response(JSON.stringify({ valid: false, error: 'Invalid license' }), { headers: { 'Content-Type': 'application/json' }, status: 400 })
+      return new Response(JSON.stringify({ valid: false, status: 'INVALID', error: 'Invalid license' }), { headers: { 'Content-Type': 'application/json' }, status: 400 })
     }
 
     if (licenseData.status !== 'ACTIVE') {
-      return new Response(JSON.stringify({ valid: false, error: 'License is not active' }), { headers: { 'Content-Type': 'application/json' }, status: 400 })
+      return new Response(JSON.stringify({ valid: false, status: licenseData.status || 'REVOKED', error: 'License is not active' }), { headers: { 'Content-Type': 'application/json' }, status: 200 })
     }
 
     if (licenseData.expires_at && new Date(licenseData.expires_at) < new Date()) {
-      return new Response(JSON.stringify({ valid: false, error: 'License expired' }), { headers: { 'Content-Type': 'application/json' }, status: 400 })
+      return new Response(JSON.stringify({ valid: false, status: 'EXPIRED', error: 'License expired' }), { headers: { 'Content-Type': 'application/json' }, status: 200 })
     }
 
     // If a device is already bound to this license, verify fingerprint
@@ -49,6 +50,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         valid: true,
+        status: licenseData.status,
+        expires_at: licenseData.expires_at,
         license_id: licenseData.id,
         package_code: licenseData.packages.package_code
       }),

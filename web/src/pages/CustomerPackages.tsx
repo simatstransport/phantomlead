@@ -23,12 +23,22 @@ const installationSteps = [
   'Enter your Gemini API key when prompted, then let the installer validate and install the authorized tools.'
 ];
 
+
+const PRICING_TIERS = [
+  { duration: 1, label: '1 Month Access', price: 3000 },
+  { duration: 2, label: '2 Months Access', price: 5000 },
+  { duration: 3, label: '3 Months Access', price: 6000 },
+  { duration: null, label: 'Lifetime Access (Full)', price: 8000 }
+];
+
 export const CustomerPackages = () => {
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Checkout State
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
+  const [packageDurations, setPackageDurations] = useState<Record<string, number | null>>({});
   const [step, setStep] = useState(1); // 1 = Packages, 2 = Details, 3 = Payment
   
   // Form State
@@ -67,7 +77,9 @@ export const CustomerPackages = () => {
   };
 
   const handleBuyClick = (pkg: any) => {
+    const duration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : PRICING_TIERS[0].duration;
     setSelectedPackage(pkg);
+    setSelectedDuration(duration);
     setStep(2);
   };
 
@@ -101,10 +113,13 @@ export const CustomerPackages = () => {
 
     const { data: customer } = await supabase.from('customers').select('id').eq('user_id', user.id).single();
 
+
+    const tier = PRICING_TIERS.find(t => t.duration === selectedDuration) || PRICING_TIERS[0];
     const { error } = await supabase.from('payments').insert({
       customer_id: customer?.id,
       package_id: selectedPackage.id,
-      amount: selectedPackage.price,
+      amount: tier.price,
+      duration_months: selectedDuration,
       upi_transaction_id: formData.upiId,
       status: 'PENDING'
     });
@@ -134,7 +149,23 @@ export const CustomerPackages = () => {
               <div key={pkg.id} className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-8 flex flex-col hover:border-green-600/50 transition-colors">
                 <div className="mb-6 flex-1">
                   <h3 className="text-2xl font-bold text-white mb-2">{pkg.package_name}</h3>
-                  <div className="text-3xl font-black text-green-500 mb-4">₹{pkg.price}</div>
+                  <div className="mb-4">
+                    <label className="block text-sm text-gray-400 mb-2">Select Duration</label>
+                    <select 
+                      className="w-full px-3 py-2 bg-black border border-gray-800 rounded-lg text-white focus:outline-none focus:border-green-500"
+                      value={packageDurations[pkg.id] !== undefined ? (packageDurations[pkg.id] === null ? 'null' : String(packageDurations[pkg.id])) : '1'}
+                      onChange={(e) => setPackageDurations({...packageDurations, [pkg.id]: e.target.value === 'null' ? null : parseInt(e.target.value)})}
+                    >
+                      {PRICING_TIERS.map(t => (
+                        <option key={t.duration === null ? 'lifetime' : t.duration} value={t.duration === null ? 'null' : String(t.duration)}>
+                          {t.label} - ₹{t.price}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="text-3xl font-black text-green-500 mb-4">
+                    ₹{PRICING_TIERS.find(t => t.duration === (packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1))?.price}
+                  </div>
                   <p className="text-sm font-medium text-gray-200 mb-2">What it is for</p>
                   <p className="text-gray-400 text-sm mb-5">{packageGuides[pkg.package_code]?.purpose || pkg.description}</p>
 
@@ -199,7 +230,7 @@ export const CustomerPackages = () => {
           
           <div className="bg-black border border-gray-800 rounded-xl p-6 text-center mb-8">
             <div className="text-sm text-gray-400 mb-1">Amount to Pay</div>
-            <div className="text-4xl font-black text-green-500 mb-6">₹{selectedPackage?.price}</div>
+            <div className="text-4xl font-black text-green-500 mb-6">₹{PRICING_TIERS.find(t => t.duration === selectedDuration)?.price}</div>
             <div className="text-sm text-gray-400 mb-1">Official UPI ID</div>
             <div className="text-xl font-mono text-white bg-[#0a0a0a] py-3 rounded-lg border border-gray-800 select-all">
               phantomlead@upi

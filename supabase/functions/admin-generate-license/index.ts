@@ -38,7 +38,7 @@ serve(async (req) => {
       .single()
     if (profile?.role !== 'admin') throw new Error('Forbidden')
 
-    const { customer_email, package_code } = await req.json()
+    const { customer_email, package_code, duration_months } = await req.json()
     if (typeof customer_email !== 'string' || typeof package_code !== 'string') {
       throw new Error('Customer email and package code are required')
     }
@@ -63,6 +63,18 @@ serve(async (req) => {
       encryptLicenseKey(licenseKey, encryptionSecret)
     ])
 
+    let expires_at = null
+    if (typeof duration_months === 'number' && duration_months > 0) {
+      const date = new Date()
+      date.setMonth(date.getMonth() + duration_months)
+      expires_at = date.toISOString()
+    }
+
+    let finalDuration = duration_months;
+    if (finalDuration === null || finalDuration === undefined) {
+      finalDuration = -1; // Default to Lifetime
+    }
+
     const { error: insertError } = await serviceClient.from('licenses').insert({
       license_key_hash: licenseKeyHash,
       license_key_encrypted: encryptedLicenseKey,
@@ -70,6 +82,8 @@ serve(async (req) => {
       package_id: pkg.id,
       status: 'ACTIVE',
       payment_type: 'FREE',
+      duration_months: finalDuration,
+      expires_at: expires_at,
       max_devices: 1
     })
     if (insertError) throw insertError

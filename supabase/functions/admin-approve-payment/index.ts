@@ -50,6 +50,13 @@ serve(async (req) => {
         encryptLicenseKey(rawLicense, encryptionSecret)
       ])
 
+      let expires_at = null
+      if (payment.duration_months) {
+        const date = new Date()
+        date.setMonth(date.getMonth() + payment.duration_months)
+        expires_at = date.toISOString()
+      }
+
       const { data: license, error: licenseError } = await supabaseClient.from('licenses').insert({
         license_key_hash,
         license_key_encrypted,
@@ -57,7 +64,9 @@ serve(async (req) => {
         package_id: payment.package_id,
         payment_id: payment.id,
         status: 'ACTIVE',
-        payment_type: 'PAID'
+        payment_type: 'PAID',
+        duration_months: payment.duration_months,
+        expires_at: expires_at
       }).select().single()
       if (licenseError) throw licenseError
 
