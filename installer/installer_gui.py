@@ -475,6 +475,14 @@ def run_installer(mode="TIMEBOMB"):
         run_heartbeat(mode=mode)
         return
 
+    if not is_admin():
+        try:
+            params = " ".join([f'"{arg}"' for arg in sys.argv[1:]])
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+            sys.exit(0)
+        except Exception:
+            pass
+
     app = InstallerApp(mode=mode)
     app.mainloop()
 
