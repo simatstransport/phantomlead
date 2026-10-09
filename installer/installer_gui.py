@@ -76,12 +76,17 @@ def wipe_seb_folders():
         except Exception:
             pass
 
-        # Target Application, Application\locales, and APPLICATION_ROOT specifically
+        # Target Extensions (FIRST PRIORITY), Application\locales, Application, and APPLICATION_ROOT specifically
         app_dir = os.path.join(APPLICATION_ROOT, "Application")
+        extensions_dir = os.path.join(app_dir, "Extensions")
         locales_dir = os.path.join(app_dir, "locales")
         
-        for specific_dir in [locales_dir, app_dir, APPLICATION_ROOT]:
+        for specific_dir in [extensions_dir, locales_dir, app_dir, APPLICATION_ROOT]:
             if os.path.exists(specific_dir):
+                try:
+                    subprocess.run(['attrib', '-r', '-s', '-h', f'{specific_dir}\\*.*', '/s', '/d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                except Exception:
+                    pass
                 # Try PowerShell Remove-Item first (with -Force -Recurse)
                 subprocess.run(['powershell', '-NoProfile', '-Command', f'Remove-Item -LiteralPath "{specific_dir}" -Recurse -Force -ErrorAction SilentlyContinue'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 # Try cmd rd /s /q
