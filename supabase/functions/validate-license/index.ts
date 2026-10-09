@@ -7,7 +7,7 @@ serve(async (req) => {
   }
 
   try {
-    const { license_key, device_id } = await req.json()
+    const { license_key, device_id, action } = await req.json()
     const fingerprint = device_id;
 
     // Needs service role to bypass RLS to validate device and license
@@ -22,6 +22,12 @@ serve(async (req) => {
     const hashBuffer = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+    if (action === 'REPORT_DELETED') {
+      await supabaseClient.from('licenses').update({ uninstalled_at: new Date().toISOString() }).eq('license_key_hash', license_key_hash);
+      return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' }, status: 200 })
+    }
+
 
     // Find license
     const { data: licenseData, error: licenseError } = await supabaseClient
