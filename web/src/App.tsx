@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X, BookOpen , AlertTriangle , MonitorX } from 'lucide-react';
+import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X, BookOpen , AlertTriangle } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
 import { Trash2, AlertTriangle, MonitorX } from 'lucide-react';
 
