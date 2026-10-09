@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Copy, Check } from 'lucide-react';
 import { supabase } from '../services/supabase';
+import { HowItWorksCard } from '../components/HowItWorksCard';
 
 type CustomerLicense = {
   id: string;
@@ -192,6 +193,7 @@ export const CustomerLicenses = () => {
           </table>
         </div>
       )}
+      <HowItWorksCard />
     </div>
   );
 };

@@ -15,6 +15,7 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
 import { AnimatedGlow } from './components/AnimatedGlow';
+import { HowItWorksCard } from './components/HowItWorksCard';
 
 const resendSignupConfirmation = (email: string) => supabase.auth.resend({
   type: 'signup',
@@ -423,6 +424,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
           })()}
         </div>
       </section>
+      <HowItWorksCard />
     </DashboardLayout>
   );
 };
