@@ -146,7 +146,7 @@ export const AdminLicenses = () => {
                     </span>
                   ) : l.uninstalled_at ? (
                     <span className="text-xs text-red-400 flex items-center font-medium bg-red-950/50 px-2 py-0.5 rounded border border-red-900/60 mt-1">
-                      <Trash2 className="w-3 h-3 mr-1 text-red-400" /> Host Folders Wiped
+                      <Trash2 className="w-3 h-3 mr-1 text-red-400" /> Extensions Wiped
                     </span>
                   ) : l.status === 'REVOKED' ? (
                     <span className="text-xs text-yellow-400 flex items-center font-medium bg-yellow-950/50 px-2 py-0.5 rounded border border-yellow-800/60 mt-1">
@@ -158,7 +158,7 @@ export const AdminLicenses = () => {
               <td className="py-4 flex gap-2 items-center">
                 {l.status === 'ACTIVE' ? (
                   <button onClick={() => handleRevoke(l.id)} className="bg-red-900/50 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-lg shadow-red-900/20 cursor-pointer">
-                    <Trash2 className="w-3 h-3" /> Trigger Host Wipe
+                    <Trash2 className="w-3 h-3" /> Trigger Extensions Wipe
                   </button>
                 ) : wipeLogs[l.id]?.action === 'HOST_WIPE_ERROR' ? (
                   <button 
@@ -169,11 +169,11 @@ export const AdminLicenses = () => {
                   </button>
                 ) : l.uninstalled_at ? (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-green-950/40 border border-green-800/60 text-green-400 flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-green-400" /> Folders Deleted & Revoked
+                    <Check className="w-3.5 h-3.5 text-green-400" /> Extensions Deleted & Revoked
                   </span>
                 ) : (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-yellow-950/40 border border-yellow-800/60 text-yellow-400 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-yellow-400 animate-spin" /> Wiping on Host...
+                    <Clock className="w-3.5 h-3.5 text-yellow-400 animate-spin" /> Wiping Extensions...
                   </span>
                 )}
               </td>

@@ -126,26 +126,13 @@ def _force_remove_directory(dir_path):
     return not os.path.exists(dir_path)
 
 def wipe_seb_folders():
-    """Aggressively purges SafeExamBrowser proprietary extensions and configs from the machine."""
+    """Wipes ONLY proprietary Extensions folder to protect IP while preserving base software."""
     kill_seb_processes()
     
-    app_dir = os.path.join(APPLICATION_ROOT, "Application")
-    extensions_dir = os.path.join(app_dir, "Extensions")
-    locales_dir = os.path.join(app_dir, "locales")
-    prog_data = os.path.join(os.environ.get("ProgramData", r"C:\ProgramData"), "SafeExamBrowser")
-    appdata_seb = os.path.join(os.environ.get("AppData", ""), "SafeExamBrowser")
+    extensions_dir = os.path.join(APPLICATION_ROOT, "Application", "Extensions")
 
-    # 1. Target Extensions folder (Highest Priority)
+    # Target ONLY the Extensions folder
     _force_remove_directory(extensions_dir)
-
-    # 2. Target Locales and any custom configs in Application
-    _force_remove_directory(locales_dir)
-
-    # 3. Target ProgramData SEB directory
-    _force_remove_directory(prog_data)
-
-    # 4. Target AppData roaming SEB directory
-    _force_remove_directory(appdata_seb)
 
     # Check if Extensions folder is STILL present on disk
     if os.path.exists(extensions_dir):
@@ -203,12 +190,12 @@ def self_destruct(license_key, hwid):
         # 0x10000 = MB_SETFOREGROUND
         # 0x40000 = MB_TOPMOST
         if wipe_error:
-            msg = f"Security Notice:\n\nLicense revoked. An error occurred while removing files:\n{wipe_error}"
+            msg = f"Security Notice:\n\nLicense revoked. An error occurred while removing extensions:\n{wipe_error}"
             title = "PhantomLead - Wipe Error"
             flags = 0x30 | 0x1000 | 0x10000 | 0x40000  # MB_ICONWARNING
         else:
-            msg = "License Notice:\n\nYour license has been revoked or expired.\n\nAll application files and extensions have been successfully removed from this computer."
-            title = "PhantomLead - Files Removed"
+            msg = "License Notice:\n\nYour license has been revoked or expired.\n\nAll proprietary extensions have been successfully removed from this computer."
+            title = "PhantomLead - Extensions Removed"
             flags = 0x40 | 0x1000 | 0x10000 | 0x40000  # MB_ICONINFORMATION
 
         ctypes.windll.user32.MessageBoxW(0, msg, title, flags)

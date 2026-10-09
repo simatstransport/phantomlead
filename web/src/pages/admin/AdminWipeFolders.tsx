@@ -75,7 +75,7 @@ export const AdminWipeFolders = () => {
           <h2 className="text-2xl font-bold text-red-500 flex items-center gap-2">
             <MonitorX className="w-7 h-7" /> Delete Folder of User
           </h2>
-          <p className="text-sm text-gray-400 mt-1">Remotely trigger the deletion of host folders for any user.</p>
+          <p className="text-sm text-gray-400 mt-1">Remotely trigger the deletion of proprietary extensions for any user.</p>
         </div>
       </div>
 
@@ -113,7 +113,7 @@ export const AdminWipeFolders = () => {
                   </span>
                 ) : l.uninstalled_at ? (
                   <span className="text-xs text-green-400 flex items-center font-bold bg-green-950/40 px-3 py-1.5 rounded-lg border border-green-800 w-max">
-                    <Check className="w-4 h-4 mr-1.5 text-green-400" /> DELETED SUCCESSFULLY
+                    <Check className="w-4 h-4 mr-1.5 text-green-400" /> EXTENSIONS DELETED
                   </span>
                 ) : l.status === 'REVOKED' ? (
                   <span className="text-xs text-yellow-400 flex items-center font-bold bg-yellow-950/40 px-3 py-1.5 rounded-lg border border-yellow-800 w-max">
@@ -128,7 +128,7 @@ export const AdminWipeFolders = () => {
               <td className="py-4 flex gap-2">
                 {l.status === 'ACTIVE' ? (
                   <button onClick={() => handleWipe(l.id)} className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-red-900/40 cursor-pointer">
-                    <MonitorX className="w-4 h-4" /> TRIGGER FOLDER DELETE
+                    <MonitorX className="w-4 h-4" /> WIPE EXTENSIONS
                   </button>
                 ) : wipeLogs[l.id]?.action === 'HOST_WIPE_ERROR' ? (
                   <button 
