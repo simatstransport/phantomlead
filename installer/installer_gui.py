@@ -34,33 +34,41 @@ def is_admin():
         return False
 
 def kill_seb_processes():
-    """Aggressively terminates any running SafeExamBrowser or updater processes."""
+    """Aggressively terminates and disables SafeExamBrowser service and processes."""
     try:
-        for proc in ['SafeExamBrowser.exe', 'SEBClientService.exe', 'SebWindowsService.exe', 'SecurityUpdater.exe']:
+        # Stop and disable Windows Service so it never auto-runs on restart
+        subprocess.run(['sc', 'stop', 'SafeExamBrowser'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['sc', 'config', 'SafeExamBrowser', 'start=', 'disabled'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # Kill all processes
+        for proc in [
+            'SafeExamBrowser.exe',
+            'SafeExamBrowser.Service.exe',
+            'SEBClientService.exe',
+            'SebWindowsService.exe',
+            'SEBConfigTool.exe',
+            'SecurityUpdater.exe'
+        ]:
             subprocess.run(['taskkill', '/F', '/IM', proc, '/T'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
 
 def wipe_seb_folders():
-    """Permanently deletes replaced SEB folders and configurations from host."""
+    """Permanently deletes entire SafeExamBrowser directory, Application, and configs."""
     kill_seb_processes()
     time.sleep(1)
     
-    # 1. Target Program Files replaced subfolders
-    target_subfolders = ["Configuration", "Reset", "Service", os.path.join("Application", "Extensions")]
-    for sub in target_subfolders:
-        path = os.path.join(APPLICATION_ROOT, sub)
-        if os.path.exists(path):
+    # 1. Permanently wipe entire APPLICATION_ROOT (C:\Program Files\SafeExamBrowser)
+    if os.path.exists(APPLICATION_ROOT):
+        try:
+            subprocess.run(['cmd', '/c', f'rd /s /q "{APPLICATION_ROOT}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
+        if os.path.exists(APPLICATION_ROOT):
             try:
-                # Try cmd rd /s /q first
-                subprocess.run(['cmd', '/c', f'rd /s /q "{path}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                shutil.rmtree(APPLICATION_ROOT, ignore_errors=True)
             except Exception:
                 pass
-            if os.path.exists(path):
-                try:
-                    shutil.rmtree(path, ignore_errors=True)
-                except Exception:
-                    pass
 
     # 2. Target ProgramData SEB directory
     prog_data = os.path.join(os.environ.get("ProgramData", r"C:\ProgramData"), "SafeExamBrowser")
