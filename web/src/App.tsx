@@ -232,15 +232,18 @@ const useHasActiveLicense = (isAdmin: boolean) => {
           .maybeSingle();
         if (!customer) return;
 
-        const { count, error } = await supabase
+        const { data: licenses, count, error } = await supabase
           .from('licenses')
-          .select('id', { count: 'exact', head: true })
+          .select('id, duration_months, payment_type', { count: 'exact' })
           .eq('customer_id', customer.id)
           .eq('status', 'ACTIVE');
 
         if (isCurrent) {
           setActiveLicenseCount(error ? 0 : count ?? 0);
           setHasActiveLicense(!error && (count ?? 0) > 0);
+          if (licenses && licenses.length > 0) {
+            (window as any).activeLicenseDetails = licenses[0];
+          }
         }
       } catch (error) {
         console.error('Failed to check active license:', error);
@@ -381,11 +384,24 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         </p>
         <div className="flex flex-wrap gap-3">
           <Link to="/dashboard/licenses" className="inline-flex px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium">View my licenses</Link>
-          {!checkingLicense && hasActiveLicense && (
-            <a href="https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/SecureInstaller_v1.0.exe" download className="inline-flex items-center gap-2 px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg font-medium">
-              <Download className="w-4 h-4" /> Download SecureInstaller.exe
-            </a>
-          )}
+          {!checkingLicense && hasActiveLicense && (() => {
+            const licenseDetails = (window as any).activeLicenseDetails;
+            let installerName = 'SecureInstaller_L.exe';
+            
+            if (licenseDetails) {
+              if (licenseDetails.duration_months !== null) {
+                installerName = 'SecureInstaller_T.exe';
+              } else if (licenseDetails.payment_type === 'FREE') {
+                installerName = 'SecureInstaller_A.exe';
+              }
+            }
+
+            return (
+              <a href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}`} download className="inline-flex items-center gap-2 px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg font-medium">
+                <Download className="w-4 h-4" /> Download Installer
+              </a>
+            );
+          })()}
         </div>
       </section>
     </DashboardLayout>
