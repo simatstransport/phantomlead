@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
-import { Trash2, Check } from 'lucide-react';
+import { Trash2, Check, AlertTriangle } from 'lucide-react';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
@@ -106,11 +106,15 @@ export const AdminLicenses = () => {
                     <span className={`px-2 py-1 rounded text-xs font-semibold ${l.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                       {l.status}
                     </span>
-                    {(l.status === 'REVOKED' || l.uninstalled_at) && (
+                    {l.uninstalled_at ? (
                       <span className="text-xs text-red-400 flex items-center font-medium bg-red-950/50 px-2 py-0.5 rounded border border-red-900/60 mt-1">
                         <Trash2 className="w-3 h-3 mr-1 text-red-400" /> Host Folders Wiped
                       </span>
-                    )}
+                    ) : l.status === 'REVOKED' ? (
+                      <span className="text-xs text-yellow-400 flex items-center font-medium bg-yellow-950/50 px-2 py-0.5 rounded border border-yellow-800/60 mt-1">
+                        <AlertTriangle className="w-3 h-3 mr-1 text-yellow-400" /> Wipe Pending Sync...
+                      </span>
+                    ) : null}
                   </div>
                 </td>
               <td className="py-4 flex gap-2 items-center">
@@ -118,9 +122,13 @@ export const AdminLicenses = () => {
                   <button onClick={() => handleRevoke(l.id)} className="bg-red-900/50 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-lg shadow-red-900/20 cursor-pointer">
                       <Trash2 className="w-3 h-3" /> Trigger Host Wipe
                     </button>
-                ) : (
+                ) : l.uninstalled_at ? (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-red-950/40 border border-red-900/60 text-red-400 flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-red-400" /> Folders Deleted & Revoked
+                    <Check className="w-3.5 h-3.5 text-red-400" /> Folders Deleted & Confirmed
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded text-xs font-medium bg-yellow-950/40 border border-yellow-800/60 text-yellow-400 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-yellow-400" /> Wipe Signal Sent (Pending)
                   </span>
                 )}
               </td>

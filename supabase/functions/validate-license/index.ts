@@ -31,8 +31,11 @@ serve(async (req) => {
     const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
     if (action === 'REPORT_DELETED') {
-      await supabaseClient.from('licenses').update({ uninstalled_at: new Date().toISOString() }).eq('license_key_hash', license_key_hash);
-      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+      const { data: updateData, error: updateError } = await supabaseClient.from('licenses').update({ uninstalled_at: new Date().toISOString() }).eq('license_key_hash', license_key_hash).select();
+      if (updateError) {
+        return new Response(JSON.stringify({ success: false, error: updateError.message }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+      }
+      return new Response(JSON.stringify({ success: true, data: updateData }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
     // Find license

