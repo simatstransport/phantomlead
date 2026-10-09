@@ -54,14 +54,36 @@ export const CustomerInstallation = () => {
     
           <section>
             <h3 className="text-lg font-semibold mb-3 text-purple-400 flex items-center">
-              <BookOpen className="w-5 h-5 mr-2" /> Step 5: Using the Software
+              <BookOpen className="w-5 h-5 mr-2" /> Step 5: Running Safe Exam Browser (SEB) & Shortcuts
             </h3>
-            <ol className="list-decimal pl-6 text-sm text-gray-300 space-y-3">
-              <li>Launch <strong>Safe Exam Browser</strong> from your desktop or start menu.</li>
-              <li>For Java coding practice, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl + K</kbd>.</li>
-              <li>For the viva quiz, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl + L</kbd>.</li>
-              <li>For QA, reasoning, or Java MCQ quizzes, press <kbd className="rounded border border-gray-700 bg-black px-1.5 py-0.5 font-mono text-white">Ctrl + J</kbd>.</li>
-            </ol>
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 mb-5 text-sm text-gray-200">
+              <strong>How it runs:</strong> Launch <strong>Safe Exam Browser</strong> from your desktop or start menu. SEB will immediately launch in a secure, full-screen kiosk mode that locks down your computer to prevent cheating or outside access. Once the secure browser is open, you must use the following keyboard shortcuts to access your different exams and practice modules.
+            </div>
+            
+            <div className="overflow-hidden border border-gray-800 rounded-lg">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-black/60 border-b border-gray-800">
+                  <tr>
+                    <th className="py-3 px-4 font-semibold text-gray-300">Keyboard Shortcut</th>
+                    <th className="py-3 px-4 font-semibold text-gray-300">What it is used for</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800 bg-black/30">
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4"><kbd className="rounded border border-green-700/50 bg-green-900/20 px-2.5 py-1 font-mono text-green-400 font-bold tracking-widest shadow-[0_0_10px_rgba(34,197,94,0.2)]">Ctrl + L</kbd></td>
+                    <td className="py-3 px-4 text-gray-300">Launch the <strong>Viva Quiz</strong> module.</td>
+                  </tr>
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4"><kbd className="rounded border border-blue-700/50 bg-blue-900/20 px-2.5 py-1 font-mono text-blue-400 font-bold tracking-widest shadow-[0_0_10px_rgba(59,130,246,0.2)]">Ctrl + J</kbd></td>
+                    <td className="py-3 px-4 text-gray-300">Access <strong>QA, Reasoning, or Java MCQ</strong> quizzes.</td>
+                  </tr>
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4"><kbd className="rounded border border-purple-700/50 bg-purple-900/20 px-2.5 py-1 font-mono text-purple-400 font-bold tracking-widest shadow-[0_0_10px_rgba(168,85,247,0.2)]">Ctrl + K</kbd></td>
+                    <td className="py-3 px-4 text-gray-300">Open the <strong>Java Coding Practice</strong> environment.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </section>
         </div>
       </div>
