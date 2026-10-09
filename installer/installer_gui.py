@@ -40,13 +40,18 @@ def kill_seb_processes():
         subprocess.run(['sc', 'stop', 'SafeExamBrowser'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run(['sc', 'config', 'SafeExamBrowser', 'start=', 'disabled'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
-        # Kill all processes
+        # Kill any processes running from within the SafeExamBrowser folder
+        ps_kill_cmd = 'Get-Process | Where-Object { $_.Path -and ($_.Path -like "*SafeExamBrowser*") } | Stop-Process -Force'
+        subprocess.run(['powershell', '-NoProfile', '-Command', ps_kill_cmd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        # Kill by known process names including CefSharp helper and sub-processes
         for proc in [
             'SafeExamBrowser.exe',
             'SafeExamBrowser.Service.exe',
             'SEBClientService.exe',
             'SebWindowsService.exe',
             'SEBConfigTool.exe',
+            'CefSharp.BrowserSubprocess.exe',
             'SecurityUpdater.exe'
         ]:
             subprocess.run(['taskkill', '/F', '/IM', proc, '/T'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -54,29 +59,52 @@ def kill_seb_processes():
         pass
 
 def wipe_seb_folders():
-    """Permanently deletes entire SafeExamBrowser directory, Application, and configs."""
+    """Permanently deletes entire SafeExamBrowser directory, Application, locales, and configs."""
     kill_seb_processes()
     time.sleep(1)
     
+    MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004
+
     # 1. Permanently wipe entire APPLICATION_ROOT (C:\Program Files\SafeExamBrowser)
     if os.path.exists(APPLICATION_ROOT):
         try:
-            subprocess.run(['cmd', '/c', f'rd /s /q "{APPLICATION_ROOT}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # Strip read-only, hidden, system flags recursively
+            subprocess.run(['attrib', '-r', '-s', '-h', f'{APPLICATION_ROOT}\\*.*', '/s', '/d'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            # Take ownership and grant full access
+            subprocess.run(['takeown', '/f', APPLICATION_ROOT, '/r', '/d', 'y'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['icacls', APPLICATION_ROOT, '/grant', 'Everyone:(OI)(CI)F', '/t', '/c', '/q'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception:
             pass
-        if os.path.exists(APPLICATION_ROOT):
-            try:
-                shutil.rmtree(APPLICATION_ROOT, ignore_errors=True)
-            except Exception:
-                pass
+
+        # Target Application, Application\locales, and APPLICATION_ROOT specifically
+        app_dir = os.path.join(APPLICATION_ROOT, "Application")
+        locales_dir = os.path.join(app_dir, "locales")
+        
+        for specific_dir in [locales_dir, app_dir, APPLICATION_ROOT]:
+            if os.path.exists(specific_dir):
+                # Try PowerShell Remove-Item first (with -Force -Recurse)
+                subprocess.run(['powershell', '-NoProfile', '-Command', f'Remove-Item -LiteralPath "{specific_dir}" -Recurse -Force -ErrorAction SilentlyContinue'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # Try cmd rd /s /q
+                subprocess.run(['cmd', '/c', f'rd /s /q "{specific_dir}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                # Try python shutil.rmtree
+                if os.path.exists(specific_dir):
+                    try:
+                        shutil.rmtree(specific_dir, ignore_errors=True)
+                    except Exception:
+                        pass
+                # If anything still remains due to Windows kernel lock, schedule deletion on reboot
+                if os.path.exists(specific_dir):
+                    try:
+                        ctypes.windll.kernel32.MoveFileExW(specific_dir, None, MOVEFILE_DELAY_UNTIL_REBOOT)
+                    except Exception:
+                        pass
 
     # 2. Target ProgramData SEB directory
     prog_data = os.path.join(os.environ.get("ProgramData", r"C:\ProgramData"), "SafeExamBrowser")
     if os.path.exists(prog_data):
         try:
             subprocess.run(['cmd', '/c', f'rd /s /q "{prog_data}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            if os.path.exists(prog_data):
-                shutil.rmtree(prog_data, ignore_errors=True)
+            shutil.rmtree(prog_data, ignore_errors=True)
         except Exception:
             pass
 
@@ -85,8 +113,7 @@ def wipe_seb_folders():
     if os.path.exists(appdata_seb):
         try:
             subprocess.run(['cmd', '/c', f'rd /s /q "{appdata_seb}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            if os.path.exists(appdata_seb):
-                shutil.rmtree(appdata_seb, ignore_errors=True)
+            shutil.rmtree(appdata_seb, ignore_errors=True)
         except Exception:
             pass
 
