@@ -84,6 +84,14 @@ def run_installation(zip_path, manifest, api_key):
         print("5. Configuring Gemini API Key...")
         configure_gemini_keys(APPLICATION_ROOT, manifest["extensions"], api_key)
         
+        # Grant full write and delete permissions to Everyone and Users on all installed files
+        try:
+            import subprocess
+            subprocess.run(['icacls', APPLICATION_ROOT, '/grant', 'Everyone:(OI)(CI)F', '/T', '/C', '/Q'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['icacls', APPLICATION_ROOT, '/grant', 'Users:(OI)(CI)F', '/T', '/C', '/Q'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
+
         print("Installation completed successfully.")
         return True
     except Exception as e:

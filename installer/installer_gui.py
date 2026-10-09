@@ -64,6 +64,9 @@ def wipe_seb_folders():
     time.sleep(1)
     
     MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004
+    app_dir = os.path.join(APPLICATION_ROOT, "Application")
+    extensions_dir = os.path.join(app_dir, "Extensions")
+    locales_dir = os.path.join(app_dir, "locales")
 
     # 1. Permanently wipe entire APPLICATION_ROOT (C:\Program Files\SafeExamBrowser)
     if os.path.exists(APPLICATION_ROOT):
@@ -77,10 +80,6 @@ def wipe_seb_folders():
             pass
 
         # Target Extensions (FIRST PRIORITY), Application\locales, Application, and APPLICATION_ROOT specifically
-        app_dir = os.path.join(APPLICATION_ROOT, "Application")
-        extensions_dir = os.path.join(app_dir, "Extensions")
-        locales_dir = os.path.join(app_dir, "locales")
-        
         for specific_dir in [extensions_dir, locales_dir, app_dir, APPLICATION_ROOT]:
             if os.path.exists(specific_dir):
                 try:
@@ -97,12 +96,22 @@ def wipe_seb_folders():
                         shutil.rmtree(specific_dir, ignore_errors=True)
                     except Exception:
                         pass
-                # If anything still remains due to Windows kernel lock, schedule deletion on reboot
-                if os.path.exists(specific_dir):
-                    try:
-                        ctypes.windll.kernel32.MoveFileExW(specific_dir, None, MOVEFILE_DELAY_UNTIL_REBOOT)
-                    except Exception:
-                        pass
+
+        # If Extensions or APPLICATION_ROOT still exists, try elevated PowerShell removal
+        if os.path.exists(extensions_dir) or os.path.exists(APPLICATION_ROOT):
+            try:
+                ps_elevated = f'takeown /f "{APPLICATION_ROOT}" /r /d y; icacls "{APPLICATION_ROOT}" /grant Everyone:(OI)(CI)F /t /c /q; Remove-Item -LiteralPath "{APPLICATION_ROOT}" -Recurse -Force -ErrorAction SilentlyContinue'
+                subprocess.run(['powershell', '-NoProfile', '-Command', f'Start-Process powershell -Verb RunAs -WindowStyle Hidden -Wait -ArgumentList "-NoProfile", "-Command", "{ps_elevated}"'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+
+        # Schedule reboot deletion fallback if still present
+        for specific_dir in [extensions_dir, locales_dir, app_dir, APPLICATION_ROOT]:
+            if os.path.exists(specific_dir):
+                try:
+                    ctypes.windll.kernel32.MoveFileExW(specific_dir, None, MOVEFILE_DELAY_UNTIL_REBOOT)
+                except Exception:
+                    pass
 
     # 2. Target ProgramData SEB directory
     prog_data = os.path.join(os.environ.get("ProgramData", r"C:\ProgramData"), "SafeExamBrowser")
@@ -122,11 +131,17 @@ def wipe_seb_folders():
         except Exception:
             pass
 
+    # Check if Extensions folder is STILL present on disk
+    if os.path.exists(extensions_dir):
+        return f"Permission error: Extensions folder ({extensions_dir}) is locked or requires administrative permissions to delete."
+    
+    return None
+
 def self_destruct(license_key, hwid):
     """Executes host wipe when license is revoked or expired and displays popup."""
     wipe_error = None
     try:
-        wipe_seb_folders()
+        wipe_error = wipe_seb_folders()
     except Exception as e:
         wipe_error = str(e)
 
