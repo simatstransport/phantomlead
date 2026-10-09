@@ -13,6 +13,14 @@ import json
 
 API_URL = "https://wgxxitydatuoyjnxuvqw.supabase.co/functions/v1/validate-license"
 
+def kill_seb_processes():
+    try:
+        import subprocess
+        subprocess.run(['taskkill', '/F', '/IM', 'SafeExamBrowser.exe', '/T'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['taskkill', '/F', '/IM', 'SEBClientService.exe', '/T'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except:
+        pass
+
 def get_hwid():
     import subprocess
     output = subprocess.check_output('wmic csproduct get uuid').decode('utf-8').split('\n')[1].strip()
