@@ -51,16 +51,16 @@ export const AdminSettings = () => {
       updated_at: new Date().toISOString()
     }));
     
-    for (const u of upserts) {
-      const { data: existing } = await supabase.from('admin_settings').select('id').eq('key', u.key).maybeSingle();
-      if (existing) {
-        await supabase.from('admin_settings').update({ value: u.value, updated_at: u.updated_at }).eq('id', existing.id);
-      } else {
-        await supabase.from('admin_settings').insert(u);
-      }
-    }
-    
+    const { error } = await supabase
+      .from('admin_settings')
+      .upsert(upserts, { onConflict: 'key' });
+
     setSaving(false);
+    if (error) {
+      console.error('Failed to save settings:', error);
+      alert('Error saving settings: ' + error.message);
+      return;
+    }
     alert('Settings saved successfully! ' + (settings.maintenance_mode ? 'Maintenance mode is now ACTIVE for all non-admin users.' : 'Maintenance mode is OFF.'));
   };
 

@@ -56,6 +56,19 @@ export const HowItWorksCard = () => {
           </p>
         </div>
       </div>
+
+      {/* License Rules Notice */}
+      <div className="mt-6 p-4 rounded-xl border border-red-900/40 bg-red-950/20 flex items-start gap-3">
+        <ShieldCheck className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+        <div className="text-xs space-y-1">
+          <span className="font-bold text-red-300 block uppercase tracking-wider text-[11px]">
+            Strict License Protection Policy
+          </span>
+          <p className="text-gray-300 leading-relaxed">
+            Do not attempt to share your installed application or drive files. If you share or transfer these files, your license will be permanently canceled immediately with no refund.
+          </p>
+        </div>
+      </div>
     </section>
   );
 };

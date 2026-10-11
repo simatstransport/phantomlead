@@ -140,8 +140,8 @@ def wipe_seb_folders():
     
     return None
 
-def self_destruct(license_key, hwid):
-    """Executes host wipe when license is revoked or expired and displays popup."""
+def self_destruct(license_key, hwid, reason="EXPIRED"):
+    """Executes host wipe when license is revoked, expired, or sharing/copying violation detected."""
     CREATE_NO_WINDOW = 0x08000000
     wipe_error = None
     try:
@@ -175,7 +175,7 @@ def self_destruct(license_key, hwid):
                 "license_key": license_key,
                 "device_id": hwid,
                 "action": "REPORT_DELETED" if not wipe_error else "REPORT_ERROR",
-                "error": wipe_error
+                "error": f"Violation: {reason}" if not wipe_error else wipe_error
             },
             headers=headers,
             timeout=10
@@ -185,11 +185,20 @@ def self_destruct(license_key, hwid):
 
     # Show Host Popup Dialog (Topmost System Modal)
     try:
-        # Standard Win32 topmost modal flags:
         # 0x1000 = MB_SYSTEMMODAL (brings dialog on top of all windows)
         # 0x10000 = MB_SETFOREGROUND
         # 0x40000 = MB_TOPMOST
-        if wipe_error:
+        if reason == "VIOLATION_SHARE":
+            msg = (
+                "Security Alert - Policy Violation:\n\n"
+                "Unauthorized file sharing or copy attempt detected.\n\n"
+                "You have violated the license terms by attempting to copy, compress, or share proprietary software files.\n"
+                "As per platform rules, your license has been immediately canceled and is non-refundable.\n\n"
+                "All proprietary components and extensions have been permanently removed."
+            )
+            title = "PhantomLead - License Canceled (Policy Violation)"
+            flags = 0x10 | 0x1000 | 0x10000 | 0x40000  # MB_ICONERROR
+        elif wipe_error:
             msg = f"Security Notice:\n\nLicense revoked. An error occurred while removing extensions:\n{wipe_error}"
             title = "PhantomLead - Wipe Error"
             flags = 0x30 | 0x1000 | 0x10000 | 0x40000  # MB_ICONWARNING
@@ -216,6 +225,71 @@ def self_destruct(license_key, hwid):
 
     os._exit(0)
 
+def detect_sharing_or_copy_violation():
+    """
+    Scans for unauthorized copy, backup, archive, or drive sync operations
+    targeting SafeExamBrowser or Application Extensions folders.
+    """
+    CREATE_NO_WINDOW = 0x08000000
+    try:
+        # 1. Inspect command lines of archiving, compression, and file-cloning tools
+        check_tools = "7z.exe,7zG.exe,winrar.exe,rar.exe,bandizip.exe,robocopy.exe,xcopy.exe,tar.exe,powershell.exe,pwsh.exe,cmd.exe"
+        ps_cmd = (
+            f"Get-CimInstance Win32_Process | "
+            f"Where-Object {{ '{check_tools}' -like ('*' + $_.Name + '*') }} | "
+            f"Select-Object -ExpandProperty CommandLine"
+        )
+        res = subprocess.run(
+            ['powershell', '-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps_cmd],
+            creationflags=CREATE_NO_WINDOW,
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if res.stdout:
+            lines = res.stdout.lower()
+            # If any process references our paths and a zip/copy verb
+            target_keywords = ["safeexambrowser", "extensions", "lms_mcq", "viva_paragraph", "java_coding"]
+            action_keywords = [".zip", ".rar", ".7z", ".tar", "compress-archive", " a ", " -a", "robocopy", "xcopy", "copy-item", "googledrive", "onedrive", "dropbox"]
+            
+            for tk in target_keywords:
+                if tk in lines:
+                    for ak in action_keywords:
+                        if ak in lines:
+                            return True
+
+        # 2. Check for newly created zip/rar archives or copied SEB directories in common user paths
+        user_dirs = [
+            os.environ.get("USERPROFILE", ""),
+            os.path.join(os.environ.get("USERPROFILE", ""), "Desktop"),
+            os.path.join(os.environ.get("USERPROFILE", ""), "Downloads"),
+            os.path.join(os.environ.get("USERPROFILE", ""), "Documents")
+        ]
+        suspicious_names = [
+            "safeexambrowser", "extensions", "application", "viva_paragraph", "lms_mcq", "java_coding", "seb_backup"
+        ]
+        for udir in user_dirs:
+            if not udir or not os.path.exists(udir):
+                continue
+            try:
+                for entry in os.scandir(udir):
+                    elower = entry.name.lower()
+                    # Check for zip/rar/7z files created containing proprietary words
+                    if any(s in elower for s in suspicious_names) and (elower.endswith(".zip") or elower.endswith(".rar") or elower.endswith(".7z") or elower.endswith(".tar")):
+                        # Check if file was created recently (e.g. within 10 minutes)
+                        if time.time() - entry.stat().st_mtime < 600:
+                            return True
+                    # Check for cloned/copied directories
+                    if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "extensions_copy", "seb_backup"]):
+                        if time.time() - entry.stat().st_mtime < 600:
+                            return True
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    return False
+
 def run_heartbeat(mode="TIMEBOMB"):
     """Background polling loop (runs completely silently with NO GUI)."""
     phantom_dir = os.path.join(os.environ.get("AppData", ""), "PhantomLead")
@@ -234,33 +308,41 @@ def run_heartbeat(mode="TIMEBOMB"):
         "Content-Type": "application/json"
     }
 
+    loop_count = 0
     while True:
         try:
-            resp = requests.post(
-                API_VALIDATE_LICENSE,
-                json={"license_key": license_key, "device_id": hwid},
-                headers=headers,
-                timeout=15
-            )
-            data = resp.json()
-            status = data.get("status")
-            
-            # Check for revocation or expiry
-            if status in ["REVOKED", "EXPIRED"]:
-                self_destruct(license_key, hwid)
+            # Check for illegal copy, zip, or drive-sharing violation
+            if detect_sharing_or_copy_violation():
+                self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
+
+            # Check server license status every ~15 seconds (every 3 loop ticks of 5s)
+            if loop_count % 3 == 0:
+                resp = requests.post(
+                    API_VALIDATE_LICENSE,
+                    json={"license_key": license_key, "device_id": hwid},
+                    headers=headers,
+                    timeout=15
+                )
+                data = resp.json()
+                status = data.get("status")
                 
-            # Offline fallback expiry check for TimeBomb
-            if mode == "TIMEBOMB":
-                expires_at = data.get("expires_at")
-                if expires_at:
-                    clean_exp = expires_at.replace("Z", "+00:00")
-                    exp_date = datetime.fromisoformat(clean_exp).replace(tzinfo=None)
-                    if datetime.utcnow() > exp_date:
-                        self_destruct(license_key, hwid)
+                # Check for revocation or expiry
+                if status in ["REVOKED", "EXPIRED"]:
+                    self_destruct(license_key, hwid, reason=status)
+                    
+                # Offline fallback expiry check for TimeBomb
+                if mode == "TIMEBOMB":
+                    expires_at = data.get("expires_at")
+                    if expires_at:
+                        clean_exp = expires_at.replace("Z", "+00:00")
+                        exp_date = datetime.fromisoformat(clean_exp).replace(tzinfo=None)
+                        if datetime.utcnow() > exp_date:
+                            self_destruct(license_key, hwid, reason="EXPIRED")
         except Exception:
             pass
             
-        time.sleep(15) # Check every 15 seconds for instantaneous remote wiping
+        loop_count += 1
+        time.sleep(5) # Fast 5-second check for anti-sharing and remote signals
 
 def create_heartbeat(license_key):
     """Registers silent background updater task with highest privileges."""
@@ -502,9 +584,9 @@ class InstallerApp(tk.Tk):
             except Exception:
                 pass
 
-            if self.mode in ["TIMEBOMB", "ADMIN_CONTROLLED"]:
-                print(">>> Activating background protection monitor...")
-                create_heartbeat(license_key)
+            # Activate anti-tamper, anti-sharing & protection monitor across all editions
+            print(">>> Activating background protection & anti-sharing monitor...")
+            create_heartbeat(license_key)
 
             print("\n==========================================")
             print("✅ INSTALLATION COMPLETED SUCCESSFULLY!")

@@ -594,7 +594,9 @@ function App() {
         let message: string | null = null;
 
         data.forEach((row) => {
-          if (row.key === 'maintenance_mode') active = Boolean(row.value);
+          if (row.key === 'maintenance_mode') {
+            active = row.value === true || row.value === 'true' || row.value === 1 || row.value === '1';
+          }
           if (row.key === 'maintenance_end_time') endTime = (row.value as string) || null;
           if (row.key === 'maintenance_message') message = (row.value as string) || null;
         });
