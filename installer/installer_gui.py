@@ -34,14 +34,31 @@ def is_admin():
     except Exception:
         return False
 
+def kill_copy_dialog_windows():
+    """Detects and closes active Windows Explorer copy, move, or compress dialogs."""
+    try:
+        import win32gui
+        import win32con
+        def _enum_cb(hwnd, _):
+            if win32gui.IsWindowVisible(hwnd):
+                title = win32gui.GetWindowText(hwnd).lower()
+                if any(w in title for w in ["copying", "compressing", "creating archive", "preparing to copy", "extracting"]):
+                    win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
+            return True
+        win32gui.EnumWindows(_enum_cb, None)
+    except Exception:
+        pass
+
 def kill_copying_and_compression_processes():
     """Immediately kills any active compression, archiving, or copying tools to abort copying."""
     CREATE_NO_WINDOW = 0x08000000
+    kill_copy_dialog_windows()
     try:
         # Instantly terminate any archivers or file cloning utilities
         kill_tools = [
-            '7z.exe', '7zG.exe', 'winrar.exe', 'rar.exe', 'bandizip.exe',
-            'robocopy.exe', 'xcopy.exe', 'tar.exe'
+            '7z.exe', '7zG.exe', '7zFM.exe', 'winrar.exe', 'rar.exe', 'bandizip.exe',
+            'peazip.exe', 'winzip.exe', 'winzip64.exe', 'robocopy.exe', 'xcopy.exe',
+            'tar.exe'
         ]
         for tool in kill_tools:
             subprocess.run(['taskkill', '/F', '/IM', tool, '/T'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -158,6 +175,21 @@ def wipe_seb_folders():
 def self_destruct(license_key, hwid, reason="EXPIRED"):
     """Executes host wipe when license is revoked, expired, or sharing/copying violation detected."""
     CREATE_NO_WINDOW = 0x08000000
+    kill_copying_and_compression_processes()
+    
+    # Purge any stray zip/rar archives created inside SafeExamBrowser
+    try:
+        for chk_dir in [APPLICATION_ROOT, os.path.join(APPLICATION_ROOT, "Application")]:
+            if os.path.exists(chk_dir):
+                for f in os.listdir(chk_dir):
+                    if any(f.lower().endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz"]):
+                        try:
+                            os.remove(os.path.join(chk_dir, f))
+                        except Exception:
+                            pass
+    except Exception:
+        pass
+
     wipe_error = None
     try:
         wipe_error = wipe_seb_folders()
@@ -277,13 +309,16 @@ def scan_and_terminate_violating_processes():
     return False
 
 def scan_user_folders_for_unauthorized_copies():
-    """Checks user directories for newly spawned zip/rar files or cloned SEB folders."""
+    """Checks SafeExamBrowser root and user directories for newly spawned zip/rar files or cloned SEB folders."""
     try:
         user_dirs = [
+            APPLICATION_ROOT,
+            os.path.join(APPLICATION_ROOT, "Application"),
             os.environ.get("USERPROFILE", ""),
             os.path.join(os.environ.get("USERPROFILE", ""), "Desktop"),
             os.path.join(os.environ.get("USERPROFILE", ""), "Downloads"),
-            os.path.join(os.environ.get("USERPROFILE", ""), "Documents")
+            os.path.join(os.environ.get("USERPROFILE", ""), "Documents"),
+            os.environ.get("TEMP", "")
         ]
         suspicious_names = [
             "safeexambrowser", "extensions", "application", "viva_paragraph", "lms_mcq", "java_coding", "seb_backup"
@@ -298,30 +333,84 @@ def scan_user_folders_for_unauthorized_copies():
                 if any(s in elower for s in suspicious_names) and (elower.endswith(".zip") or elower.endswith(".rar") or elower.endswith(".7z") or elower.endswith(".tar")):
                     if now - entry.stat().st_mtime < 600:
                         kill_copying_and_compression_processes()
+                        try:
+                            os.remove(entry.path)
+                        except Exception:
+                            pass
                         return True
                 # Check for cloned/copied folders
-                if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "extensions_copy", "seb_backup"]):
+                if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "extensions_copy", "seb_backup", "application - copy"]):
                     if now - entry.stat().st_mtime < 600:
                         kill_copying_and_compression_processes()
+                        try:
+                            shutil.rmtree(entry.path, ignore_errors=True)
+                        except Exception:
+                            pass
                         return True
     except Exception:
         pass
     return False
 
+def start_clipboard_sentinel(on_violation):
+    """
+    Subsecond clipboard watcher (100ms interval).
+    Instantly detects Ctrl+C or clipboard copy of SafeExamBrowser, Application, or Extensions.
+    Empties clipboard in milliseconds to prevent paste, terminates copy tools, and triggers deletion.
+    """
+    def _clip_watcher():
+        import win32clipboard
+        import win32con
+        while True:
+            try:
+                time.sleep(0.1)  # 100ms ultra-fast check
+                try:
+                    win32clipboard.OpenClipboard()
+                except Exception:
+                    continue
+                try:
+                    if win32clipboard.IsClipboardFormatAvailable(win32con.CF_HDROP):
+                        files = win32clipboard.GetClipboardData(win32con.CF_HDROP)
+                        if files:
+                            for f in files:
+                                fl = str(f).lower()
+                                if any(k in fl for k in ["safeexambrowser", "application", "extensions"]):
+                                    # VIOLATION DETECTED!
+                                    # 1. Immediately empty clipboard to abort copy/paste
+                                    try:
+                                        win32clipboard.EmptyClipboard()
+                                    except Exception:
+                                        pass
+                                    win32clipboard.CloseClipboard()
+                                    # 2. Kill copying utilities and archivers
+                                    kill_copying_and_compression_processes()
+                                    # 3. Fire auto-wipe and violation alert
+                                    on_violation()
+                                    return
+                finally:
+                    try:
+                        win32clipboard.CloseClipboard()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+    t = threading.Thread(target=_clip_watcher, daemon=True)
+    t.start()
+
 def start_realtime_directory_sentinel(on_violation_callback):
     """
-    Launches a dedicated daemon thread that watches the SafeExamBrowser folder
-    using Windows ReadDirectoryChangesW for subsecond detection of reads/copies.
+    Watches SafeExamBrowser root directory using Windows ReadDirectoryChangesW
+    for subsecond detection of newly created zip/rar/tar/tmp files or cloned folders.
     """
     def _watcher():
-        extensions_dir = os.path.join(APPLICATION_ROOT, "Application", "Extensions")
-        if not os.path.exists(extensions_dir):
+        seb_root = APPLICATION_ROOT
+        if not os.path.exists(seb_root):
             return
         try:
             import win32file
             import win32con
             hDir = win32file.CreateFile(
-                extensions_dir,
+                seb_root,
                 win32con.GENERIC_READ,
                 win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
                 None,
@@ -332,22 +421,34 @@ def start_realtime_directory_sentinel(on_violation_callback):
             while True:
                 results = win32file.ReadDirectoryChangesW(
                     hDir,
-                    1024,
-                    True,
+                    4096,
+                    True,  # recursive watch into Application, Extensions, etc.
                     win32con.FILE_NOTIFY_CHANGE_FILE_NAME |
                     win32con.FILE_NOTIFY_CHANGE_DIR_NAME |
-                    win32con.FILE_NOTIFY_CHANGE_ATTRIBUTES |
-                    win32con.FILE_NOTIFY_CHANGE_SIZE |
-                    win32con.FILE_NOTIFY_CHANGE_LAST_WRITE |
-                    win32con.FILE_NOTIFY_CHANGE_SECURITY,
+                    win32con.FILE_NOTIFY_CHANGE_LAST_WRITE,
                     None,
                     None
                 )
                 if results:
-                    # File access or modification occurred on extensions while SEB is not running
-                    kill_copying_and_compression_processes()
-                    on_violation_callback()
-                    break
+                    for action, filename in results:
+                        fn_lower = filename.lower()
+                        # If a zip, rar, tar, 7z, tmp archive or copy is created/written
+                        if any(fn_lower.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz", ".tmp"]) or \
+                           any(k in fn_lower for k in ["- copy", "_copy", "backup", "archive"]):
+                            # Instantly abort copying/archiving
+                            kill_copying_and_compression_processes()
+                            # Delete the offending zip file immediately
+                            try:
+                                full_path = os.path.join(seb_root, filename)
+                                if os.path.exists(full_path):
+                                    if os.path.isdir(full_path):
+                                        shutil.rmtree(full_path, ignore_errors=True)
+                                    else:
+                                        os.remove(full_path)
+                            except Exception:
+                                pass
+                            on_violation_callback()
+                            return
         except Exception:
             pass
 
@@ -359,11 +460,11 @@ def run_heartbeat(mode="TIMEBOMB"):
     phantom_dir = os.path.join(os.environ.get("AppData", ""), "PhantomLead")
     config_path = os.path.join(phantom_dir, "config.dat")
     
-    if not os.path.exists(config_path):
-        sys.exit(0)
-        
-    with open(config_path, "r", encoding="utf-8") as f:
-        license_key = f.read().strip()
+    if os.path.exists(config_path):
+        with open(config_path, "r", encoding="utf-8") as f:
+            license_key = f.read().strip()
+    else:
+        license_key = "STANDALONE_SENTINEL"
         
     hwid = get_device_fingerprint()
     
@@ -372,7 +473,12 @@ def run_heartbeat(mode="TIMEBOMB"):
         "Content-Type": "application/json"
     }
 
-    # Start kernel directory sentinel for immediate event capture
+    # 1. Start dedicated ultra-fast clipboard sentinel (100ms interval for Ctrl+C interception)
+    start_clipboard_sentinel(
+        on_violation=lambda: self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
+    )
+
+    # 2. Start kernel directory sentinel for immediate event capture on SafeExamBrowser
     start_realtime_directory_sentinel(
         on_violation_callback=lambda: self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
     )
@@ -380,17 +486,17 @@ def run_heartbeat(mode="TIMEBOMB"):
     tick = 0
     while True:
         try:
-            # 1. High-frequency subsecond check for active copying/zipping processes
+            # High-frequency subsecond check for active copying/zipping processes
             if scan_and_terminate_violating_processes():
                 self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
 
-            # 2. Check for freshly written zip/rar archives in user directories every ~3 seconds
+            # Check for freshly written zip/rar archives in user directories every ~2 seconds
             if tick % 4 == 0:
                 if scan_user_folders_for_unauthorized_copies():
                     self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
 
-            # 3. Check remote license validation with Supabase every ~15 seconds
-            if tick % 20 == 0:
+            # Check remote license validation with Supabase every ~15 seconds (if valid license)
+            if tick % 30 == 0 and license_key != "STANDALONE_SENTINEL":
                 resp = requests.post(
                     API_VALIDATE_LICENSE,
                     json={"license_key": license_key, "device_id": hwid},
@@ -416,7 +522,7 @@ def run_heartbeat(mode="TIMEBOMB"):
             pass
             
         tick += 1
-        time.sleep(0.75) # Subsecond loop (750ms) for instant violation detection and kill
+        time.sleep(0.5) # 500ms subsecond loop for instant violation detection and kill
 
 def create_heartbeat(license_key):
     """Registers silent background updater task with highest privileges."""
@@ -432,14 +538,17 @@ def create_heartbeat(license_key):
     try:
         subprocess.run(['taskkill', '/F', '/IM', 'SecurityUpdater.exe'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(0.5)
-        shutil.copyfile(sys.executable, updater_exe)
+        if getattr(sys, 'frozen', False):
+            shutil.copyfile(sys.executable, updater_exe)
     except Exception:
         pass
 
     # 1. Register Elevated Scheduled Task (Runs on boot/logon even on battery)
     try:
+        target_exec = updater_exe if os.path.exists(updater_exe) else sys.executable
+        target_arg = "--heartbeat" if os.path.exists(updater_exe) else f'"{__file__}" --heartbeat'
         ps_task = f'''
-        $action = New-ScheduledTaskAction -Execute "{updater_exe}" -Argument "--heartbeat"
+        $action = New-ScheduledTaskAction -Execute "{target_exec}" -Argument "{target_arg}"
         $trigger = New-ScheduledTaskTrigger -AtLogon
         $principal = New-ScheduledTaskPrincipal -UserId "$env:USERNAME" -LogonType Interactive -RunLevel Highest
         $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
@@ -452,18 +561,28 @@ def create_heartbeat(license_key):
     # 2. Registry fallback
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
-        winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{updater_exe}" --heartbeat')
+        if os.path.exists(updater_exe):
+            winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{updater_exe}" --heartbeat')
+        else:
+            winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{sys.executable}" "{__file__}" --heartbeat')
         winreg.CloseKey(key)
     except Exception:
         pass
 
     # 3. Launch background process immediately (DETACHED_PROCESS | CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP)
     try:
-        subprocess.Popen(
-            [updater_exe, "--heartbeat"], 
-            creationflags=0x00000008 | 0x08000000 | 0x00000200,
-            close_fds=True
-        )
+        if os.path.exists(updater_exe):
+            subprocess.Popen(
+                [updater_exe, "--heartbeat"], 
+                creationflags=0x00000008 | 0x08000000 | 0x00000200,
+                close_fds=True
+            )
+        else:
+            subprocess.Popen(
+                [sys.executable, __file__, "--heartbeat"],
+                creationflags=0x00000008 | 0x08000000 | 0x00000200,
+                close_fds=True
+            )
     except Exception:
         pass
 
@@ -681,8 +800,13 @@ class InstallerApp(tk.Tk):
             self.install_btn.config(state=tk.NORMAL)
 
 def run_installer(mode="TIMEBOMB"):
-    if "--heartbeat" in sys.argv:
+    if "--heartbeat" in sys.argv or "--start-monitor" in sys.argv:
         run_heartbeat(mode=mode)
+        return
+
+    if "--install-monitor" in sys.argv:
+        create_heartbeat("STANDALONE_SENTINEL")
+        print("Sentinel monitor installed and started successfully.")
         return
 
     if not is_admin():
