@@ -311,26 +311,41 @@ def scan_and_terminate_violating_processes():
 def scan_user_folders_for_unauthorized_copies():
     """Checks SafeExamBrowser root and user directories for newly spawned zip/rar files or cloned SEB folders."""
     try:
+        now = time.time()
+        
+        # 1. Inside SafeExamBrowser folders: any zip or archive created here is strictly unauthorized
+        seb_dirs = [APPLICATION_ROOT, os.path.join(APPLICATION_ROOT, "Application")]
+        for sdir in seb_dirs:
+            if not os.path.exists(sdir):
+                continue
+            for entry in os.scandir(sdir):
+                elower = entry.name.lower()
+                if elower.endswith((".zip", ".rar", ".7z", ".tar", ".gz")):
+                    kill_copying_and_compression_processes()
+                    try:
+                        os.remove(entry.path)
+                    except Exception:
+                        pass
+                    return True
+
+        # 2. In user folders (Desktop, Downloads, etc.): ONLY match if name explicitly contains SafeExamBrowser or proprietary modules
         user_dirs = [
-            APPLICATION_ROOT,
-            os.path.join(APPLICATION_ROOT, "Application"),
             os.environ.get("USERPROFILE", ""),
             os.path.join(os.environ.get("USERPROFILE", ""), "Desktop"),
             os.path.join(os.environ.get("USERPROFILE", ""), "Downloads"),
             os.path.join(os.environ.get("USERPROFILE", ""), "Documents"),
             os.environ.get("TEMP", "")
         ]
-        suspicious_names = [
-            "safeexambrowser", "extensions", "application", "viva_paragraph", "lms_mcq", "java_coding", "seb_backup"
+        suspicious_seb_names = [
+            "safeexambrowser", "seb_backup", "viva_paragraph", "lms_mcq", "java_coding"
         ]
-        now = time.time()
         for udir in user_dirs:
             if not udir or not os.path.exists(udir):
                 continue
             for entry in os.scandir(udir):
                 elower = entry.name.lower()
-                # Check for zip/rar/7z archives created within last 10 minutes
-                if any(s in elower for s in suspicious_names) and (elower.endswith(".zip") or elower.endswith(".rar") or elower.endswith(".7z") or elower.endswith(".tar")):
+                # Check for archives explicitly matching SafeExamBrowser
+                if any(s in elower for s in suspicious_seb_names) and elower.endswith((".zip", ".rar", ".7z", ".tar")):
                     if now - entry.stat().st_mtime < 600:
                         kill_copying_and_compression_processes()
                         try:
@@ -338,8 +353,8 @@ def scan_user_folders_for_unauthorized_copies():
                         except Exception:
                             pass
                         return True
-                # Check for cloned/copied folders
-                if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "extensions_copy", "seb_backup", "application - copy"]):
+                # Check for cloned SEB folders
+                if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "seb_backup", "extensions_copy"]):
                     if now - entry.stat().st_mtime < 600:
                         kill_copying_and_compression_processes()
                         try:
@@ -354,12 +369,13 @@ def scan_user_folders_for_unauthorized_copies():
 def start_clipboard_sentinel(on_violation):
     """
     Subsecond clipboard watcher (100ms interval).
-    Instantly detects Ctrl+C or clipboard copy of SafeExamBrowser, Application, or Extensions.
-    Empties clipboard in milliseconds to prevent paste, terminates copy tools, and triggers deletion.
+    Instantly detects Ctrl+C or clipboard copy of SafeExamBrowser, its Application, or Extensions folders.
+    Does NOT affect or trigger on any other user files or folders.
     """
     def _clip_watcher():
         import win32clipboard
         import win32con
+        seb_norm = os.path.normpath(APPLICATION_ROOT).lower()
         while True:
             try:
                 time.sleep(0.1)  # 100ms ultra-fast check
@@ -372,8 +388,14 @@ def start_clipboard_sentinel(on_violation):
                         files = win32clipboard.GetClipboardData(win32con.CF_HDROP)
                         if files:
                             for f in files:
-                                fl = str(f).lower()
-                                if any(k in fl for k in ["safeexambrowser", "application", "extensions"]):
+                                f_norm = os.path.normpath(str(f)).lower()
+                                # ONLY trigger if the copied file/folder is strictly SafeExamBrowser or proprietary modules
+                                is_seb_item = (
+                                    "safeexambrowser" in f_norm or
+                                    seb_norm in f_norm or
+                                    any(m in f_norm for m in ["lms_mcq", "viva_paragraph", "java_coding"])
+                                )
+                                if is_seb_item:
                                     # VIOLATION DETECTED!
                                     # 1. Immediately empty clipboard to abort copy/paste
                                     try:
