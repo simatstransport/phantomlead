@@ -30,6 +30,8 @@ for script, exe_name in TARGETS:
         "--hidden-import", "hashlib",
         "--hidden-import", "winreg",
         "--hidden-import", "tkinter",
+        "--hidden-import", "win32file",
+        "--hidden-import", "win32con",
         "--distpath", ROOT_DIST,
         "--workpath", os.path.join(INSTALLER_DIR, "build"),
         "--specpath", INSTALLER_DIR,

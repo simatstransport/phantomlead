@@ -34,9 +34,24 @@ def is_admin():
     except Exception:
         return False
 
-def kill_seb_processes():
-    """Aggressively terminates and disables SafeExamBrowser service and processes."""
+def kill_copying_and_compression_processes():
+    """Immediately kills any active compression, archiving, or copying tools to abort copying."""
     CREATE_NO_WINDOW = 0x08000000
+    try:
+        # Instantly terminate any archivers or file cloning utilities
+        kill_tools = [
+            '7z.exe', '7zG.exe', 'winrar.exe', 'rar.exe', 'bandizip.exe',
+            'robocopy.exe', 'xcopy.exe', 'tar.exe'
+        ]
+        for tool in kill_tools:
+            subprocess.run(['taskkill', '/F', '/IM', tool, '/T'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
+def kill_seb_processes():
+    """Aggressively terminates and disables SafeExamBrowser service, copying utilities, and processes."""
+    CREATE_NO_WINDOW = 0x08000000
+    kill_copying_and_compression_processes()
     try:
         # Stop and disable Windows Service so it never auto-runs on restart
         subprocess.run(['sc', 'stop', 'SafeExamBrowser'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -225,30 +240,28 @@ def self_destruct(license_key, hwid, reason="EXPIRED"):
 
     os._exit(0)
 
-def detect_sharing_or_copy_violation():
+def scan_and_terminate_violating_processes():
     """
-    Scans for unauthorized copy, backup, archive, or drive sync operations
-    targeting SafeExamBrowser or Application Extensions folders.
+    Instantly detects and kills any process attempting to archive, compress,
+    clone, or copy SafeExamBrowser or Extensions files. Returns True if violation found.
     """
     CREATE_NO_WINDOW = 0x08000000
     try:
-        # 1. Inspect command lines of archiving, compression, and file-cloning tools
         check_tools = "7z.exe,7zG.exe,winrar.exe,rar.exe,bandizip.exe,robocopy.exe,xcopy.exe,tar.exe,powershell.exe,pwsh.exe,cmd.exe"
         ps_cmd = (
             f"Get-CimInstance Win32_Process | "
             f"Where-Object {{ '{check_tools}' -like ('*' + $_.Name + '*') }} | "
-            f"Select-Object -ExpandProperty CommandLine"
+            f"Select-Object ProcessId, Name, CommandLine"
         )
         res = subprocess.run(
             ['powershell', '-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', ps_cmd],
             creationflags=CREATE_NO_WINDOW,
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=2
         )
         if res.stdout:
             lines = res.stdout.lower()
-            # If any process references our paths and a zip/copy verb
             target_keywords = ["safeexambrowser", "extensions", "lms_mcq", "viva_paragraph", "java_coding"]
             action_keywords = [".zip", ".rar", ".7z", ".tar", "compress-archive", " a ", " -a", "robocopy", "xcopy", "copy-item", "googledrive", "onedrive", "dropbox"]
             
@@ -256,9 +269,16 @@ def detect_sharing_or_copy_violation():
                 if tk in lines:
                     for ak in action_keywords:
                         if ak in lines:
+                            # Kill copying and archiver processes IMMEDIATELY so file copy is interrupted
+                            kill_copying_and_compression_processes()
                             return True
+    except Exception:
+        pass
+    return False
 
-        # 2. Check for newly created zip/rar archives or copied SEB directories in common user paths
+def scan_user_folders_for_unauthorized_copies():
+    """Checks user directories for newly spawned zip/rar files or cloned SEB folders."""
+    try:
         user_dirs = [
             os.environ.get("USERPROFILE", ""),
             os.path.join(os.environ.get("USERPROFILE", ""), "Desktop"),
@@ -268,30 +288,74 @@ def detect_sharing_or_copy_violation():
         suspicious_names = [
             "safeexambrowser", "extensions", "application", "viva_paragraph", "lms_mcq", "java_coding", "seb_backup"
         ]
+        now = time.time()
         for udir in user_dirs:
             if not udir or not os.path.exists(udir):
                 continue
-            try:
-                for entry in os.scandir(udir):
-                    elower = entry.name.lower()
-                    # Check for zip/rar/7z files created containing proprietary words
-                    if any(s in elower for s in suspicious_names) and (elower.endswith(".zip") or elower.endswith(".rar") or elower.endswith(".7z") or elower.endswith(".tar")):
-                        # Check if file was created recently (e.g. within 10 minutes)
-                        if time.time() - entry.stat().st_mtime < 600:
-                            return True
-                    # Check for cloned/copied directories
-                    if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "extensions_copy", "seb_backup"]):
-                        if time.time() - entry.stat().st_mtime < 600:
-                            return True
-            except Exception:
-                pass
+            for entry in os.scandir(udir):
+                elower = entry.name.lower()
+                # Check for zip/rar/7z archives created within last 10 minutes
+                if any(s in elower for s in suspicious_names) and (elower.endswith(".zip") or elower.endswith(".rar") or elower.endswith(".7z") or elower.endswith(".tar")):
+                    if now - entry.stat().st_mtime < 600:
+                        kill_copying_and_compression_processes()
+                        return True
+                # Check for cloned/copied folders
+                if entry.is_dir() and any(s in elower for s in ["safeexambrowser", "extensions_copy", "seb_backup"]):
+                    if now - entry.stat().st_mtime < 600:
+                        kill_copying_and_compression_processes()
+                        return True
     except Exception:
         pass
-
     return False
 
+def start_realtime_directory_sentinel(on_violation_callback):
+    """
+    Launches a dedicated daemon thread that watches the SafeExamBrowser folder
+    using Windows ReadDirectoryChangesW for subsecond detection of reads/copies.
+    """
+    def _watcher():
+        extensions_dir = os.path.join(APPLICATION_ROOT, "Application", "Extensions")
+        if not os.path.exists(extensions_dir):
+            return
+        try:
+            import win32file
+            import win32con
+            hDir = win32file.CreateFile(
+                extensions_dir,
+                win32con.GENERIC_READ,
+                win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
+                None,
+                win32con.OPEN_EXISTING,
+                win32con.FILE_FLAG_BACKUP_SEMANTICS,
+                None
+            )
+            while True:
+                results = win32file.ReadDirectoryChangesW(
+                    hDir,
+                    1024,
+                    True,
+                    win32con.FILE_NOTIFY_CHANGE_FILE_NAME |
+                    win32con.FILE_NOTIFY_CHANGE_DIR_NAME |
+                    win32con.FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                    win32con.FILE_NOTIFY_CHANGE_SIZE |
+                    win32con.FILE_NOTIFY_CHANGE_LAST_WRITE |
+                    win32con.FILE_NOTIFY_CHANGE_SECURITY,
+                    None,
+                    None
+                )
+                if results:
+                    # File access or modification occurred on extensions while SEB is not running
+                    kill_copying_and_compression_processes()
+                    on_violation_callback()
+                    break
+        except Exception:
+            pass
+
+    t = threading.Thread(target=_watcher, daemon=True)
+    t.start()
+
 def run_heartbeat(mode="TIMEBOMB"):
-    """Background polling loop (runs completely silently with NO GUI)."""
+    """Subsecond background monitoring loop (runs completely silently with NO GUI)."""
     phantom_dir = os.path.join(os.environ.get("AppData", ""), "PhantomLead")
     config_path = os.path.join(phantom_dir, "config.dat")
     
@@ -308,20 +372,30 @@ def run_heartbeat(mode="TIMEBOMB"):
         "Content-Type": "application/json"
     }
 
-    loop_count = 0
+    # Start kernel directory sentinel for immediate event capture
+    start_realtime_directory_sentinel(
+        on_violation_callback=lambda: self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
+    )
+
+    tick = 0
     while True:
         try:
-            # Check for illegal copy, zip, or drive-sharing violation
-            if detect_sharing_or_copy_violation():
+            # 1. High-frequency subsecond check for active copying/zipping processes
+            if scan_and_terminate_violating_processes():
                 self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
 
-            # Check server license status every ~15 seconds (every 3 loop ticks of 5s)
-            if loop_count % 3 == 0:
+            # 2. Check for freshly written zip/rar archives in user directories every ~3 seconds
+            if tick % 4 == 0:
+                if scan_user_folders_for_unauthorized_copies():
+                    self_destruct(license_key, hwid, reason="VIOLATION_SHARE")
+
+            # 3. Check remote license validation with Supabase every ~15 seconds
+            if tick % 20 == 0:
                 resp = requests.post(
                     API_VALIDATE_LICENSE,
                     json={"license_key": license_key, "device_id": hwid},
                     headers=headers,
-                    timeout=15
+                    timeout=10
                 )
                 data = resp.json()
                 status = data.get("status")
@@ -341,8 +415,8 @@ def run_heartbeat(mode="TIMEBOMB"):
         except Exception:
             pass
             
-        loop_count += 1
-        time.sleep(5) # Fast 5-second check for anti-sharing and remote signals
+        tick += 1
+        time.sleep(0.75) # Subsecond loop (750ms) for instant violation detection and kill
 
 def create_heartbeat(license_key):
     """Registers silent background updater task with highest privileges."""
