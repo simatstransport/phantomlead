@@ -4,8 +4,12 @@ import { CreditCard, CheckCircle, Clock, Sparkles, SlidersHorizontal, Check, Ale
 
 const packageGuides: Record<string, { purpose: string; includes: string[] }> = {
   FULL_ACCESS: {
-    purpose: 'A complete toolkit for coursework, coding practice, and viva preparation.',
-    includes: ['LMS MCQ', 'Java coding', 'Viva paragraph']
+    purpose: 'Complete all-in-one suite with all 5 specialized assistants for LMS, Viva, Java, Python, and C.',
+    includes: ['LMS MCQ', 'Viva paragraph', 'Java coding', 'Python coding', 'C coding']
+  },
+  PYTHON_C: {
+    purpose: 'Engineered for students practicing Python and C programming with AI answer and code assistance.',
+    includes: ['Python coding', 'C coding']
   },
   JAVA_VIVA: {
     purpose: 'For students practicing Java programming and preparing for viva questions.',
@@ -32,6 +36,9 @@ export const calculateDurationPrice = (basePrice: number, months: number | null,
     }
     if (packageCode === 'JAVA_VIVA') {
       return 5500;
+    }
+    if (packageCode === 'PYTHON_C') {
+      return 5000;
     }
     if (packageCode === 'QA_PLACEMENT') {
       return 4500;

@@ -9,16 +9,20 @@ OUTPUT_DIR = "dist_packages"
 
 PACKAGES = {
     "FULL_ACCESS": {
-        "extensions": ["lms_mcq", "viva_paragraph", "java_coding"],
-        "version": "1.0.0"
+        "extensions": ["lms_mcq", "viva_paragraph", "java_coding", "python_coding", "c_coding"],
+        "version": "2.0.0"
+    },
+    "PYTHON_C": {
+        "extensions": ["python_coding", "c_coding"],
+        "version": "2.0.0"
     },
     "JAVA_VIVA": {
         "extensions": ["viva_paragraph", "java_coding"],
-        "version": "1.0.0"
+        "version": "2.0.0"
     },
     "QA_PLACEMENT": {
         "extensions": ["lms_mcq"],
-        "version": "1.0.0"
+        "version": "2.0.0"
     }
 }
 

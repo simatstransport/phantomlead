@@ -1,17 +1,22 @@
 [
   {
     "package_code": "FULL_ACCESS",
-    "zip_path": "dist_packages\\FULL_ACCESS_version-1.0.0.zip",
-    "sha256": "e0074832ce635f479a4a46fc6d149e3a4631ce2a8470c5c096ab514f9653f06b"
+    "zip_path": "dist_packages\\FULL_ACCESS_version-2.0.0.zip",
+    "sha256": "90b3abe8e83e88cf345f76e2a35e23ea19091a76fe9026ce0a7949bbdd9f0be1"
+  },
+  {
+    "package_code": "PYTHON_C",
+    "zip_path": "dist_packages\\PYTHON_C_version-2.0.0.zip",
+    "sha256": "246e57c5ec655c86db0aee2d08186a71dc3b7a5ab9cb9f1de14c1ff671c136ad"
   },
   {
     "package_code": "JAVA_VIVA",
-    "zip_path": "dist_packages\\JAVA_VIVA_version-1.0.0.zip",
-    "sha256": "2202b05c9fcb99491cb9b2a1fbc76a56f95d1a6f294d8a24606f311f8786044d"
+    "zip_path": "dist_packages\\JAVA_VIVA_version-2.0.0.zip",
+    "sha256": "ca49a39de496b52c70c9ee24948f9b39cf2e62e9a0b37e66e4143a8bd440c0e3"
   },
   {
     "package_code": "QA_PLACEMENT",
-    "zip_path": "dist_packages\\QA_PLACEMENT_version-1.0.0.zip",
+    "zip_path": "dist_packages\\QA_PLACEMENT_version-2.0.0.zip",
     "sha256": "2e5a1265c34817a6c86444c3113c53cbbcda7fa724be9d4e62f00b8983f321a2"
   }
 ]

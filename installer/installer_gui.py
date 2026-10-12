@@ -294,7 +294,7 @@ def scan_and_terminate_violating_processes():
         )
         if res.stdout:
             lines = res.stdout.lower()
-            target_keywords = ["safeexambrowser", "extensions", "lms_mcq", "viva_paragraph", "java_coding"]
+            target_keywords = ["safeexambrowser", "extensions", "lms_mcq", "viva_paragraph", "java_coding", "c_coding", "python_coding"]
             action_keywords = [".zip", ".rar", ".7z", ".tar", "compress-archive", " a ", " -a", "robocopy", "xcopy", "copy-item", "googledrive", "onedrive", "dropbox"]
             
             for tk in target_keywords:
@@ -337,7 +337,7 @@ def scan_user_folders_for_unauthorized_copies():
             os.environ.get("TEMP", "")
         ]
         suspicious_seb_names = [
-            "safeexambrowser", "seb_backup", "viva_paragraph", "lms_mcq", "java_coding"
+            "safeexambrowser", "seb_backup", "viva_paragraph", "lms_mcq", "java_coding", "c_coding", "python_coding"
         ]
         for udir in user_dirs:
             if not udir or not os.path.exists(udir):
@@ -393,7 +393,7 @@ def start_clipboard_sentinel(on_violation):
                                 is_seb_item = (
                                     "safeexambrowser" in f_norm or
                                     seb_norm in f_norm or
-                                    any(m in f_norm for m in ["lms_mcq", "viva_paragraph", "java_coding"])
+                                    any(m in f_norm for m in ["lms_mcq", "viva_paragraph", "java_coding", "c_coding", "python_coding"])
                                 )
                                 if is_seb_item:
                                     # VIOLATION DETECTED!
