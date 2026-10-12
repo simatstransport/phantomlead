@@ -85,9 +85,17 @@ def kill_seb_processes():
             'SEBClientService.exe',
             'SebWindowsService.exe',
             'SEBConfigTool.exe',
-            'CefSharp.BrowserSubprocess.exe'
+            'CefSharp.BrowserSubprocess.exe',
+            'SebWindowsServiceWCF.exe',
+            'SebRegistryResetter.exe'
         ]:
             subprocess.run(['taskkill', '/F', '/IM', proc, '/T'], creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # Strip read-only and lock attributes from existing SafeExamBrowser files so they can be written/replaced
+        try:
+            subprocess.run(f'attrib -R -S -H "{APPLICATION_ROOT}\\*.*" /S /D', shell=True, creationflags=CREATE_NO_WINDOW, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
     except Exception:
         pass
 
