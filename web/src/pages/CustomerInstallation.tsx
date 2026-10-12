@@ -78,26 +78,40 @@ export const CustomerInstallation = () => {
               <strong>How it runs:</strong> Launch <strong>Safe Exam Browser</strong> from your desktop or start menu. SEB will immediately launch in a secure, full-screen kiosk mode that locks down your computer to prevent cheating or outside access. Once the secure browser is open, you must use the following keyboard shortcuts to access your different exams and practice modules.
             </div>
             
-            <div className="overflow-hidden border border-gray-800 rounded-lg">
+            <div className="overflow-x-auto border border-gray-800 rounded-lg">
               <table className="w-full text-left text-sm">
                 <thead className="bg-black/60 border-b border-gray-800">
                   <tr>
-                    <th className="py-3 px-4 font-semibold text-gray-300">Keyboard Shortcut</th>
-                    <th className="py-3 px-4 font-semibold text-gray-300">What it is used for</th>
+                    <th className="py-3 px-4 font-semibold text-gray-300">Extension Folder</th>
+                    <th className="py-3 px-4 font-semibold text-gray-300">Language / Purpose</th>
+                    <th className="py-3 px-4 font-semibold text-gray-300">Shortcut to Open/Close Popup Card</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800 bg-black/30">
                   <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4 font-mono text-purple-300 font-semibold">java_coding</td>
+                    <td className="py-3 px-4 text-gray-200">☕ Java Coding Helper</td>
+                    <td className="py-3 px-4"><kbd className="rounded border border-purple-700/50 bg-purple-900/20 px-2.5 py-1 font-mono text-purple-400 font-bold tracking-widest shadow-[0_0_10px_rgba(168,85,247,0.2)]">Ctrl + K</kbd> <span className="text-gray-400 text-xs ml-1">(or F10)</span></td>
+                  </tr>
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4 font-mono text-yellow-300 font-semibold">python_coding</td>
+                    <td className="py-3 px-4 text-gray-200">🐍 Python 3 Coding Helper</td>
+                    <td className="py-3 px-4"><kbd className="rounded border border-yellow-700/50 bg-yellow-900/20 px-2.5 py-1 font-mono text-yellow-400 font-bold tracking-widest shadow-[0_0_10px_rgba(234,179,8,0.2)]">Ctrl + T</kbd></td>
+                  </tr>
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4 font-mono text-cyan-300 font-semibold">c_coding</td>
+                    <td className="py-3 px-4 text-gray-200">⚙️ C Coding Helper</td>
+                    <td className="py-3 px-4"><kbd className="rounded border border-cyan-700/50 bg-cyan-900/20 px-2.5 py-1 font-mono text-cyan-400 font-bold tracking-widest shadow-[0_0_10px_rgba(6,182,212,0.2)]">Ctrl + Y</kbd></td>
+                  </tr>
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4 font-mono text-blue-300 font-semibold">lms_mcq</td>
+                    <td className="py-3 px-4 text-gray-200">MCQ Helper</td>
+                    <td className="py-3 px-4"><kbd className="rounded border border-blue-700/50 bg-blue-900/20 px-2.5 py-1 font-mono text-blue-400 font-bold tracking-widest shadow-[0_0_10px_rgba(59,130,246,0.2)]">Ctrl + J</kbd> <span className="text-gray-400 text-xs ml-1">(or F8)</span></td>
+                  </tr>
+                  <tr className="hover:bg-gray-900/50 transition-colors">
+                    <td className="py-3 px-4 font-mono text-green-300 font-semibold">viva_paragraph</td>
+                    <td className="py-3 px-4 text-gray-200">Viva Paragraph Helper</td>
                     <td className="py-3 px-4"><kbd className="rounded border border-green-700/50 bg-green-900/20 px-2.5 py-1 font-mono text-green-400 font-bold tracking-widest shadow-[0_0_10px_rgba(34,197,94,0.2)]">Ctrl + L</kbd></td>
-                    <td className="py-3 px-4 text-gray-300">Launch the <strong>Viva Quiz</strong> module.</td>
-                  </tr>
-                  <tr className="hover:bg-gray-900/50 transition-colors">
-                    <td className="py-3 px-4"><kbd className="rounded border border-blue-700/50 bg-blue-900/20 px-2.5 py-1 font-mono text-blue-400 font-bold tracking-widest shadow-[0_0_10px_rgba(59,130,246,0.2)]">Ctrl + J</kbd></td>
-                    <td className="py-3 px-4 text-gray-300">Access <strong>QA, Reasoning, or Java MCQ</strong> quizzes.</td>
-                  </tr>
-                  <tr className="hover:bg-gray-900/50 transition-colors">
-                    <td className="py-3 px-4"><kbd className="rounded border border-purple-700/50 bg-purple-900/20 px-2.5 py-1 font-mono text-purple-400 font-bold tracking-widest shadow-[0_0_10px_rgba(168,85,247,0.2)]">Ctrl + K</kbd></td>
-                    <td className="py-3 px-4 text-gray-300">Open the <strong>Java Coding Practice</strong> environment.</td>
                   </tr>
                 </tbody>
               </table>
