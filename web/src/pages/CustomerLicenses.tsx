@@ -93,9 +93,9 @@ export const CustomerLicenses = () => {
   if (loading) return <p className="text-gray-400">Loading your licenses...</p>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
-      <h2 className="text-xl font-bold mb-2">Your licenses</h2>
-      <p className="text-sm text-gray-400 mb-6">Use the key shown on your license when activating SecureInstaller.</p>
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6">
+      <h2 className="text-lg sm:text-xl font-bold mb-2">Your licenses</h2>
+      <p className="text-xs sm:text-sm text-gray-400 mb-6">Use the key shown on your license when activating SecureInstaller.</p>
       {(() => {
         const activeLicense = licenses.find(license => license.status === 'ACTIVE');
         if (!activeLicense) return null;
@@ -110,7 +110,7 @@ export const CustomerLicenses = () => {
         }
         
         return (
-          <a href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} download className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg font-medium">
+          <a href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} download className="mb-6 inline-flex items-center gap-2 px-4 py-2.5 bg-green-700 hover:bg-green-600 rounded-lg font-medium text-sm transition-colors">
             <Download className="w-4 h-4" /> Download SecureInstaller.exe
           </a>
         );
@@ -121,12 +121,12 @@ export const CustomerLicenses = () => {
         <p role="alert" className="text-sm text-red-400">Could not load licenses: {error}</p>
       ) : licenses.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-300 mb-4">No licenses have been issued to your account yet.</p>
-          <Link to="/dashboard/packages" className="inline-flex px-4 py-2 bg-green-700 hover:bg-green-800 rounded-lg font-medium">Browse packages</Link>
+          <p className="text-gray-300 mb-4 text-sm">No licenses have been issued to your account yet.</p>
+          <Link to="/dashboard/packages" className="inline-flex px-4 py-2 bg-green-700 hover:bg-green-800 rounded-lg font-medium text-sm">Browse packages</Link>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full min-w-[700px] text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-800 text-gray-400">
                 <th className="pb-3 pr-5 font-medium">Package</th>

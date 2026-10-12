@@ -282,10 +282,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
   }, []);
   
   return (
-    <div className="min-h-screen bg-[#030805] text-white flex relative overflow-hidden">
-      <AnimatedGlow />
-      <MatrixBackground />
-      
+    <div className="min-h-screen bg-transparent text-white flex relative overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -345,17 +342,17 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
-        <header className="h-16 border-b border-green-900/30 flex items-center px-4 md:px-8 bg-black/80 backdrop-blur shrink-0">
-          <button onClick={() => setSidebarOpen(true)} className="md:hidden mr-4 text-gray-400 hover:text-white p-2">
+        <header className="h-16 border-b border-green-900/30 flex items-center px-3 sm:px-6 md:px-8 bg-black/80 backdrop-blur shrink-0 gap-2">
+          <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-400 hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-gray-800/60" aria-label="Open Navigation Menu">
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold text-green-50 font-mono tracking-wide">{title}</h1>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="text-sm font-medium text-green-400 hidden sm:block">{userName}</span>
+          <h1 className="text-base sm:text-xl font-semibold text-green-50 font-mono tracking-wide truncate">{title}</h1>
+          <div className="ml-auto flex items-center gap-2 sm:gap-3 shrink-0">
+            <span className="text-xs sm:text-sm font-medium text-green-400 hidden sm:block max-w-[150px] truncate">{userName}</span>
             <div className="w-8 h-8 bg-[#0a0a0a] rounded-full flex items-center justify-center border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]"><User className="w-4 h-4 text-green-400" /></div>
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto ">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto w-full max-w-full">
           {children}
         </main>
       </div>
@@ -662,6 +659,7 @@ function App() {
 
       <div className="min-h-screen bg-[#030805] text-gray-100 font-sans relative overflow-hidden">
         <AnimatedGlow />
+        <MatrixBackground />
 
         {/* If Maintenance is ACTIVE and user is NOT Admin: lock out all routes and render MaintenancePage */}
         {maintenance.active && !isAdmin ? (

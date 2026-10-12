@@ -63,15 +63,15 @@ export const AdminCustomers = () => {
   if (loading) return <p className="text-gray-400">Loading customers...</p>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
-      <h2 className="text-xl font-bold mb-5">Customer Management</h2>
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6">
+      <h2 className="text-lg sm:text-xl font-bold mb-5">Customer Management</h2>
       {error ? (
         <p role="alert" className="text-sm text-red-400">Could not load customers: {error}</p>
       ) : customers.length === 0 ? (
         <p className="text-center py-8 text-gray-500">No customers have signed up yet.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full min-w-[650px] text-left border-collapse">
             <thead>
               <tr className="border-b border-gray-800 text-gray-400">
                 <th className="pb-3 pr-5 font-medium">Name</th>

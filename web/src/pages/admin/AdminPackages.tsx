@@ -186,32 +186,32 @@ export const AdminPackages = () => {
   if (loading) return <div className="text-gray-400">Loading package manager...</div>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 shadow-2xl">
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl">
       {/* Top Header */}
-      <div className="flex flex-wrap justify-between items-center gap-4 mb-6 pb-6 border-b border-gray-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-800">
         <div>
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400">
               <Package className="w-5 h-5" />
             </span>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Full Package Management</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Full Package Management</h2>
           </div>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-400 mt-1">
             Complete administrative control over all packages, codes, names, tools, adjustable month prices, and store visibility.
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             to="/dashboard/packages"
             target="_blank"
-            className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all hover:border-green-500/50 shadow-sm"
+            className="px-3 sm:px-4 py-2 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all hover:border-green-500/50 shadow-sm"
           >
-            <ExternalLink className="w-4 h-4 text-green-400" /> Preview Student Store
+            <ExternalLink className="w-4 h-4 text-green-400" /> Preview Store
           </Link>
           <button
             onClick={handleOpenCreate}
-            className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer"
+            className="px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Create Package
           </button>
@@ -219,8 +219,8 @@ export const AdminPackages = () => {
       </div>
 
       {/* Package Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table className="w-full min-w-[750px] text-left border-collapse">
           <thead>
             <tr className="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider">
               <th className="pb-3.5 font-semibold">Package Code</th>

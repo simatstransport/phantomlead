@@ -69,17 +69,18 @@ export const AdminWipeFolders = () => {
   if (loading) return <div className="text-gray-400">Loading customer data...</div>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-red-900/50 rounded-xl p-6 shadow-lg shadow-red-900/10">
+    <div className="bg-[#0a0a0a] border border-red-900/50 rounded-xl p-4 sm:p-6 shadow-lg shadow-red-900/10">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-red-500 flex items-center gap-2">
-            <MonitorX className="w-7 h-7" /> Delete Folder of User
+          <h2 className="text-xl sm:text-2xl font-bold text-red-500 flex items-center gap-2">
+            <MonitorX className="w-6 sm:w-7 h-6 sm:h-7" /> Delete Folder of User
           </h2>
-          <p className="text-sm text-gray-400 mt-1">Remotely trigger the deletion of proprietary extensions for any user.</p>
+          <p className="text-xs sm:text-sm text-gray-400 mt-1">Remotely trigger the deletion of proprietary extensions for any user.</p>
         </div>
       </div>
 
-      <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table className="w-full min-w-[700px] text-left border-collapse">
         <thead>
           <tr className="border-b border-red-900/30 text-gray-400">
             <th className="pb-3 font-medium">Customer Details</th>
@@ -150,6 +151,7 @@ export const AdminWipeFolders = () => {
           {licenses.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-500">No users found.</td></tr>}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };

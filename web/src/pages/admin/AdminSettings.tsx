@@ -67,11 +67,11 @@ export const AdminSettings = () => {
   if (loading) return <div className="text-gray-400">Loading settings...</div>;
 
   return (
-    <div className="max-w-3xl bg-[#0a0a0a] border border-gray-800 rounded-xl p-6 shadow-xl">
-      <div className="flex items-center justify-between pb-6 mb-6 border-b border-gray-800">
+    <div className="max-w-3xl bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6 shadow-xl">
+      <div className="flex items-center justify-between pb-4 sm:pb-6 mb-4 sm:mb-6 border-b border-gray-800">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-green-400" /> Platform Settings
+          <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+            <ShieldCheck className="w-5 sm:w-6 h-5 sm:h-6 text-green-400" /> Platform Settings
           </h2>
           <p className="text-xs text-gray-400 mt-1">
             Global controls for Maintenance Mode, end-time scheduling, user signups, and branding.

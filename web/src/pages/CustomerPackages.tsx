@@ -241,17 +241,17 @@ export const CustomerPackages = () => {
   if (loading) return <div className="text-gray-400">Loading available packages...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto px-1 sm:px-2">
       {step === 1 && (
         <>
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-extrabold mb-3 text-white tracking-tight">Available Packages & Adjustable Durations</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-sm">
+          <div className="mb-6 sm:mb-8 text-center px-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3 text-white tracking-tight">Available Packages & Adjustable Durations</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto text-xs sm:text-sm">
               Select your package and freely customize the duration from 1 month to 24 months, or choose Lifetime Access.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
               const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
@@ -260,7 +260,7 @@ export const CustomerPackages = () => {
               const isSliderOpen = customSliderActive[pkg.id] || false;
 
               return (
-                <div key={pkg.id} className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-7 flex flex-col hover:border-green-600/50 transition-all shadow-xl relative overflow-hidden group">
+                <div key={pkg.id} className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-5 sm:p-7 flex flex-col hover:border-green-600/50 transition-all shadow-xl relative overflow-hidden group">
                   <div className="mb-6 flex-1">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-2">
@@ -434,9 +434,9 @@ export const CustomerPackages = () => {
       )}
 
       {step === 2 && (
-        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold mb-2 text-white">Student Details</h2>
-          <p className="text-sm text-gray-400 mb-6">
+        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-white">Student Details</h2>
+          <p className="text-xs sm:text-sm text-gray-400 mb-6">
             Purchasing: <span className="text-white font-bold">{selectedPackage?.package_name} ({selectedLabel})</span> · <span className="text-green-400 font-extrabold text-base">₹{selectedPrice}</span>
           </p>
           <form onSubmit={handleDetailsSubmit} className="space-y-4">
@@ -504,9 +504,9 @@ export const CustomerPackages = () => {
       )}
 
       {step === 3 && (
-        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-8 shadow-2xl">
+        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold mb-1.5 text-white">UPI Payment</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-1.5 text-white">UPI Payment</h2>
             <p className="text-gray-400 text-xs">
               Complete your payment for <span className="text-white font-bold">{selectedPackage?.package_name} ({selectedLabel})</span>.
             </p>

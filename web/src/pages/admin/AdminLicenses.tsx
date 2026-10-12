@@ -106,12 +106,13 @@ export const AdminLicenses = () => {
   if (loading) return <div className="text-gray-400">Loading licenses...</div>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Global License Management</h2>
-        <button onClick={handleOpenModal} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium">Generate FREE License</button>
+    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 className="text-lg sm:text-xl font-bold">Global License Management</h2>
+        <button onClick={handleOpenModal} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs sm:text-sm font-medium w-full sm:w-auto">Generate FREE License</button>
       </div>
-      <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table className="w-full min-w-[650px] text-left border-collapse">
         <thead>
           <tr className="border-b border-gray-800 text-gray-400">
             <th className="pb-3 font-medium">Customer</th>
@@ -182,6 +183,7 @@ export const AdminLicenses = () => {
           {licenses.length === 0 && <tr><td colSpan={5} className="py-4 text-center text-gray-500">No licenses found.</td></tr>}
         </tbody>
       </table>
+      </div>
 
       {/* Generate Free License Modal */}
       {isModalOpen && (

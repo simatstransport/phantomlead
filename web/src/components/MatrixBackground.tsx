@@ -10,60 +10,89 @@ export const MatrixBackground = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    let animationFrameId: number;
+    let width = 0;
+    let height = 0;
+    const fontSize = 14;
+    let columns = 0;
+    let drops: number[] = [];
 
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
     const charArray = chars.split('');
-    const fontSize = 14;
-    let columns = width / fontSize;
-    const drops: number[] = [];
 
-    for (let x = 0; x < columns; x++) {
-      drops[x] = 1;
-    }
+    const setupCanvas = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
 
-    const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.scale(dpr, dpr);
+
+      columns = Math.floor(width / fontSize);
+      drops = [];
+      for (let x = 0; x < columns; x++) {
+        drops[x] = Math.floor(Math.random() * -50);
+      }
+    };
+
+    setupCanvas();
+
+    let lastTime = 0;
+    const fpsInterval = 1000 / 30; // 30 FPS for smooth, battery-friendly mobile rendering
+
+    const render = (time: number) => {
+      animationFrameId = requestAnimationFrame(render);
+
+      const elapsed = time - lastTime;
+      if (elapsed < fpsInterval) return;
+      lastTime = time - (elapsed % fpsInterval);
+
+      ctx.fillStyle = 'rgba(3, 8, 5, 0.08)';
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = '#0f0'; // pure green
+      ctx.fillStyle = '#00ff41'; // Matrix neon green
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
         const text = charArray[Math.floor(Math.random() * charArray.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
 
-        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+        if (y > 0) {
+          ctx.fillText(text, x, y);
+        }
+
+        if (y > height && Math.random() > 0.975) {
           drops[i] = 0;
         }
         drops[i]++;
       }
     };
 
-    const interval = setInterval(draw, 33);
+    animationFrameId = requestAnimationFrame(render);
 
     const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      columns = width / fontSize;
-      for (let x = drops.length; x < columns; x++) {
-        drops[x] = 1;
-      }
+      setupCanvas();
     };
 
     window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
 
     return () => {
-      clearInterval(interval);
+      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
     };
   }, []);
 
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
+      className="fixed inset-0 pointer-events-none opacity-[0.05] sm:opacity-[0.06] z-0 block w-full h-full"
     />
   );
 };

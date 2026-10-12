@@ -73,13 +73,13 @@ export const MaintenancePage = ({ endTime, message, onCheckStatus }: Maintenance
   })() : null;
 
   return (
-    <div className="min-h-screen bg-[#040805] text-gray-100 flex flex-col justify-between items-center p-6 relative overflow-hidden font-sans select-none">
+    <div className="min-h-screen bg-transparent text-gray-100 flex flex-col justify-between items-center p-4 sm:p-6 relative overflow-hidden font-sans select-none">
       {/* Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-green-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-72 sm:h-96 bg-green-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-60 sm:w-80 h-60 sm:h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Top Bar Branding */}
-      <header className="w-full max-w-4xl flex justify-between items-center pt-4 z-10">
+      <header className="w-full max-w-4xl flex justify-between items-center pt-2 sm:pt-4 z-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-black border border-green-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]">
             <Shield className="w-5 h-5 text-green-400" />

@@ -2,10 +2,10 @@ import { Key, Shield, Download, BookOpen , AlertTriangle } from 'lucide-react';
 
 export const CustomerInstallation = () => {
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      <div className="bg-[#0a0a0a] border border-green-500/30 rounded-xl p-8 shadow-[0_0_15px_rgba(34,197,94,0.05)]">
-        <h2 className="text-2xl font-bold mb-8 flex items-center text-green-50">
-          <BookOpen className="w-6 h-6 mr-3 text-green-400" /> User Manual & Complete Installation Guide
+    <div className="max-w-4xl mx-auto space-y-6 pb-12 px-1 sm:px-2">
+      <div className="bg-[#0a0a0a] border border-green-500/30 rounded-xl p-4 sm:p-8 shadow-[0_0_15px_rgba(34,197,94,0.05)]">
+        <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 flex items-center text-green-50">
+          <BookOpen className="w-5 sm:w-6 h-5 sm:h-6 mr-2 sm:mr-3 text-green-400 shrink-0" /> User Manual & Installation Guide
         </h2>
 
           <div className="mt-8 mb-8 bg-red-950/30 border border-red-900/50 rounded-xl p-6">
