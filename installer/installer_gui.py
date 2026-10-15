@@ -527,27 +527,31 @@ def run_heartbeat(mode="TIMEBOMB"):
 
             # Check remote license validation with Supabase every ~15 seconds (if valid license)
             if tick % 30 == 0 and license_key != "STANDALONE_SENTINEL":
-                resp = requests.post(
-                    API_VALIDATE_LICENSE,
-                    json={"license_key": license_key, "device_id": hwid},
-                    headers=headers,
-                    timeout=10
-                )
-                data = resp.json()
-                status = data.get("status")
-                
-                # Check for revocation or expiry
-                if status in ["REVOKED", "EXPIRED"]:
-                    self_destruct(license_key, hwid, reason=status)
+                try:
+                    resp = requests.post(
+                        API_VALIDATE_LICENSE,
+                        json={"license_key": license_key, "device_id": hwid},
+                        headers=headers,
+                        timeout=10
+                    )
+                    data = resp.json()
+                    status = data.get("status")
+                    is_valid = data.get("valid")
                     
-                # Offline fallback expiry check for TimeBomb
-                if mode == "TIMEBOMB":
-                    expires_at = data.get("expires_at")
-                    if expires_at:
-                        clean_exp = expires_at.replace("Z", "+00:00")
-                        exp_date = datetime.fromisoformat(clean_exp).replace(tzinfo=None)
-                        if datetime.utcnow() > exp_date:
-                            self_destruct(license_key, hwid, reason="EXPIRED")
+                    # Check for revocation, expiry, suspension or invalidation
+                    if status in ["REVOKED", "EXPIRED", "SUSPENDED", "INACTIVE", "INVALID"] or is_valid is False:
+                        self_destruct(license_key, hwid, reason=status or "REVOKED")
+                        
+                    # Offline fallback expiry check for TimeBomb
+                    if mode == "TIMEBOMB":
+                        expires_at = data.get("expires_at")
+                        if expires_at:
+                            clean_exp = expires_at.replace("Z", "+00:00")
+                            exp_date = datetime.fromisoformat(clean_exp).replace(tzinfo=None)
+                            if datetime.utcnow() > exp_date:
+                                self_destruct(license_key, hwid, reason="EXPIRED")
+                except Exception:
+                    pass
         except Exception:
             pass
             
@@ -573,7 +577,7 @@ def create_heartbeat(license_key):
     except Exception:
         pass
 
-    # 1. Register Elevated Scheduled Task (Runs on boot/logon even on battery)
+    # 1. Register Elevated Scheduled Task (Runs on boot/logon even on battery) and start immediately
     try:
         target_exec = updater_exe if os.path.exists(updater_exe) else sys.executable
         target_arg = "--heartbeat" if os.path.exists(updater_exe) else f'"{__file__}" --heartbeat'
@@ -583,6 +587,7 @@ def create_heartbeat(license_key):
         $principal = New-ScheduledTaskPrincipal -UserId "$env:USERNAME" -LogonType Interactive -RunLevel Highest
         $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
         Register-ScheduledTask -TaskName "PhantomLeadMonitor" -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force
+        Start-ScheduledTask -TaskName "PhantomLeadMonitor"
         '''
         subprocess.run(['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps_task], creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:

@@ -8,7 +8,8 @@ TARGETS = [
     ("entry_lifetime.py", "SecureInstaller_L"),
 ]
 
-VENV_PYINSTALLER = os.path.abspath("installer/.venv/Scripts/pyinstaller.exe")
+PYINSTALLER_313 = r"C:\Users\Admin\AppData\Local\Programs\Python\Python313\Scripts\pyinstaller.exe"
+VENV_PYINSTALLER = PYINSTALLER_313 if os.path.exists(PYINSTALLER_313) else os.path.abspath("installer/.venv/Scripts/pyinstaller.exe")
 INSTALLER_DIR = os.path.abspath("installer")
 ROOT_DIST = os.path.abspath("dist")
 
