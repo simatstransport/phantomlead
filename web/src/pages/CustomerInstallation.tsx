@@ -1,4 +1,4 @@
-import { Key, Shield, Download, BookOpen , AlertTriangle } from 'lucide-react';
+import { Key, Shield, Download, BookOpen, AlertTriangle, Lightbulb, RefreshCw } from 'lucide-react';
 
 export const CustomerInstallation = () => {
   return (
@@ -115,6 +115,40 @@ export const CustomerInstallation = () => {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </section>
+
+          {/* Pro Tips / Troubleshooting */}
+          <section className="mt-8 border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-transparent rounded-xl p-5 sm:p-6 shadow-[0_0_15px_rgba(245,158,11,0.08)]">
+            <h3 className="text-lg font-bold mb-3 text-amber-400 flex items-center">
+              <Lightbulb className="w-5 h-5 mr-2 text-amber-400" /> Pro Tip: Error While Loading Answers? (API Key Quota Limit)
+            </h3>
+            
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">
+              If you get an error while loading answers inside Safe Exam Browser, it is due to your <strong>Google Gemini API key daily request limit being exhausted</strong>. Free-tier API keys automatically reset after <strong>8 to 18 hours</strong>.
+            </p>
+
+            <div className="bg-black/60 border border-amber-500/20 rounded-lg p-4 space-y-3">
+              <h4 className="font-semibold text-amber-300 flex items-center text-xs uppercase tracking-wider">
+                <RefreshCw className="w-4 h-4 mr-1.5 text-amber-400" /> Need it working immediately? Follow these steps:
+              </h4>
+              <ol className="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-gray-300">
+                <li>
+                  Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-amber-400 underline underline-offset-2 hover:text-amber-300 font-medium">Google AI Studio API Keys</a>, delete your old API key, and create a <strong>new API key</strong> (or sign in with a different Google account).
+                </li>
+                <li>
+                  Launch your <strong>SecureInstaller.exe</strong> on your computer again.
+                </li>
+                <li>
+                  Enter your <strong>same License Key</strong> (from the My Licenses tab) and paste the <strong>new API key</strong> there.
+                </li>
+                <li>
+                  Click Install and let it finish setup.
+                </li>
+                <li>
+                  Relaunch <strong>Safe Exam Browser</strong> — your extensions will run smoothly with fast answer generation again!
+                </li>
+              </ol>
             </div>
           </section>
         </div>
