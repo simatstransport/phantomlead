@@ -101,9 +101,9 @@ export const CustomerLicenses = () => {
         if (!activeLicense) return null;
         
         let installerName = 'SecureInstaller_L.exe';
-        if (activeLicense.expires_at) {
+        if (activeLicense.expires_at || (activeLicense.duration_months && activeLicense.duration_months > 0)) {
           installerName = 'SecureInstaller_T.exe';
-        } else if (activeLicense.payment_type === 'FREE') {
+        } else if (activeLicense.duration_months === 0) {
           installerName = 'SecureInstaller_A.exe';
         } else {
           installerName = 'SecureInstaller_L.exe';
@@ -150,7 +150,7 @@ export const CustomerLicenses = () => {
                 } else if (license.expires_at) {
                   installerName = 'SecureInstaller_T.exe';
                   editionLabel = 'Time-Bomb Term';
-                } else if (license.payment_type === 'FREE') {
+                } else if (license.duration_months === 0) {
                   installerName = 'SecureInstaller_A.exe';
                   editionLabel = 'Admin Managed';
                 } else {

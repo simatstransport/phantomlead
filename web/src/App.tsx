@@ -237,7 +237,7 @@ const useHasActiveLicense = (isAdmin: boolean) => {
 
         const { data: licenses, count, error } = await supabase
           .from('licenses')
-          .select('id, duration_months, payment_type', { count: 'exact' })
+          .select('id, duration_months, payment_type, expires_at', { count: 'exact' })
           .eq('customer_id', customer.id)
           .eq('status', 'ACTIVE');
 
@@ -391,10 +391,10 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             let installerName = 'SecureInstaller_L.exe';
             
             if (licenseDetails) {
-              if (licenseDetails.duration_months > 0) {
+              if ((licenseDetails.duration_months && licenseDetails.duration_months > 0) || licenseDetails.expires_at) {
                 installerName = 'SecureInstaller_T.exe'; // Time-Bomb
               } else if (licenseDetails.duration_months === 0) {
-                installerName = 'SecureInstaller_A.exe'; // Admin Controlled (Free)
+                installerName = 'SecureInstaller_A.exe'; // Admin Controlled (0)
               } else {
                 installerName = 'SecureInstaller_L.exe'; // True Lifetime (-1 or null)
               }
