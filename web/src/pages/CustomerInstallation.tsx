@@ -620,50 +620,71 @@ export const CustomerInstallation = () => {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-amber-200 flex items-center gap-2">
-                  Pro-Tip: "Error While Loading Answers" (Gemini Quota Reset)
+                  💡 Pro Tip: Error While Loading Answers? (API Key Quota Limit)
                 </h3>
                 <p className="text-xs text-zinc-400">
-                  Free-tier Google Gemini API keys are subject to daily request limits. Here is how to restore instant answers:
+                  Quick troubleshooting for Google Gemini free-tier daily rate limits.
                 </p>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-              If an error appears inside SEB while requesting answers, your Google AI Studio free tier quota has reached its daily limit. Quotas reset automatically after 8 to 18 hours, or you can rotate to a fresh key instantly:
+            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed">
+              If you get an error while loading answers inside Safe Exam Browser, it is due to your <strong>Google Gemini API key daily request limit being exhausted</strong>. Free-tier API keys automatically reset after <strong>8 to 18 hours</strong>.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2">
-              <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800 space-y-1.5">
-                <span className="font-mono text-amber-400 font-bold text-xs">01</span>
-                <p className="text-xs font-semibold text-zinc-200">Open Studio</p>
-                <p className="text-[11px] text-zinc-400">Visit Google AI Studio or switch to an alternate Google account.</p>
-              </div>
+            <div className="p-4 sm:p-5 rounded-xl bg-black/60 border border-amber-500/30 space-y-3">
+              <h4 className="font-mono text-xs uppercase tracking-wider text-amber-300 font-bold flex items-center gap-1.5">
+                ⚡ Need it working immediately? Follow these steps:
+              </h4>
 
-              <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800 space-y-1.5">
-                <span className="font-mono text-amber-400 font-bold text-xs">02</span>
-                <p className="text-xs font-semibold text-zinc-200">Generate Key</p>
-                <p className="text-[11px] text-zinc-400">Generate a new API key from the studio dashboard.</p>
-              </div>
+              <ol className="space-y-3 text-xs sm:text-sm text-zinc-300">
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-700/60 px-2 py-0.5 rounded text-xs shrink-0">
+                    1
+                  </span>
+                  <span>
+                    Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-amber-400 font-semibold underline underline-offset-2 hover:text-amber-300">Google AI Studio API Keys</a>, delete your old API key, and create a <strong>new API key</strong> (or sign in with a different Google account).
+                  </span>
+                </li>
 
-              <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800 space-y-1.5">
-                <span className="font-mono text-amber-400 font-bold text-xs">03</span>
-                <p className="text-xs font-semibold text-zinc-200">Run Installer</p>
-                <p className="text-[11px] text-zinc-400">Launch SecureInstaller.exe again on your computer.</p>
-              </div>
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-700/60 px-2 py-0.5 rounded text-xs shrink-0">
+                    2
+                  </span>
+                  <span>
+                    Launch your <strong className="text-white">SecureInstaller.exe</strong> on your computer again.
+                  </span>
+                </li>
 
-              <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800 space-y-1.5">
-                <span className="font-mono text-amber-400 font-bold text-xs">04</span>
-                <p className="text-xs font-semibold text-zinc-200">Paste &amp; Update</p>
-                <p className="text-[11px] text-zinc-400">Enter your existing License Key and the new Gemini API Key.</p>
-              </div>
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-700/60 px-2 py-0.5 rounded text-xs shrink-0">
+                    3
+                  </span>
+                  <span>
+                    Enter your <strong className="text-white">same License Key</strong> (found in your My Licenses tab) and paste the <strong className="text-white">new API key</strong> there.
+                  </span>
+                </li>
 
-              <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800 space-y-1.5">
-                <span className="font-mono text-amber-400 font-bold text-xs">05</span>
-                <p className="text-xs font-semibold text-zinc-200">Relaunch SEB</p>
-                <p className="text-[11px] text-zinc-400">Open Safe Exam Browser. Answers will now generate immediately!</p>
-              </div>
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-700/60 px-2 py-0.5 rounded text-xs shrink-0">
+                    4
+                  </span>
+                  <span>
+                    Click <strong className="text-green-400">Install</strong> and let it finish the setup.
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-700/60 px-2 py-0.5 rounded text-xs shrink-0">
+                    5
+                  </span>
+                  <span className="text-green-300">
+                    Relaunch <strong>Safe Exam Browser</strong> — your extensions will run smoothly with fast answer generation again!
+                  </span>
+                </li>
+              </ol>
             </div>
           </div>
         </section>
