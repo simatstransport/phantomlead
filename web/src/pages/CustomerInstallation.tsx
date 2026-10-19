@@ -29,10 +29,43 @@ export const CustomerInstallation = () => {
         <div className="space-y-10">
           <section>
             <h3 className="text-lg font-semibold mb-3 text-red-400 flex items-center">
-              <Shield className="w-5 h-5 mr-2" /> Step 1: Before Installation
+              <Shield className="w-5 h-5 mr-2" /> Step 1: Before Installation (Disable Real-Time Protection)
             </h3>
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-sm text-gray-200">
-              <strong>CRITICAL REQUIREMENT:</strong> You must completely turn off your Antivirus software and Windows Device Protections (Windows Defender) before downloading or running the installer. Secure tools often get incorrectly flagged by aggressive heuristic scanners.
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-5 text-sm text-gray-200 space-y-4">
+              <div className="flex items-start gap-2.5">
+                <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-red-300 block text-base font-bold mb-1">
+                    CRITICAL REQUIREMENT: Turn Off Windows Real-Time Protection
+                  </strong>
+                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                    Before downloading or running SecureInstaller, you must turn off <strong>Real-time protection</strong> in Windows Defender. Secure tools and custom background extensions get falsely flagged and blocked by Windows heuristic scanners.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-black/60 border border-red-900/40 rounded-lg p-4 space-y-3">
+                <h4 className="text-xs uppercase font-bold tracking-wider text-red-300 flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-red-400" /> Follow these exact steps in Windows:
+                </h4>
+                <ol className="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-gray-200">
+                  <li>
+                    Open <strong>Windows Security</strong> (search for <em>"Windows Security"</em> in your Windows Start menu or taskbar).
+                  </li>
+                  <li>
+                    Click on <strong>Virus &amp; threat protection</strong>.
+                  </li>
+                  <li>
+                    Under <strong>Virus &amp; threat protection settings</strong>, click on <span className="text-red-300 font-semibold underline underline-offset-2">Manage settings</span>.
+                  </li>
+                  <li>
+                    Toggle <strong>Real-time protection</strong> to <strong className="text-red-400 font-extrabold bg-red-950/60 px-2 py-0.5 rounded border border-red-800">OFF</strong>!
+                  </li>
+                </ol>
+                <div className="mt-2 pt-2 border-t border-gray-800 text-[11px] text-gray-400 flex items-center gap-1.5">
+                  <span className="text-amber-400 font-bold">⚠️ Note:</span> If you have third-party antivirus installed (e.g., McAfee, Quick Heal, Avast, Kaspersky, Norton), temporarily pause or disable its real-time protection shield as well.
+                </div>
+              </div>
             </div>
           </section>
     

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, Copy, Check, Clock, Calendar, ShieldCheck, Laptop, AlertTriangle, Sparkles } from 'lucide-react';
+import { Download, Copy, Check, Clock, Calendar, ShieldCheck, Laptop, AlertTriangle, Sparkles, BookOpen } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
 
@@ -405,16 +405,26 @@ export const CustomerLicenses = () => {
 
             {/* Bottom Actions */}
             <div className="pt-4 border-t border-gray-800/80 flex flex-wrap items-center justify-between gap-4">
-              <a
-                href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`}
-                download={installerName}
-                className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-sm transition-all shadow-[0_0_15px_rgba(34,197,94,0.35)] cursor-pointer"
-              >
-                <Download className="w-4 h-4" /> Download {installerName}
-                <span className="text-xs font-normal text-green-100 bg-green-700/60 px-2 py-0.5 rounded ml-1">
-                  {editionLabel}
-                </span>
-              </a>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`}
+                  download={installerName}
+                  className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold text-sm transition-all shadow-[0_0_15px_rgba(34,197,94,0.35)] cursor-pointer"
+                >
+                  <Download className="w-4 h-4" /> Download {installerName}
+                  <span className="text-xs font-normal text-green-100 bg-green-700/60 px-2 py-0.5 rounded ml-1">
+                    {editionLabel}
+                  </span>
+                </a>
+
+                <Link
+                  to="/dashboard/install"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-gray-200 hover:text-white rounded-lg text-sm font-medium border border-zinc-700 transition-colors"
+                >
+                  <BookOpen className="w-4 h-4 text-green-400" />
+                  <span>Installation Manual &amp; Shortcuts</span>
+                </Link>
+              </div>
 
               {(activeLicense.expires_at || activeLicense.duration_months === -10 || (activeLicense.duration_months && activeLicense.duration_months > 0)) && (
                 <div className="flex items-center gap-2 text-xs text-amber-300/90 bg-amber-950/20 border border-amber-900/40 px-3 py-1.5 rounded-lg max-w-xl">
