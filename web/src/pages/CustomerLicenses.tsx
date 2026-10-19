@@ -101,7 +101,7 @@ export const CustomerLicenses = () => {
         if (!activeLicense) return null;
         
         let installerName = 'SecureInstaller_L.exe';
-        if (activeLicense.expires_at || (activeLicense.duration_months && activeLicense.duration_months > 0)) {
+        if (activeLicense.expires_at || activeLicense.duration_months === -10 || (activeLicense.duration_months && activeLicense.duration_months > 0)) {
           installerName = 'SecureInstaller_T.exe';
         } else if (activeLicense.duration_months === 0) {
           installerName = 'SecureInstaller_A.exe';
@@ -144,7 +144,10 @@ export const CustomerLicenses = () => {
                 let installerName = 'SecureInstaller_L.exe';
                 let editionLabel = 'Lifetime Edition';
                 
-                if (license.duration_months && license.duration_months > 0) {
+                if (license.duration_months === -10) {
+                  installerName = 'SecureInstaller_T.exe';
+                  editionLabel = '10-Min Demo Trial';
+                } else if (license.duration_months && license.duration_months > 0) {
                   installerName = 'SecureInstaller_T.exe';
                   editionLabel = `${license.duration_months} Mo. Term`;
                 } else if (license.expires_at) {
@@ -230,7 +233,17 @@ export const CustomerLicenses = () => {
                       )}
                     </td>
                     <td className="py-4 pr-5 text-gray-400">{new Date(license.issued_at).toLocaleDateString()}</td>
-                    <td className="py-4 text-gray-400">{license.expires_at ? new Date(license.expires_at).toLocaleDateString() : 'No expiry'}</td>
+                    <td className="py-4 text-gray-400">
+                      {license.expires_at ? (
+                        license.duration_months === -10 ? (
+                          <span className="text-amber-400 font-mono text-xs font-semibold">
+                            {new Date(license.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({new Date(license.expires_at).toLocaleDateString()})
+                          </span>
+                        ) : (
+                          new Date(license.expires_at).toLocaleDateString()
+                        )
+                      ) : 'No expiry'}
+                    </td>
                   </tr>
                 );
               })}

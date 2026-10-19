@@ -64,7 +64,11 @@ serve(async (req) => {
     ])
 
     let expires_at = null
-    if (typeof duration_months === 'number' && duration_months > 0) {
+    if (duration_months === -10) {
+      // 10-Minute Demo Trial: set initial 24-hour expiration window until student activates installer
+      const date = new Date(Date.now() + 24 * 60 * 60 * 1000)
+      expires_at = date.toISOString()
+    } else if (typeof duration_months === 'number' && duration_months > 0) {
       const date = new Date()
       date.setMonth(date.getMonth() + duration_months)
       expires_at = date.toISOString()

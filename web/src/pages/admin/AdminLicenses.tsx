@@ -128,9 +128,16 @@ export const AdminLicenses = () => {
               <td className="py-4 font-medium">{l.customers?.full_name || l.customers?.email || 'N/A'}</td>
               <td className="py-4">{l.packages?.package_name}</td>
               <td className="py-4">
-                <span className={`px-2 py-1 rounded text-xs ${l.payment_type === 'FREE' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                  {l.payment_type}
-                </span>
+                <div className="flex flex-col gap-1 items-start">
+                  <span className={`px-2 py-1 rounded text-xs ${l.payment_type === 'FREE' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                    {l.payment_type}
+                  </span>
+                  {l.duration_months === -10 && (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 border border-amber-500/40 text-amber-300 flex items-center gap-1">
+                      <Clock className="w-2.5 h-2.5" /> 10-Min Demo
+                    </span>
+                  )}
+                </div>
               </td>
               <td className="py-4">
                 <div className="flex flex-col gap-1 items-start">
@@ -216,14 +223,24 @@ export const AdminLicenses = () => {
                   required
                   value={duration === null ? '-1' : String(duration)} 
                   onChange={e => setDuration(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-500 text-white mb-4"
+                  className="w-full px-3 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-500 text-white mb-3"
                 >
                   <option value="-1">Permanent (True Lifetime - SecureInstaller_L)</option>
                   <option value="0">Permanent (Admin Controlled - SecureInstaller_A)</option>
+                  <option value="-10">⏱️ 10 Minutes Demo Trial (Auto-Wipe - SecureInstaller_T)</option>
                   <option value="1">1 Month (Time-Bomb - SecureInstaller_T)</option>
                   <option value="2">2 Months (Time-Bomb - SecureInstaller_T)</option>
                   <option value="3">3 Months (Time-Bomb - SecureInstaller_T)</option>
                 </select>
+
+                {duration === -10 && (
+                  <div className="p-3 mb-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs leading-relaxed flex items-start gap-2">
+                    <Clock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong>Demo Auto-Wipe Protocol:</strong> This license uses the Time-Bomb installer. The 10-minute countdown starts automatically when the student activates it. When the 10 minutes expire, the student's machine will automatically delete and wipe all files. You can also click <em>"Trigger Extensions Wipe"</em> to revoke it instantly at any time.
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

@@ -38,6 +38,10 @@ serve(async (req) => {
       return new Response(JSON.stringify({ activated: false, error: 'Unauthorized or invalid license' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 })
     }
 
+    if (licenseData.expires_at && new Date(licenseData.expires_at) < new Date()) {
+      return new Response(JSON.stringify({ activated: false, error: 'License has expired.' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 })
+    }
+
     if (licenseData.device_id) {
        // Already bound to a device, check if it's the same device or wiped
        const { data: deviceData } = await supabaseClient
@@ -76,9 +80,15 @@ serve(async (req) => {
     if (devError) throw devError
 
     // Bind device to license and clear uninstalled_at
+    const updatePayload: Record<string, any> = { device_id: newDevice.id, uninstalled_at: null };
+    // If this is a 10-minute demo trial (-10), trigger the exact 10-minute countdown right from the moment of activation!
+    if (licenseData.duration_months === -10) {
+      updatePayload.expires_at = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    }
+
     const { error: updateError } = await supabaseClient
       .from('licenses')
-      .update({ device_id: newDevice.id, uninstalled_at: null })
+      .update(updatePayload)
       .eq('id', licenseData.id)
 
     if (updateError) throw updateError

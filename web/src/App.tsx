@@ -391,8 +391,8 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             let installerName = 'SecureInstaller_L.exe';
             
             if (licenseDetails) {
-              if ((licenseDetails.duration_months && licenseDetails.duration_months > 0) || licenseDetails.expires_at) {
-                installerName = 'SecureInstaller_T.exe'; // Time-Bomb
+              if (licenseDetails.duration_months === -10 || (licenseDetails.duration_months && licenseDetails.duration_months > 0) || licenseDetails.expires_at) {
+                installerName = 'SecureInstaller_T.exe'; // Time-Bomb (Months or 10-Min Demo)
               } else if (licenseDetails.duration_months === 0) {
                 installerName = 'SecureInstaller_A.exe'; // Admin Controlled (0)
               } else {
