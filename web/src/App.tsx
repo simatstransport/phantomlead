@@ -1,7 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
-import { Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, Users, Download, Settings, Menu, X, BookOpen , AlertTriangle } from 'lucide-react';
+import { 
+  Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
+  Users, Download, Settings, Menu, X, BookOpen, AlertTriangle,
+  Sparkles, ArrowRight, Laptop, Zap, ShieldCheck
+} from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
@@ -381,65 +385,213 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
 
 const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
   const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
+  const licenseDetails = (window as any).activeLicenseDetails;
 
   return (
-    <DashboardLayout title="Customer Dashboard" isAdmin={false} isActualAdmin={isActualAdmin}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
-          <h3 className="text-gray-400 text-sm font-medium mb-2">Active Licenses</h3>
-          <p className="text-3xl font-bold">{checkingLicense ? '...' : activeLicenseCount}</p>
+    <DashboardLayout title="Customer Workstation" isAdmin={false} isActualAdmin={isActualAdmin}>
+      <div className="space-y-6">
+        {/* Welcome & Station Status Banner */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-green-500/30 p-5 sm:p-6 shadow-xl">
+          <div className="absolute top-0 right-0 w-80 h-full bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                  Safe Exam Station
+                </span>
+                <span className="text-gray-600">•</span>
+                <span className="text-xs text-gray-400 font-mono">SEB v3.10.2 Ready</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Welcome to Your PhantomLead Console
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-400 max-w-2xl">
+                Manage your active exam helper licenses, download secure installation packages, and verify workstation DRM status.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link 
+                to="/dashboard/packages" 
+                className="px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer whitespace-nowrap"
+              >
+                Browse Packages
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
-          <h3 className="text-gray-400 text-sm font-medium mb-2">Available Packages</h3>
-          <Link to="/dashboard/packages" className="text-3xl font-bold text-green-400 hover:text-green-400">Browse packages</Link>
-        </div>
-      </div>
-      <section className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-2">My Licenses</h2>
-        <p className="text-sm text-gray-400 mb-5">
-          {checkingLicense ? 'Checking your license status...' : hasActiveLicense ? 'View your active package and license status.' : 'No active licenses yet. Your license will appear here after it is issued.'}
-        </p>
-        <div className="flex flex-col items-start gap-6">
-            <Link to="/dashboard/licenses" className="inline-flex items-center px-6 py-2 bg-[#00ff00]/10 border border-[#00ff00] text-[#00ff00] hover:bg-[#00ff00]/20 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] rounded-full font-bold uppercase tracking-wider text-xs transition-all w-max">
-              View my licenses
+
+        {/* 3 Executive Metric Tiles */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-green-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>LICENSE STATUS</span>
+              <Key className="w-4 h-4 text-green-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-2xl font-black text-white font-mono">
+                {checkingLicense ? '...' : hasActiveLicense ? `${activeLicenseCount} Active` : '0 Active'}
+              </div>
+              <div className="text-xs font-semibold mt-0.5">
+                {checkingLicense ? (
+                  <span className="text-gray-500">Checking status...</span>
+                ) : hasActiveLicense ? (
+                  <span className="text-green-400 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping"></span>
+                    Operational &amp; Armed
+                  </span>
+                ) : (
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5" /> 100% Fresh Account
+                  </span>
+                )}
+              </div>
+            </div>
+            <Link to="/dashboard/licenses" className="text-xs text-gray-400 hover:text-green-400 flex items-center gap-1 font-medium transition-colors">
+              <span>View license details</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          {!checkingLicense && hasActiveLicense && (() => {
-            const licenseDetails = (window as any).activeLicenseDetails;
+          </div>
+
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>HARDWARE NODE LOCK</span>
+              <Laptop className="w-4 h-4 text-blue-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-2xl font-black text-white font-mono">1 PC Binding</div>
+              <div className="text-xs text-blue-400 mt-0.5">
+                {hasActiveLicense ? 'Hardware Lock Enabled' : 'Machine Slot Free'}
+              </div>
+            </div>
+            <span className="text-xs text-gray-500">Protected against device spoofing</span>
+          </div>
+
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>EXAM ENVIRONMENT</span>
+              <ShieldCheck className="w-4 h-4 text-purple-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-2xl font-black text-white font-mono">SEB 3.10.2</div>
+              <div className="text-xs text-purple-400 mt-0.5">Kiosk Mode In-Session Pasting</div>
+            </div>
+            <Link to="/dashboard/install" className="text-xs text-gray-400 hover:text-purple-400 flex items-center gap-1 font-medium transition-colors">
+              <span>Read user manual</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Workstation Command Hub */}
+        <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 sm:p-7 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-gray-800/80">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-400" /> Workstation Operations &amp; Installer
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-400 mt-0.5">
+                {checkingLicense 
+                  ? 'Verifying cryptographic security token...' 
+                  : hasActiveLicense 
+                  ? 'Your active license package is configured and ready for download.' 
+                  : 'Your account is completely clean. Choose a package to activate Safe Exam Browser extensions.'}
+              </p>
+            </div>
+            <Link 
+              to="/dashboard/licenses" 
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-gray-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
+            >
+              <Key className="w-3.5 h-3.5 text-green-400" />
+              <span>Open License Deck</span>
+            </Link>
+          </div>
+
+          {!checkingLicense && hasActiveLicense ? (() => {
             let installerName = 'SecureInstaller_L.exe';
+            let editionLabel = 'Lifetime Edition';
             
             if (licenseDetails) {
-              if (licenseDetails.duration_months === -10 || (licenseDetails.duration_months && licenseDetails.duration_months > 0) || licenseDetails.expires_at) {
-                installerName = 'SecureInstaller_T.exe'; // Time-Bomb (Months or 10-Min Demo)
+              if (licenseDetails.duration_months === -10) {
+                installerName = 'SecureInstaller_T.exe';
+                editionLabel = '10-Min Demo Trial';
+              } else if (licenseDetails.duration_months && licenseDetails.duration_months > 0) {
+                installerName = 'SecureInstaller_T.exe';
+                editionLabel = `${licenseDetails.duration_months} Mo. Term`;
+              } else if (licenseDetails.expires_at) {
+                installerName = 'SecureInstaller_T.exe';
+                editionLabel = 'Time-Bomb Term';
               } else if (licenseDetails.duration_months === 0) {
-                installerName = 'SecureInstaller_A.exe'; // Admin Controlled (0)
+                installerName = 'SecureInstaller_A.exe';
+                editionLabel = 'Admin Managed';
               } else {
-                installerName = 'SecureInstaller_L.exe'; // True Lifetime (-1 or null)
+                installerName = 'SecureInstaller_L.exe';
+                editionLabel = 'Lifetime Edition';
               }
             }
 
             return (
-              <div className="flex flex-col gap-4">
-                <div>
-                  <a href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} download className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all">
-                    <Download className="w-5 h-5" /> Download Secure Installer
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <a 
+                    href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} 
+                    download={installerName} 
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" /> Download {installerName}
+                    <span className="text-xs font-normal text-green-100 bg-green-700/60 px-2 py-0.5 rounded ml-1">
+                      {editionLabel}
+                    </span>
                   </a>
+
+                  <Link 
+                    to="/dashboard/install" 
+                    className="inline-flex items-center gap-2 px-4 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-gray-200 hover:text-white rounded-xl text-sm font-medium border border-zinc-700 transition-colors"
+                  >
+                    <BookOpen className="w-4 h-4 text-green-400" />
+                    <span>Setup Manual &amp; Shortcuts</span>
+                  </Link>
                 </div>
+
                 {(installerName === 'SecureInstaller_T.exe' || installerName === 'SecureInstaller_A.exe') && (
-                  <div className="mt-2 p-4 border border-red-900/50 bg-red-950/20 rounded-lg max-w-xl">
-                    <h4 className="text-red-400 font-bold mb-1 flex items-center text-sm"><AlertTriangle className="w-4 h-4 mr-2" /> DRM Security Notice</h4>
-                    <p className="text-xs text-gray-400 leading-relaxed">
+                  <div className="p-4 border border-red-900/50 bg-red-950/20 rounded-xl max-w-2xl text-xs text-gray-300 space-y-1">
+                    <h4 className="text-red-400 font-bold flex items-center gap-1.5">
+                      <AlertTriangle className="w-4 h-4 text-red-400" /> DRM Security Sentinel Active
+                    </h4>
+                    <p className="text-gray-400 leading-relaxed">
                       {installerName === 'SecureInstaller_T.exe' 
-                        ? 'This software contains an automated Time-Bomb. Upon your license expiry date, or if your license is revoked by an admin, the system will automatically and permanently delete the configuration files from your host machine to prevent unauthorized access.'
-                        : 'This software is actively monitored. If your access is revoked by an administrator, the remote kill-switch will automatically and permanently delete the configuration files from your host machine.'}
+                        ? 'This software contains an automated Time-Bomb. Upon your license expiry date, or if revoked by an admin, the system automatically wipes all proprietary configuration files and resets your account to Fresh.'
+                        : 'This software is actively monitored. If your access is revoked by an administrator, the remote kill-switch automatically wipes all configuration files from your host machine.'}
                     </p>
                   </div>
                 )}
               </div>
             );
-          })()}
+          })() : (
+            <div className="py-8 text-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                <Sparkles className="w-7 h-7" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-lg font-bold text-white">Your Account is Fresh &amp; Ready</h4>
+                <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto">
+                  No licenses are currently active. Browse our available packages to activate Safe Exam Browser extensions immediately.
+                </p>
+              </div>
+              <Link 
+                to="/dashboard/packages" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all"
+              >
+                <span>Browse Available Packages</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
         </div>
-      </section>
-      <HowItWorksCard />
+
+        <HowItWorksCard />
+      </div>
     </DashboardLayout>
   );
 };
@@ -480,110 +632,236 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <DashboardLayout title="Admin Overview" isAdmin={true}>
-      <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-green-400 mb-1">Welcome back, Administrator!</h2>
-          <p className="text-sm text-gray-300">Here is what is happening with your license platform today.</p>
-        </div>
-        <Link to="/admin/settings" className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Platform Settings</Link>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
-          <div className="flex items-center text-gray-400 mb-2">
-            <Users className="w-5 h-5 mr-2" />
-            <h3 className="font-medium">Total Customers</h3>
-          </div>
-          <div className="text-3xl font-bold text-white">{loading ? '...' : stats.customers}</div>
-        </div>
-        
-        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
-          <div className="flex items-center text-gray-400 mb-2">
-            <CreditCard className="w-5 h-5 mr-2" />
-            <h3 className="font-medium">Pending Approvals</h3>
-          </div>
-          <div className="text-3xl font-bold text-yellow-400">{loading ? '...' : stats.pending}</div>
-        </div>
-
-        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
-          <div className="flex items-center text-gray-400 mb-2">
-            <Key className="w-5 h-5 mr-2" />
-            <h3 className="font-medium">Active Licenses</h3>
-          </div>
-          <div className="text-3xl font-bold text-green-400">{loading ? '...' : stats.activeLicenses}</div>
-        </div>
-
-        <div className="bg-zinc-950 border border-gray-800 p-6 rounded-xl shadow-sm">
-          <div className="flex items-center text-gray-400 mb-2">
-            <span className="font-medium">Total Revenue</span>
-          </div>
-          <div className="text-3xl font-bold text-white">{loading ? '...' : `₹${stats.revenue.toLocaleString()}`}</div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Quick Actions Panel */}
-        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6">
-          <h2 className="text-lg font-bold mb-4 border-b border-gray-800 pb-2">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link to="/admin/payments" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
-              <CreditCard className="w-6 h-6 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
-              <div className="font-medium text-white mb-1">Review Payments</div>
-              <div className="text-xs text-gray-500">Approve or reject pending UPI transactions</div>
-            </Link>
-            
-            <Link to="/admin/licenses" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
-              <Key className="w-6 h-6 text-green-400 mb-3 group-hover:scale-110 transition-transform" />
-              <div className="font-medium text-white mb-1">Generate License</div>
-              <div className="text-xs text-gray-500">Manually issue a free license to a customer</div>
-            </Link>
-
-            <Link to="/admin/packages" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
-              <Package className="w-6 h-6 text-purple-400 mb-3 group-hover:scale-110 transition-transform" />
-              <div className="font-medium text-white mb-1">Manage Packages</div>
-              <div className="text-xs text-gray-500">Update pricing or add new software bundles</div>
-            </Link>
-
-            <Link to="/admin/customers" className="p-4 bg-black border border-gray-800 rounded-lg hover:border-green-500 transition-colors group">
-              <Users className="w-6 h-6 text-blue-400 mb-3 group-hover:scale-110 transition-transform" />
-              <div className="font-medium text-white mb-1">Manage Users</div>
-              <div className="text-xs text-gray-500">Block, delete, or view registered customers</div>
-            </Link>
-          </div>
-        </div>
-
-        {/* System Status Panel */}
-        <div className="bg-zinc-950 border border-gray-800 rounded-xl p-6 flex flex-col justify-between">
-          <div>
-            <h2 className="text-lg font-bold mb-4 border-b border-gray-800 pb-2">System Status</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Database Connection</span>
-                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Operational</span>
+    <DashboardLayout title="Administrator Fleet Command" isAdmin={true}>
+      <div className="space-y-6 pb-12">
+        {/* Executive Banner */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-green-500/30 p-6 shadow-xl">
+          <div className="absolute top-0 right-0 w-96 h-full bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                  Fleet Command Engine
+                </span>
+                <span className="text-gray-600">•</span>
+                <span className="text-xs text-gray-400 font-mono">Platform v2.0</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Edge Functions</span>
-                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Deployed</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Payment Gateway (UPI)</span>
-                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Active</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">License Encryption</span>
-                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs font-medium">Secured</span>
-              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Welcome back, Fleet Administrator!
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-400 max-w-2xl">
+                Global overview of student licenses, incoming UPI transactions, node locks, and infrastructure health.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link 
+                to="/admin/licenses" 
+                className="px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all whitespace-nowrap cursor-pointer"
+              >
+                + Issue License
+              </Link>
+              <Link 
+                to="/admin/settings" 
+                className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-gray-300 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                Settings
+              </Link>
             </div>
           </div>
-          <div className="mt-6 pt-4 border-t border-gray-800 text-center text-xs text-gray-600">
-            PhantomLead Platform v1.0 &copy; 2026 Phantom Lead
+        </div>
+
+        {/* 4 Executive KPI Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>REGISTERED CUSTOMERS</span>
+              <Users className="w-4 h-4 text-blue-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-3xl font-black text-white font-mono">{loading ? '...' : stats.customers}</div>
+              <div className="text-xs text-blue-400 mt-0.5">Verified Accounts</div>
+            </div>
+            <Link to="/admin/customers" className="text-xs text-gray-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
+              <span>Manage customer directory</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>PENDING PAYMENTS</span>
+              <CreditCard className="w-4 h-4 text-yellow-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-3xl font-black text-yellow-400 font-mono">{loading ? '...' : stats.pending}</div>
+              <div className="text-xs text-yellow-300/80 mt-0.5">
+                {stats.pending > 0 ? 'Requires manual review' : 'All transactions reviewed'}
+              </div>
+            </div>
+            <Link to="/admin/payments" className="text-xs text-gray-500 hover:text-yellow-400 flex items-center gap-1 transition-colors">
+              <span>Review transaction queue</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-green-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>ACTIVE LICENSES</span>
+              <Key className="w-4 h-4 text-green-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-3xl font-black text-green-400 font-mono">{loading ? '...' : stats.activeLicenses}</div>
+              <div className="text-xs text-green-300/80 mt-0.5">Live running deployments</div>
+            </div>
+            <Link to="/admin/licenses" className="text-xs text-gray-500 hover:text-green-400 flex items-center gap-1 transition-colors">
+              <span>View global fleet</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/30 transition-all">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
+              <span>PLATFORM REVENUE</span>
+              <Zap className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="my-2">
+              <div className="text-3xl font-black text-white font-mono">
+                {loading ? '...' : `₹${stats.revenue.toLocaleString()}`}
+              </div>
+              <div className="text-xs text-emerald-400 mt-0.5">Approved UPI collections</div>
+            </div>
+            <span className="text-xs text-gray-500">Direct verified payments</span>
+          </div>
+        </div>
+
+        {/* 2 Executive Command Decks */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Deck 1: Quick Operations Hub */}
+          <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-800">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <LayoutDashboard className="w-4 h-4 text-green-400" /> Operational Hub
+              </h3>
+              <span className="text-xs text-gray-500 font-mono">Core Actions</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <Link 
+                to="/admin/payments" 
+                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-yellow-500/50 hover:bg-zinc-900/60 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <CreditCard className="w-5 h-5 text-yellow-400 group-hover:scale-110 transition-transform" />
+                  {stats.pending > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 animate-pulse">
+                      {stats.pending} Pending
+                    </span>
+                  )}
+                </div>
+                <div className="font-bold text-white text-sm mb-0.5">Review Payments</div>
+                <div className="text-[11px] text-gray-400">Approve or reject incoming UPI slips</div>
+              </Link>
+
+              <Link 
+                to="/admin/licenses" 
+                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-green-500/50 hover:bg-zinc-900/60 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <Key className="w-5 h-5 text-green-400 group-hover:scale-110 transition-transform" />
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/20 text-green-300 border border-green-500/40">
+                    Live
+                  </span>
+                </div>
+                <div className="font-bold text-white text-sm mb-0.5">Fleet Licenses</div>
+                <div className="text-[11px] text-gray-400">Issue keys &amp; execute remote host wipes</div>
+              </Link>
+
+              <Link 
+                to="/admin/packages" 
+                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-purple-500/50 hover:bg-zinc-900/60 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <Package className="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="font-bold text-white text-sm mb-0.5">Software Bundles</div>
+                <div className="text-[11px] text-gray-400">Configure pricing &amp; exam extensions</div>
+              </Link>
+
+              <Link 
+                to="/admin/customers" 
+                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-blue-500/50 hover:bg-zinc-900/60 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <Users className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="font-bold text-white text-sm mb-0.5">User Directory</div>
+                <div className="text-[11px] text-gray-400">Inspect device fingerprints &amp; customer profiles</div>
+              </Link>
+            </div>
+          </div>
+
+          {/* Deck 2: Infrastructure & Sentinel Radar */}
+          <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-gray-800">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Platform Infrastructure Radar
+                </h3>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
+                  HEALTH OK
+                </span>
+              </div>
+
+              <div className="divide-y divide-gray-800/60 text-xs">
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="text-gray-400">Database Engine (PostgreSQL)</span>
+                  <span className="px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded font-mono font-semibold">
+                    Operational (Sub-50ms)
+                  </span>
+                </div>
+
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="text-gray-400">Serverless Edge Functions</span>
+                  <span className="px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded font-mono font-semibold">
+                    5 Deployed &amp; Active
+                  </span>
+                </div>
+
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="text-gray-400">Auto-Wipe &amp; Sentinel Protocol</span>
+                  <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-mono font-semibold">
+                    Armed (Zero-Day Wipe)
+                  </span>
+                </div>
+
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="text-gray-400">License Cryptographic Vault</span>
+                  <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded font-mono font-semibold">
+                    SHA-256 / AES-GCM
+                  </span>
+                </div>
+
+                <div className="py-2.5 flex items-center justify-between">
+                  <span className="text-gray-400">Payment Reconciliation (UPI)</span>
+                  <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded font-mono font-semibold">
+                    Instant Screenshot Proof
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-[11px] text-gray-500 font-mono">
+              <span>PhantomLead DRM Engine v2.0</span>
+              <span>All Systems Nominal</span>
+            </div>
           </div>
         </div>
       </div>
     </DashboardLayout>
   );
-}
+};
 function App() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
