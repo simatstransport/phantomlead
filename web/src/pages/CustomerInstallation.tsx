@@ -29,42 +29,85 @@ export const CustomerInstallation = () => {
         <div className="space-y-10">
           <section>
             <h3 className="text-lg font-semibold mb-3 text-red-400 flex items-center">
-              <Shield className="w-5 h-5 mr-2" /> Step 1: Before Installation (Disable Real-Time Protection)
+              <Shield className="w-5 h-5 mr-2" /> Step 1: Before Installation (How to Turn Off Windows Security)
             </h3>
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-5 text-sm text-gray-200 space-y-4">
               <div className="flex items-start gap-2.5">
                 <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-red-300 block text-base font-bold mb-1">
-                    CRITICAL REQUIREMENT: Turn Off Windows Real-Time Protection
+                    CRITICAL REQUIREMENT: Turn Off Windows Security Before Installing
                   </strong>
                   <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                    Before downloading or running SecureInstaller, you must turn off <strong>Real-time protection</strong> in Windows Defender. Secure tools and custom background extensions get falsely flagged and blocked by Windows heuristic scanners.
+                    Windows Security (Windows Defender) automatically blocks and deletes custom exam helper tools, DLL hooks, and automated installer executables because of strict heuristic scanning. You must temporarily turn off Windows Security before downloading or running SecureInstaller.
                   </p>
                 </div>
               </div>
 
+              {/* Part 1: How to Open Windows Security */}
               <div className="bg-black/60 border border-red-900/40 rounded-lg p-4 space-y-3">
                 <h4 className="text-xs uppercase font-bold tracking-wider text-red-300 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-red-400" /> Follow these exact steps in Windows:
+                  <Shield className="w-4 h-4 text-red-400" /> Part 1: How to Open Windows Security
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300">
+                  <div className="bg-zinc-900/80 p-3 rounded-lg border border-gray-800">
+                    <strong className="text-white block mb-1">Method 1 (Quick Shortcut):</strong>
+                    Press <kbd className="rounded bg-black border border-gray-700 px-1.5 py-0.5 font-mono text-green-400">Win + R</kbd>, type <code className="text-yellow-300 font-mono font-bold">windowsdefender:</code> and hit <kbd className="rounded bg-black border border-gray-700 px-1.5 py-0.5 font-mono">Enter</kbd>.
+                  </div>
+                  <div className="bg-zinc-900/80 p-3 rounded-lg border border-gray-800">
+                    <strong className="text-white block mb-1">Method 2 (Start Menu):</strong>
+                    Open your Windows Start Menu, search for <strong>"Windows Security"</strong>, and click to open it.
+                  </div>
+                </div>
+              </div>
+
+              {/* Part 2: Turning Off Virus & Threat Protection */}
+              <div className="bg-black/60 border border-red-900/40 rounded-lg p-4 space-y-3">
+                <h4 className="text-xs uppercase font-bold tracking-wider text-red-300 flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-red-400" /> Part 2: Turn Off Real-Time Protection
                 </h4>
                 <ol className="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-gray-200">
                   <li>
-                    Open <strong>Windows Security</strong> (search for <em>"Windows Security"</em> in your Windows Start menu or taskbar).
+                    Inside Windows Security, click on <strong>Virus &amp; threat protection</strong>.
                   </li>
                   <li>
-                    Click on <strong>Virus &amp; threat protection</strong>.
-                  </li>
-                  <li>
-                    Under <strong>Virus &amp; threat protection settings</strong>, click on <span className="text-red-300 font-semibold underline underline-offset-2">Manage settings</span>.
+                    Under the <strong>Virus &amp; threat protection settings</strong> section, click on <span className="text-red-300 font-semibold underline underline-offset-2">Manage settings</span>.
                   </li>
                   <li>
                     Toggle <strong>Real-time protection</strong> to <strong className="text-red-400 font-extrabold bg-red-950/60 px-2 py-0.5 rounded border border-red-800">OFF</strong>!
                   </li>
+                  <li>
+                    Also toggle <strong>Cloud-delivered protection</strong> and <strong>Automatic sample submission</strong> to <strong className="text-red-400 font-bold">OFF</strong> (this prevents Windows from uploading or quarantining installer files).
+                  </li>
+                </ol>
+              </div>
+
+              {/* Part 3: Turn Off SmartScreen / App & Browser Control */}
+              <div className="bg-black/60 border border-red-900/40 rounded-lg p-4 space-y-3">
+                <h4 className="text-xs uppercase font-bold tracking-wider text-red-300 flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-red-400" /> Part 3: Turn Off SmartScreen (App &amp; Browser Control)
+                </h4>
+                <ol className="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-gray-200">
+                  <li>
+                    In the left navigation menu of Windows Security, click on <strong>App &amp; browser control</strong>.
+                  </li>
+                  <li>
+                    Click on <span className="text-red-300 font-semibold underline underline-offset-2">Reputation-based protection settings</span>.
+                  </li>
+                  <li>
+                    Toggle <strong>Check apps and files</strong> to <strong className="text-red-400 font-bold">OFF</strong>.
+                  </li>
+                  <li>
+                    Toggle <strong>SmartScreen for Microsoft Defender</strong> to <strong className="text-red-400 font-bold">OFF</strong>.
+                  </li>
                 </ol>
                 <div className="mt-2 pt-2 border-t border-gray-800 text-[11px] text-gray-400 flex items-center gap-1.5">
-                  <span className="text-amber-400 font-bold">⚠️ Note:</span> If you have third-party antivirus installed (e.g., McAfee, Quick Heal, Avast, Kaspersky, Norton), temporarily pause or disable its real-time protection shield as well.
+                  <span className="text-amber-400 font-bold">💡 SmartScreen Warning:</span> When launching SecureInstaller, if Windows displays a blue prompt saying <em>"Windows protected your PC"</em>, click <strong className="text-white">"More info"</strong> and then click <strong className="text-green-400">"Run anyway"</strong>.
                 </div>
+              </div>
+
+              <div className="text-[11px] text-gray-400 flex items-center gap-1.5 pt-1">
+                <span className="text-amber-400 font-bold">⚠️ Third-Party Antivirus:</span> If you use third-party antivirus software (McAfee, Quick Heal, Avast, Kaspersky, Norton, Bitdefender), open its dashboard and temporarily pause or disable its shield during setup.
               </div>
             </div>
           </section>
