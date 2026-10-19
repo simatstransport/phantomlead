@@ -235,17 +235,34 @@ const useHasActiveLicense = (isAdmin: boolean) => {
           .maybeSingle();
         if (!customer) return;
 
-        const { data: licenses, count, error } = await supabase
+        const { data: licenses, error } = await supabase
           .from('licenses')
-          .select('id, duration_months, payment_type, expires_at', { count: 'exact' })
+          .select('id, duration_months, payment_type, expires_at')
           .eq('customer_id', customer.id)
           .eq('status', 'ACTIVE');
 
+        const now = Date.now();
+        const validLicenses: any[] = [];
+        if (!error && licenses) {
+          for (const lic of licenses) {
+            if (lic.expires_at && new Date(lic.expires_at).getTime() <= now) {
+              // Expired: auto delete logs and license to keep user account 100% fresh
+              supabase.from('installation_logs').delete().eq('license_id', lic.id).then(() => {
+                supabase.from('licenses').delete().eq('id', lic.id);
+              });
+            } else {
+              validLicenses.push(lic);
+            }
+          }
+        }
+
         if (isCurrent) {
-          setActiveLicenseCount(error ? 0 : count ?? 0);
-          setHasActiveLicense(!error && (count ?? 0) > 0);
-          if (licenses && licenses.length > 0) {
-            (window as any).activeLicenseDetails = licenses[0];
+          setActiveLicenseCount(validLicenses.length);
+          setHasActiveLicense(validLicenses.length > 0);
+          if (validLicenses.length > 0) {
+            (window as any).activeLicenseDetails = validLicenses[0];
+          } else {
+            (window as any).activeLicenseDetails = null;
           }
         }
       } catch (error) {

@@ -34,8 +34,24 @@ export const AdminLicenses = () => {
       .from('licenses')
       .select('*, customers(full_name, email), packages(package_name)')
       .order('issued_at', { ascending: false });
-    if (error) console.error(error);
-    else setLicenses(data || []);
+    if (error) {
+      console.error(error);
+    } else {
+      // Automatically purge any expired licenses so both admin and customer pages stay fresh
+      const now = Date.now();
+      const valid = [];
+      for (const lic of (data || [])) {
+        if (lic.expires_at && new Date(lic.expires_at).getTime() <= now) {
+          // Expired: delete logs and license in background
+          supabase.from('installation_logs').delete().eq('license_id', lic.id).then(() => {
+            supabase.from('licenses').delete().eq('id', lic.id);
+          });
+        } else {
+          valid.push(lic);
+        }
+      }
+      setLicenses(valid);
+    }
 
     // Also fetch wipe success/error logs
     const { data: logsData } = await supabase
@@ -55,6 +71,22 @@ export const AdminLicenses = () => {
     }
 
     setLoading(false);
+  };
+
+  const handleDeleteLicense = async (id: string) => {
+    if (!window.confirm("Permanently delete this license record? The customer's account will immediately become 100% fresh.")) return;
+    try {
+      await supabase.from('installation_logs').delete().eq('license_id', id);
+      const { error } = await supabase.from('licenses').delete().eq('id', id);
+      if (error) {
+        alert("❌ Error deleting license: " + error.message);
+      } else {
+        alert("✅ License deleted successfully! Customer account is now completely fresh.");
+        fetchLicenses();
+      }
+    } catch (err: any) {
+      alert("❌ System Error: " + (err.message || String(err)));
+    }
   };
 
   const handleRevoke = async (id: string) => {
@@ -163,7 +195,7 @@ export const AdminLicenses = () => {
                   ) : null}
                 </div>
               </td>
-              <td className="py-4 flex gap-2 items-center">
+              <td className="py-4 flex gap-2 items-center flex-wrap">
                 {l.status === 'ACTIVE' ? (
                   <button onClick={() => handleRevoke(l.id)} className="bg-red-900/50 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-lg shadow-red-900/20 cursor-pointer">
                     <Trash2 className="w-3 h-3" /> Trigger Extensions Wipe
@@ -177,13 +209,21 @@ export const AdminLicenses = () => {
                   </button>
                 ) : l.uninstalled_at ? (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-green-950/40 border border-green-800/60 text-green-400 flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-green-400" /> Extensions Deleted & Revoked
+                    <Check className="w-3.5 h-3.5 text-green-400" /> Extensions Deleted &amp; Revoked
                   </span>
                 ) : (
                   <span className="px-2.5 py-1 rounded text-xs font-medium bg-yellow-950/40 border border-yellow-800/60 text-yellow-400 flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-yellow-400 animate-spin" /> Wiping Extensions...
                   </span>
                 )}
+                <button
+                  type="button"
+                  onClick={() => handleDeleteLicense(l.id)}
+                  className="bg-zinc-900 hover:bg-red-950/80 border border-zinc-800 hover:border-red-700 text-gray-400 hover:text-red-300 px-2 py-1 rounded text-xs transition-all flex items-center gap-1 cursor-pointer"
+                  title="Permanently delete this license record (resets customer to fresh account)"
+                >
+                  <Trash2 className="w-3 h-3" /> Delete
+                </button>
               </td>
             </tr>
           ))}

@@ -31,18 +31,20 @@ serve(async (req) => {
     const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
     if (action === 'REPORT_DELETED') {
-      const { data: updateData, error: updateError } = await supabaseClient.from('licenses').update({ uninstalled_at: new Date().toISOString() }).eq('license_key_hash', license_key_hash).select('id');
-      if (updateError) {
-        return new Response(JSON.stringify({ success: false, error: updateError.message }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
-      }
+      const { data: updateData } = await supabaseClient.from('licenses').select('id').eq('license_key_hash', license_key_hash);
       if (updateData && updateData.length > 0) {
+        const licId = updateData[0].id;
         await supabaseClient.from('audit_logs').insert({
           action: 'HOST_WIPE_SUCCESS',
-          target_id: updateData[0].id,
-          details: { message: 'All application folders and extensions deleted successfully', device_id: fingerprint, timestamp: new Date().toISOString() }
+          target_id: licId,
+          details: { message: 'All application folders and extensions wiped successfully. License automatically purged for fresh account.', device_id: fingerprint, timestamp: new Date().toISOString() }
         });
+        // Delete installation logs referencing this license
+        await supabaseClient.from('installation_logs').delete().eq('license_id', licId);
+        // Delete the license so customer and admin accounts are completely fresh
+        await supabaseClient.from('licenses').delete().eq('id', licId);
       }
-      return new Response(JSON.stringify({ success: true, data: updateData }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+      return new Response(JSON.stringify({ success: true, message: 'Wiped and license purged for fresh account' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
     if (action === 'REPORT_ERROR') {
