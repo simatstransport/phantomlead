@@ -1,23 +1,44 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
-import { CreditCard, CheckCircle, Clock, Sparkles, SlidersHorizontal, Check, AlertCircle } from 'lucide-react';
+import { 
+  CreditCard, 
+  CheckCircle, 
+  Clock, 
+  Sparkles, 
+  SlidersHorizontal, 
+  Check, 
+  AlertCircle, 
+  ArrowRight, 
+  ArrowLeft, 
+  Copy, 
+  User, 
+  Phone, 
+  School, 
+  GraduationCap, 
+  Package, 
+  ChevronRight
+} from 'lucide-react';
 
-const packageGuides: Record<string, { purpose: string; includes: string[] }> = {
+const packageGuides: Record<string, { purpose: string; badge: string; includes: string[] }> = {
   FULL_ACCESS: {
     purpose: 'Complete all-in-one suite with all 5 specialized assistants for LMS, Viva, Java, Python, and C.',
-    includes: ['LMS MCQ', 'Viva paragraph', 'Java coding', 'Python coding', 'C coding']
+    badge: 'COMMAND SUITE • MOST POPULAR',
+    includes: ['LMS MCQ Helper', 'Viva Paragraph Explainer', 'Java Coding Helper', 'Python 3 Coding Helper', 'C Coding Helper']
   },
   PYTHON_C: {
     purpose: 'Engineered for students practicing Python and C programming with AI answer and code assistance.',
-    includes: ['Python coding', 'C coding']
+    badge: 'DEVELOPER DUO',
+    includes: ['Python 3 Coding Helper', 'C Coding Helper']
   },
   JAVA_VIVA: {
-    purpose: 'For students practicing Java programming and preparing for viva questions.',
-    includes: ['Java coding', 'Viva paragraph']
+    purpose: 'For students practicing Java programming and preparing for oral viva voce questions.',
+    badge: 'JAVA & ORAL EXAM',
+    includes: ['Java Coding Helper', 'Viva Paragraph Explainer']
   },
   QA_PLACEMENT: {
-    purpose: 'For LMS-based multiple-choice practice and QA or placement preparation.',
-    includes: ['LMS MCQ']
+    purpose: 'For LMS-based multiple-choice practice and QA or campus placement assessment rounds.',
+    badge: 'MCQ & APTITUDE',
+    includes: ['LMS MCQ Helper']
   }
 };
 
@@ -30,7 +51,6 @@ const installationSteps = [
 export const calculateDurationPrice = (basePrice: number, months: number | null, packageCode?: string): number => {
   const p = Number(basePrice) || 3000;
   if (months === null) {
-    // Default Lifetime Full Access amount is exactly 7000
     if (packageCode === 'FULL_ACCESS' || p >= 5500) {
       return 7000;
     }
@@ -51,7 +71,7 @@ export const calculateDurationPrice = (basePrice: number, months: number | null,
 };
 
 export const getDiscountLabel = (months: number | null): string | null => {
-  if (months === null) return 'Unlimited Access';
+  if (months === null) return 'Permanent Unlimited Access';
   if (months === 2) return 'Save 15%';
   if (months === 3) return 'Save 23% (Popular)';
   if (months === 6) return 'Save 35%';
@@ -109,12 +129,12 @@ export const CustomerPackages = () => {
   const [selectedLabel, setSelectedLabel] = useState<string>('');
   
   // Per-package duration adjustments
-  // packageDurations stores { [pkgId]: number | null } where null = Lifetime
   const [packageDurations, setPackageDurations] = useState<Record<string, number | null>>({});
-  // customSliderActive stores whether custom slider mode is open for that card
   const [customSliderActive, setCustomSliderActive] = useState<Record<string, boolean>>({});
 
   const [step, setStep] = useState(1); // 1 = Packages, 2 = Details, 3 = Payment
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const [submittingPayment, setSubmittingPayment] = useState(false);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -170,6 +190,7 @@ export const CustomerPackages = () => {
     setSelectedPrice(price);
     setSelectedLabel(label);
     setStep(2);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDetailsSubmit = async (e: React.FormEvent) => {
@@ -201,12 +222,22 @@ export const CustomerPackages = () => {
 
     setFormData(prev => ({ ...prev, phone: cleanPhone }));
     setStep(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.upiId.trim()) {
+      alert("Please enter your UPI Transaction / UTR Reference ID.");
+      return;
+    }
+
+    setSubmittingPayment(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setSubmittingPayment(false);
+      return;
+    }
 
     const { data: customer } = await supabase.from('customers').select('id').eq('user_id', user.id).single();
 
@@ -219,13 +250,23 @@ export const CustomerPackages = () => {
       status: 'PENDING'
     });
 
+    setSubmittingPayment(false);
+
     if (error) {
       alert("Error submitting payment: " + error.message);
     } else {
-      alert("Payment submitted successfully! Waiting for admin approval.");
+      alert("Payment submitted successfully! Your order has been placed for administrator clearance. Once verified, your license key will appear instantly on your My Licenses tab.");
       setStep(1);
       setSelectedPackage(null);
+      setFormData(prev => ({ ...prev, upiId: '' }));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const copyUpiId = () => {
+    navigator.clipboard.writeText('phantomlead@upi');
+    setCopiedUpi(true);
+    setTimeout(() => setCopiedUpi(false), 2000);
   };
 
   const getPackageIncludes = (pkg: any): string[] => {
@@ -238,233 +279,340 @@ export const CustomerPackages = () => {
     return [pkg.description || 'Full extension features'];
   };
 
-  if (loading) return <div className="text-gray-400">Loading available packages...</div>;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-zinc-400 space-y-3">
+        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <p className="font-mono text-xs tracking-wider uppercase">Loading security packages...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto px-1 sm:px-2">
+    <div className="max-w-6xl mx-auto space-y-8 pb-16 px-2 sm:px-4">
+      {/* Checkout Progress Stepper */}
+      <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-[#0c0d12]/90 backdrop-blur-xl p-4 sm:p-6 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-green-400 font-semibold">
+                SECURITY SUITE STORE • INSTANT ISSUANCE
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+              <Package className="w-6 h-6 text-green-400" />
+              Hardened Safe Exam Browser Packages
+            </h1>
+          </div>
+
+          {/* Stepper Pills */}
+          <div className="flex items-center gap-2 text-xs font-mono">
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+              step === 1 ? 'bg-green-500/10 border-green-500/40 text-green-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
+            }`}>
+              <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">1</span>
+              <span>Packages</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-zinc-600" />
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+              step === 2 ? 'bg-green-500/10 border-green-500/40 text-green-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
+            }`}>
+              <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">2</span>
+              <span>Student Profile</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-zinc-600" />
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+              step === 3 ? 'bg-green-500/10 border-green-500/40 text-green-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
+            }`}>
+              <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">3</span>
+              <span>UPI Settlement</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* STEP 1: Package Grid */}
       {step === 1 && (
-        <>
-          <div className="mb-6 sm:mb-8 text-center px-2">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3 text-white tracking-tight">Available Packages & Adjustable Durations</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-xs sm:text-sm">
-              Select your package and freely customize the duration from 1 month to 24 months, or choose Lifetime Access.
+        <div className="space-y-6">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Select Your Access Tier &amp; Duration
+            </h2>
+            <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+              Tailored specifically for SEB environments. Customize your license from 1 month up to 24 months, or secure Permanent Lifetime Access.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
               const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
               const discount = getDiscountLabel(currentDuration);
               const includesList = getPackageIncludes(pkg);
               const isSliderOpen = customSliderActive[pkg.id] || false;
+              const isFeatured = pkg.package_code === 'FULL_ACCESS';
+              const guide = packageGuides[pkg.package_code];
 
               return (
-                <div key={pkg.id} className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-5 sm:p-7 flex flex-col hover:border-green-600/50 transition-all shadow-xl relative overflow-hidden group">
-                  <div className="mb-6 flex-1">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-2xl font-bold text-white tracking-tight">{pkg.package_name}</h3>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-gray-900 border border-gray-800 text-gray-400 font-semibold">
-                        {pkg.package_code}
+                <div 
+                  key={pkg.id} 
+                  className={`rounded-2xl flex flex-col transition-all duration-300 relative overflow-hidden group backdrop-blur-xl ${
+                    isFeatured 
+                      ? 'bg-gradient-to-b from-[#0f1712] via-[#090b0a] to-[#060707] border-2 border-green-500/60 shadow-[0_0_35px_rgba(34,197,94,0.15)] hover:border-green-400' 
+                      : 'bg-[#0c0d12]/90 border border-zinc-800 hover:border-zinc-700 shadow-xl'
+                  }`}
+                >
+                  {/* Featured Header Pill */}
+                  {isFeatured && (
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-400 py-1.5 px-4 text-center">
+                      <span className="text-[10px] font-mono font-black text-black tracking-widest uppercase flex items-center justify-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> {guide?.badge || 'MOST POPULAR SUITE'}
                       </span>
                     </div>
+                  )}
 
-                    {/* Adjustable Duration Selector */}
-                    <div className="my-5 p-3.5 bg-black/80 rounded-xl border border-gray-800">
-                      <div className="flex items-center justify-between mb-2.5">
-                        <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-green-400" /> Choose Duration
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-6">
+                    <div>
+                      {/* Package Name & Code */}
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                          {pkg.package_name}
+                        </h3>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/60 border border-zinc-800 text-zinc-400 font-semibold">
+                          {pkg.package_code}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => setCustomSliderActive(prev => ({ ...prev, [pkg.id]: !isSliderOpen }))}
-                          className="text-[11px] text-green-400 hover:text-green-300 font-medium flex items-center gap-1 cursor-pointer transition-colors"
-                        >
-                          <SlidersHorizontal className="w-3 h-3" />
-                          {isSliderOpen ? 'Quick Pills' : 'Custom Slider'}
-                        </button>
                       </div>
 
-                      {/* Quick Month Pills */}
-                      {!isSliderOpen ? (
-                        <div className="grid grid-cols-3 gap-1.5 mb-2">
-                          {[
-                            { value: 1, label: '1 Mo' },
-                            { value: 2, label: '2 Mos' },
-                            { value: 3, label: '3 Mos' },
-                            { value: 6, label: '6 Mos' },
-                            { value: 12, label: '12 Mos' },
-                            { value: null, label: '∞ Lifetime' },
-                          ].map(opt => {
-                            const isSelected = currentDuration === opt.value;
-                            return (
-                              <button
-                                key={opt.label}
-                                type="button"
-                                onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
-                                className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                                  isSelected 
-                                    ? 'bg-green-600 text-white shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
-                                    : 'bg-[#141414] text-gray-400 hover:text-white hover:bg-gray-800'
-                                }`}
-                              >
-                                {opt.label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        /* Adjustable Custom Month Slider & Stepper */
-                        <div className="space-y-3 pt-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-400">Selected Months:</span>
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const cur = currentDuration === null ? 1 : Math.max(1, currentDuration - 1);
-                                  setPackageDurations({ ...packageDurations, [pkg.id]: cur });
-                                }}
-                                className="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
-                              >
-                                -
-                              </button>
-                              <span className="font-mono text-sm font-bold text-green-400 min-w-16 text-center">
-                                {currentDuration === null ? 'Lifetime' : `${currentDuration} Mo`}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const cur = currentDuration === null ? 1 : Math.min(24, currentDuration + 1);
-                                  setPackageDurations({ ...packageDurations, [pkg.id]: cur });
-                                }}
-                                className="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
+                      <p className="text-xs text-zinc-400 mb-5 leading-relaxed min-h-[36px]">
+                        {guide?.purpose || pkg.description}
+                      </p>
 
-                          <input
-                            type="range"
-                            min="1"
-                            max="24"
-                            step="1"
-                            value={currentDuration === null ? 12 : currentDuration}
-                            onChange={(e) => setPackageDurations({ ...packageDurations, [pkg.id]: parseInt(e.target.value) })}
-                            className="w-full accent-green-500 cursor-pointer h-1.5 bg-gray-800 rounded-lg appearance-none"
-                          />
-
-                          <div className="flex justify-between text-[10px] text-gray-500 font-mono">
-                            <span>1 Mo</span>
-                            <span>6 Mos</span>
-                            <span>12 Mos</span>
-                            <span>24 Mos</span>
-                          </div>
-
+                      {/* Adjustable Duration Controller Card */}
+                      <div className="p-4 rounded-xl bg-black/70 border border-zinc-800/90 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-green-400" /> Duration
+                          </span>
                           <button
                             type="button"
-                            onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: null })}
-                            className={`w-full py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                              currentDuration === null 
-                                ? 'bg-green-600 text-white shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
-                                : 'bg-[#141414] text-gray-300 hover:bg-gray-800'
-                            }`}
+                            onClick={() => setCustomSliderActive(prev => ({ ...prev, [pkg.id]: !isSliderOpen }))}
+                            className="text-[11px] font-mono text-green-400 hover:text-green-300 flex items-center gap-1 cursor-pointer transition-colors"
                           >
-                            Switch to Lifetime Access (Full)
+                            <SlidersHorizontal className="w-3 h-3" />
+                            {isSliderOpen ? 'Quick Pills' : 'Slider'}
                           </button>
                         </div>
-                      )}
 
-                      {/* Discount Badge */}
-                      {discount && (
-                        <div className="mt-2 text-center">
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-400 bg-green-500/10 px-2.5 py-0.5 rounded-full border border-green-500/20">
-                            <Sparkles className="w-3 h-3" /> {discount}
+                        {/* Quick Selection Pills */}
+                        {!isSliderOpen ? (
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {[
+                              { value: 1, label: '1 Mo' },
+                              { value: 2, label: '2 Mos' },
+                              { value: 3, label: '3 Mos' },
+                              { value: 6, label: '6 Mos' },
+                              { value: 12, label: '12 Mos' },
+                              { value: null, label: '∞ Lifetime' },
+                            ].map(opt => {
+                              const isSelected = currentDuration === opt.value;
+                              return (
+                                <button
+                                  key={opt.label}
+                                  type="button"
+                                  onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
+                                  className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                                    isSelected 
+                                      ? 'bg-green-500 text-black shadow-[0_0_12px_rgba(34,197,94,0.3)]' 
+                                      : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                                  }`}
+                                >
+                                  {opt.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          /* Custom Slider */
+                          <div className="space-y-3 pt-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-zinc-400 font-mono">Custom:</span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const cur = currentDuration === null ? 1 : Math.max(1, currentDuration - 1);
+                                    setPackageDurations({ ...packageDurations, [pkg.id]: cur });
+                                  }}
+                                  className="w-6 h-6 rounded bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center font-bold"
+                                >
+                                  -
+                                </button>
+                                <span className="font-mono text-xs font-bold text-green-400 min-w-16 text-center">
+                                  {currentDuration === null ? 'Lifetime' : `${currentDuration} Mo`}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const cur = currentDuration === null ? 1 : Math.min(24, currentDuration + 1);
+                                    setPackageDurations({ ...packageDurations, [pkg.id]: cur });
+                                  }}
+                                  className="w-6 h-6 rounded bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center font-bold"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+
+                            <input
+                              type="range"
+                              min="1"
+                              max="24"
+                              step="1"
+                              value={currentDuration === null ? 12 : currentDuration}
+                              onChange={(e) => setPackageDurations({ ...packageDurations, [pkg.id]: parseInt(e.target.value) })}
+                              className="w-full accent-green-500 cursor-pointer h-1.5 bg-zinc-800 rounded-lg appearance-none"
+                            />
+
+                            <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
+                              <span>1m</span>
+                              <span>6m</span>
+                              <span>12m</span>
+                              <span>24m</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: null })}
+                              className={`w-full py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                                currentDuration === null 
+                                  ? 'bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
+                                  : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800'
+                              }`}
+                            >
+                              Switch to Lifetime Access
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Discount Badge */}
+                        {discount && (
+                          <div className="pt-1 text-center">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-green-400 bg-green-500/10 px-2.5 py-0.5 rounded-full border border-green-500/20">
+                              <Sparkles className="w-3 h-3" /> {discount}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Pricing Tag */}
+                      <div className="my-5 p-3.5 rounded-xl bg-black/40 border border-zinc-800/60 flex items-baseline justify-between">
+                        <div>
+                          <div className="text-3xl font-black text-white tracking-tight">
+                            ₹{calculatedPrice}
+                          </div>
+                          <span className="text-[11px] font-mono text-zinc-500">
+                            {getDurationLabel(currentDuration)}
                           </span>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Price Display */}
-                    <div className="mb-4">
-                      <div className="text-3xl font-black text-green-400 tracking-tight">
-                        ₹{calculatedPrice}
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
+                          NODE LOCK: 1 PC
+                        </span>
                       </div>
-                      <span className="text-xs font-medium text-gray-400">
-                        Total for {getDurationLabel(currentDuration)}
-                      </span>
-                    </div>
 
-                    {/* Purpose */}
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">What it is for</p>
-                    <p className="text-gray-400 text-xs mb-5 leading-relaxed">{packageGuides[pkg.package_code]?.purpose || pkg.description}</p>
-
-                    {/* Tools Included */}
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2.5">Included tools</p>
-                    <div className="space-y-2.5 mb-5">
-                      {includesList.map((item: string) => (
-                        <div key={item} className="flex items-center text-xs text-gray-300">
-                          <CheckCircle className="w-4 h-4 text-green-400 mr-2.5 shrink-0" /> {item}
+                      {/* Included Tools */}
+                      <div className="space-y-2 mb-4">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block font-semibold">
+                          Authorized Extension Modules
+                        </span>
+                        <div className="space-y-1.5">
+                          {includesList.map((item: string) => (
+                            <div key={item} className="flex items-center text-xs text-zinc-300">
+                              <CheckCircle className="w-3.5 h-3.5 text-green-400 mr-2 shrink-0" />
+                              <span>{item}</span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
                     </div>
 
-                    {/* Installation Details */}
-                    <details className="border-t border-gray-800/80 pt-3">
-                      <summary className="cursor-pointer text-xs font-medium text-green-400 hover:text-green-300">How to install</summary>
-                      <ol className="mt-2.5 list-decimal space-y-1.5 pl-4 text-xs text-gray-400">
-                        {installationSteps.map(item => <li key={item}>{item}</li>)}
-                      </ol>
-                    </details>
+                    <button 
+                      onClick={() => handleBuyClick(pkg)} 
+                      className={`w-full py-3 rounded-xl font-bold text-xs tracking-wider uppercase font-mono transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 ${
+                        isFeatured
+                          ? 'bg-green-500 hover:bg-green-400 text-black shadow-green-500/25'
+                          : 'bg-zinc-800 hover:bg-green-500 hover:text-black text-white shadow-black/40'
+                      }`}
+                    >
+                      <span>Proceed to Purchase</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
-
-                  <button 
-                    onClick={() => handleBuyClick(pkg)} 
-                    className="w-full py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(34,197,94,0.25)] hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] cursor-pointer"
-                  >
-                    Buy Now ({getDurationLabel(currentDuration)})
-                  </button>
                 </div>
               );
             })}
           </div>
-        </>
+        </div>
       )}
 
+      {/* STEP 2: Student Details Form */}
       {step === 2 && (
-        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
-          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-white">Student Details</h2>
-          <p className="text-xs sm:text-sm text-gray-400 mb-6">
-            Purchasing: <span className="text-white font-bold">{selectedPackage?.package_name} ({selectedLabel})</span> · <span className="text-green-400 font-extrabold text-base">₹{selectedPrice}</span>
-          </p>
+        <div className="max-w-xl mx-auto rounded-2xl border border-zinc-800 bg-[#0c0d12]/95 backdrop-blur-xl p-6 sm:p-8 shadow-2xl space-y-6">
+          <div className="border-b border-zinc-800/80 pb-4">
+            <div className="flex items-center gap-2 text-xs font-mono text-green-400 mb-1">
+              <User className="w-4 h-4" /> STEP 02 • STUDENT VERIFICATION
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              Customer Profile &amp; Enrollment
+            </h2>
+            <div className="mt-3 p-3 rounded-xl bg-black/60 border border-zinc-800 flex items-center justify-between text-xs">
+              <div>
+                <span className="text-zinc-400 block font-mono text-[11px]">Selected Package:</span>
+                <span className="font-bold text-white">{selectedPackage?.package_name} ({selectedLabel})</span>
+              </div>
+              <div className="text-right">
+                <span className="text-zinc-400 block font-mono text-[11px]">Subtotal:</span>
+                <span className="text-green-400 font-extrabold text-base">₹{selectedPrice}</span>
+              </div>
+            </div>
+          </div>
+
           <form onSubmit={handleDetailsSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Full Name</label>
-              <input required type="text" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} className="w-full px-4 py-2.5 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" />
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-green-400" /> Full Name
+              </label>
+              <input 
+                required 
+                type="text" 
+                value={formData.fullName} 
+                onChange={e => setFormData({...formData, fullName: e.target.value})} 
+                placeholder="e.g. John Doe"
+                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm" 
+              />
             </div>
+
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider">
-                  Mobile Number (Indian 10-Digit)
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-green-400" /> Mobile Number (Indian 10-Digit)
                 </label>
                 {phoneStatus.isValid ? (
-                  <span className="text-[11px] text-green-400 font-semibold flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" /> Valid Indian Number
+                  <span className="text-[11px] text-green-400 font-mono flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" /> Valid
                   </span>
                 ) : phoneTouched && (
-                  <span className="text-[11px] text-red-400 font-medium flex items-center gap-1">
+                  <span className="text-[11px] text-red-400 font-mono flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5" /> {phoneStatus.error}
                   </span>
                 )}
               </div>
-              <div className={`relative flex rounded-lg overflow-hidden border transition-colors ${
-                phoneTouched && !phoneStatus.isValid ? 'border-red-500' : 'border-gray-800 focus-within:border-green-500'
+              <div className={`relative flex rounded-xl overflow-hidden border transition-colors ${
+                phoneTouched && !phoneStatus.isValid ? 'border-red-500' : 'border-zinc-800 focus-within:border-green-500'
               }`}>
-                <div className="inline-flex items-center px-3.5 bg-[#141815] border-r border-gray-800 text-gray-300 text-sm font-mono font-bold select-none gap-1.5">
+                <div className="inline-flex items-center px-3.5 bg-zinc-900 border-r border-zinc-800 text-zinc-300 text-xs font-mono font-bold select-none gap-1.5">
                   <span>🇮🇳</span>
-                  <span className="text-gray-400">+91</span>
+                  <span className="text-zinc-400">+91</span>
                 </div>
                 <input
                   required
@@ -483,74 +631,160 @@ export const CustomerPackages = () => {
                   className="w-full px-4 py-2.5 bg-black text-white text-sm font-mono tracking-wider focus:outline-none"
                 />
               </div>
-              <span className="text-[11px] text-gray-500 mt-1 block">
-                Must be an active 10-digit Indian mobile number (starts with 6, 7, 8, or 9).
+              <span className="text-[11px] text-zinc-500 mt-1 block">
+                Official Indian mobile number used for emergency license recovery.
               </span>
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">College Name</label>
-              <input required type="text" value={formData.collegeName} onChange={e => setFormData({...formData, collegeName: e.target.value})} className="w-full px-4 py-2.5 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" />
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+                <School className="w-3.5 h-3.5 text-green-400" /> College / University Name
+              </label>
+              <input 
+                required 
+                type="text" 
+                value={formData.collegeName} 
+                onChange={e => setFormData({...formData, collegeName: e.target.value})} 
+                placeholder="e.g. National Institute of Technology"
+                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm" 
+              />
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Academic Year</label>
-              <input required type="text" value={formData.academicYear} onChange={e => setFormData({...formData, academicYear: e.target.value})} className="w-full px-4 py-2.5 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" placeholder="e.g. 3rd Year" />
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
+                <GraduationCap className="w-3.5 h-3.5 text-green-400" /> Academic Year / Branch
+              </label>
+              <input 
+                required 
+                type="text" 
+                value={formData.academicYear} 
+                onChange={e => setFormData({...formData, academicYear: e.target.value})} 
+                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm" 
+                placeholder="e.g. 3rd Year B.Tech CSE" 
+              />
             </div>
-            <div className="pt-4 flex gap-4">
-              <button type="button" onClick={() => setStep(1)} className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium cursor-pointer text-sm">Back</button>
-              <button type="submit" className="flex-1 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold cursor-pointer transition-colors text-sm shadow-[0_0_15px_rgba(34,197,94,0.3)]">Continue to Payment</button>
+
+            <div className="pt-4 flex gap-3">
+              <button 
+                type="button" 
+                onClick={() => setStep(1)} 
+                className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl font-medium cursor-pointer text-xs font-mono flex items-center justify-center gap-2 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Packages
+              </button>
+              <button 
+                type="submit" 
+                className="flex-1 py-3 bg-green-500 hover:bg-green-400 text-black rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"
+              >
+                <span>Continue to Payment</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </form>
         </div>
       )}
 
+      {/* STEP 3: UPI Payment Card */}
       {step === 3 && (
-        <div className="max-w-xl mx-auto bg-[#0a0a0a] border border-gray-800 rounded-2xl p-5 sm:p-8 shadow-2xl">
-          <div className="text-center mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold mb-1.5 text-white">UPI Payment</h2>
-            <p className="text-gray-400 text-xs">
-              Complete your payment for <span className="text-white font-bold">{selectedPackage?.package_name} ({selectedLabel})</span>.
-            </p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-950/40 border border-green-800/60 text-xs text-green-300 font-mono">
-              <span>🇮🇳 Verified Mobile: +91 {formData.phone}</span>
+        <div className="max-w-xl mx-auto rounded-2xl border border-zinc-800 bg-[#0c0d12]/95 backdrop-blur-xl p-6 sm:p-8 shadow-2xl space-y-6">
+          <div className="text-center space-y-2 border-b border-zinc-800/80 pb-5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 font-mono text-xs">
+              <CreditCard className="w-3.5 h-3.5" /> STEP 03 • SECURE UPI SETTLEMENT
             </div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">
+              Direct UPI Payment
+            </h2>
+            <p className="text-xs text-zinc-400">
+              Transfer the exact amount to the official merchant handle below using any UPI app (GPay, PhonePe, Paytm).
+            </p>
           </div>
           
-          <div className="bg-black border border-gray-800 rounded-xl p-6 text-center mb-6 shadow-inner">
-            <div className="text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Amount to Pay</div>
-            <div className="text-4xl font-black text-green-400 mb-5">₹{selectedPrice}</div>
-            <div className="text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Official UPI ID</div>
-            <div className="text-lg font-mono text-white bg-[#0e0e0e] py-2.5 rounded-lg border border-gray-800 select-all font-bold">
-              phantomlead@upi
+          {/* Payment Terminal Card */}
+          <div className="rounded-xl border border-zinc-800 bg-black/80 p-5 space-y-4">
+            <div className="text-center">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
+                Amount Payable
+              </span>
+              <div className="text-4xl font-black text-green-400 tracking-tight">
+                ₹{selectedPrice}
+              </div>
+              <span className="text-xs font-mono text-zinc-500">
+                {selectedPackage?.package_name} ({selectedLabel})
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-400 font-mono">Merchant UPI VPA:</span>
+                <button
+                  type="button"
+                  onClick={copyUpiId}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-mono text-[11px] transition-colors"
+                >
+                  {copiedUpi ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedUpi ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+              <div className="font-mono text-base font-bold text-white tracking-wider select-all">
+                phantomlead@upi
+              </div>
             </div>
           </div>
 
-          <div className="mb-6 rounded-xl border border-gray-800 p-4 bg-zinc-950/60 text-xs">
-            <h3 className="font-semibold text-white mb-1.5">What this package includes:</h3>
-            <p className="text-gray-400 mb-3 leading-relaxed">{packageGuides[selectedPackage?.package_code]?.purpose || selectedPackage?.description}</p>
-            <h3 className="font-semibold text-white mb-1.5">Activation steps:</h3>
-            <ol className="list-decimal space-y-1 pl-4 text-gray-400">
-              {installationSteps.map(item => <li key={item}>{item}</li>)}
+          {/* Activation Roadmap */}
+          <div className="p-4 rounded-xl bg-black/60 border border-zinc-800 space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-green-400 font-semibold block">
+              Activation Roadmap Upon Clearance
+            </span>
+            <ol className="space-y-1.5 text-xs text-zinc-400">
+              {installationSteps.map((stepText, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="font-mono text-zinc-500 shrink-0 text-[11px]">0{idx + 1}.</span>
+                  <span>{stepText}</span>
+                </li>
+              ))}
             </ol>
           </div>
 
           <form onSubmit={handlePaymentSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">
-                Paste UPI Transaction ID (Reference / UTR Number)
+              <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
+                Paste 12-Digit UPI Ref / UTR Number
               </label>
               <input 
                 required 
                 type="text" 
                 value={formData.upiId} 
                 onChange={e => setFormData({...formData, upiId: e.target.value})} 
-                className="w-full px-4 py-3 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 font-mono text-center text-lg text-white font-bold tracking-wider" 
-                placeholder="e.g. 3201498172" 
+                className="w-full px-4 py-3 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 font-mono text-center text-lg text-white font-bold tracking-wider" 
+                placeholder="e.g. 403819284719" 
               />
+              <span className="text-[11px] text-zinc-500 mt-1 block text-center">
+                Found in your payment app under "Transaction Details" or "UPI Ref ID".
+              </span>
             </div>
-            <div className="pt-4 flex gap-4">
-              <button type="button" onClick={() => setStep(2)} className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium cursor-pointer text-sm">Back</button>
-              <button type="submit" className="flex-1 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold flex items-center justify-center cursor-pointer shadow-[0_0_15px_rgba(34,197,94,0.3)] text-sm">
-                <CreditCard className="w-4 h-4 mr-2" /> Submit Payment
+
+            <div className="pt-2 flex gap-3">
+              <button 
+                type="button" 
+                onClick={() => setStep(2)} 
+                className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl font-medium cursor-pointer text-xs font-mono flex items-center justify-center gap-2 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
+              <button 
+                type="submit" 
+                disabled={submittingPayment}
+                className="flex-1 py-3 bg-green-500 hover:bg-green-400 disabled:opacity-50 text-black rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
+              >
+                {submittingPayment ? (
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <CreditCard className="w-4 h-4" />
+                    <span>Submit Verification</span>
+                  </>
+                )}
               </button>
             </div>
           </form>
