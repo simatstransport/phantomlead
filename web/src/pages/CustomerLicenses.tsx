@@ -124,7 +124,7 @@ const getTimeRemaining = (expiresAt: string | null | undefined, now: number) => 
 const getInstallerInfo = (license: CustomerLicense) => {
   let installerName = 'SecureInstaller_L.exe';
   let editionLabel = 'Lifetime Full';
-  let badgeColor = 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10';
+  let badgeColor = 'border-sky-500/30 text-sky-400 bg-sky-500/10';
 
   if (license.duration_months === -10) {
     installerName = 'SecureInstaller_T.exe';
@@ -264,8 +264,8 @@ export const CustomerLicenses = () => {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
         <div className="relative">
-          <div className="w-12 h-12 rounded-full border-2 border-green-500/20 border-t-green-400 animate-spin"></div>
-          <Zap className="w-5 h-5 text-green-400 absolute inset-0 m-auto animate-pulse" />
+          <div className="w-12 h-12 rounded-full border-2 border-cyan-500/20 border-t-cyan-400 animate-spin"></div>
+          <Zap className="w-5 h-5 text-cyan-400 absolute inset-0 m-auto animate-pulse" />
         </div>
         <p className="text-sm font-mono text-gray-400">Loading secure crypto license terminal...</p>
       </div>
@@ -277,12 +277,12 @@ export const CustomerLicenses = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-12">
       {/* Top Cyber Command Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-green-500/5 to-transparent pointer-events-none" />
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-[#070b14] border border-gray-800/80 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-cyan-500/5 to-transparent pointer-events-none" />
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/30 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping"></span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
               License Terminal v2.0
             </span>
             <span className="text-gray-600 text-xs">•</span>
@@ -304,7 +304,7 @@ export const CustomerLicenses = () => {
             className="inline-flex items-center gap-2 px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-xl text-xs font-medium text-gray-300 hover:text-white transition-all cursor-pointer disabled:opacity-50"
             title="Refresh license state"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-green-400 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-cyan-400 ${refreshing ? 'animate-spin' : ''}`} />
             <span>{refreshing ? 'Syncing...' : 'Sync Status'}</span>
           </button>
         </div>
@@ -325,21 +325,21 @@ export const CustomerLicenses = () => {
       {/* CASE 1: FRESH ACCOUNT (No active license)                                  */}
       {/* ========================================================================= */}
       {!activeLicense ? (
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#0e1610] via-[#090d0a] to-[#050706] border border-green-500/30 p-8 sm:p-12 shadow-[0_0_50px_rgba(34,197,94,0.1)] text-center">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(34,197,94,0.15),transparent_70%)] pointer-events-none" />
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#0e1610] via-[#090d0a] to-[#050706] border border-cyan-500/30 p-8 sm:p-12 shadow-[0_0_50px_rgba(6,182,212,0.1)] text-center">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(6,182,212,0.15),transparent_70%)] pointer-events-none" />
 
           {/* Central Hologram Shield */}
           <div className="relative mx-auto mb-6 w-24 h-24 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border border-green-500/30 animate-[spin_6s_linear_infinite]" />
-            <div className="absolute inset-[-8px] rounded-full border border-dashed border-green-400/20 animate-[spin_10s_linear_reverse_infinite]" />
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-950/40 border border-green-500/40 flex items-center justify-center text-green-400 shadow-[0_0_25px_rgba(34,197,94,0.3)]">
-              <Sparkles className="w-8 h-8 text-green-400" />
+            <div className="absolute inset-0 rounded-full border border-cyan-500/30 animate-[spin_6s_linear_infinite]" />
+            <div className="absolute inset-[-8px] rounded-full border border-dashed border-cyan-400/20 animate-[spin_10s_linear_reverse_infinite]" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-sky-950/40 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.3)]">
+              <Sparkles className="w-8 h-8 text-cyan-400" />
             </div>
           </div>
 
           {/* Fresh Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold tracking-wider uppercase mb-3">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-bold tracking-wider uppercase mb-3">
+            <span className="w-2 h-2 rounded-full bg-sky-400"></span>
             Account Status: 100% Fresh
           </div>
 
@@ -353,8 +353,8 @@ export const CustomerLicenses = () => {
 
           {/* 3 High-Tech Status Blocks */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-8 text-left">
-            <div className="bg-black/40 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-green-500/30 transition-all">
-              <div className="flex items-center gap-2 mb-2 text-green-400">
+            <div className="bg-black/40 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
+              <div className="flex items-center gap-2 mb-2 text-cyan-400">
                 <HardDrive className="w-4 h-4" />
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Hardware Slot</span>
               </div>
@@ -362,7 +362,7 @@ export const CustomerLicenses = () => {
               <div className="text-[11px] text-gray-400 mt-1">Ready to pair with your computer on first install</div>
             </div>
 
-            <div className="bg-black/40 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-green-500/30 transition-all">
+            <div className="bg-black/40 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
               <div className="flex items-center gap-2 mb-2 text-cyan-400">
                 <ShieldCheck className="w-4 h-4" />
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Clean State</span>
@@ -371,7 +371,7 @@ export const CustomerLicenses = () => {
               <div className="text-[11px] text-gray-400 mt-1">No expired time-bombs or lingering locks running</div>
             </div>
 
-            <div className="bg-black/40 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-green-500/30 transition-all">
+            <div className="bg-black/40 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
               <div className="flex items-center gap-2 mb-2 text-purple-400">
                 <Cpu className="w-4 h-4" />
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-200">AI Integration</span>
@@ -385,7 +385,7 @@ export const CustomerLicenses = () => {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/dashboard/packages"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_25px_rgba(34,197,94,0.4)] transition-all hover:scale-[1.02] cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_25px_rgba(6,182,212,0.4)] transition-all hover:scale-[1.02] cursor-pointer"
             >
               <span>Browse Packages &amp; Activate Now</span>
               <ArrowRight className="w-4 h-4" />
@@ -395,7 +395,7 @@ export const CustomerLicenses = () => {
               to="/dashboard/install"
               className="inline-flex items-center gap-2 px-5 py-3.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700 text-gray-300 hover:text-white rounded-xl font-medium text-sm transition-all cursor-pointer"
             >
-              <BookOpen className="w-4 h-4 text-green-400" />
+              <BookOpen className="w-4 h-4 text-cyan-400" />
               <span>View Installation Guide</span>
             </Link>
           </div>
@@ -414,18 +414,18 @@ export const CustomerLicenses = () => {
           return (
             <div className="space-y-6">
               {/* Tactical Main Card */}
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0c120e] via-[#090b0a] to-[#040605] border border-green-500/40 p-6 sm:p-8 shadow-[0_0_35px_rgba(34,197,94,0.15)]">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#070c18] via-[#050811] to-[#040605] border border-cyan-500/40 p-6 sm:p-8 shadow-[0_0_35px_rgba(6,182,212,0.15)]">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
 
                 {/* Tactical Header */}
                 <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-gray-800/80">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
                       </span>
-                      <span className="text-[11px] font-mono uppercase tracking-widest font-bold text-green-400">
+                      <span className="text-[11px] font-mono uppercase tracking-widest font-bold text-cyan-400">
                         ACTIVE STATION ARMED
                       </span>
                       <span className="text-gray-600">•</span>
@@ -451,35 +451,35 @@ export const CustomerLicenses = () => {
                 {/* 3 Modular Cyber Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-6">
                   {/* Card 1: Cryptographic License Key Vault */}
-                  <div className="bg-black/50 border border-gray-800/90 rounded-2xl p-5 flex flex-col justify-between hover:border-green-500/40 transition-all shadow-inner">
+                  <div className="bg-black/50 border border-gray-800/90 rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-500/40 transition-all shadow-inner">
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <span className="text-xs font-mono uppercase font-bold text-gray-400 flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-green-400" /> License Key Vault
+                          <Sparkles className="w-4 h-4 text-cyan-400" /> License Key Vault
                         </span>
-                        <span className="text-[10px] text-green-400/80 font-mono bg-green-950/60 px-2 py-0.5 rounded border border-green-800/50">
+                        <span className="text-[10px] text-cyan-400/80 font-mono bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">
                           Encrypted
                         </span>
                       </div>
 
                       {activeLicense.license_key ? (
-                        <div className="bg-[#050a06] border border-green-900/60 rounded-xl p-3 flex flex-col gap-2">
-                          <span className="text-green-400 font-mono font-bold text-sm sm:text-base tracking-widest select-all break-all text-center">
+                        <div className="bg-[#050a06] border border-cyan-900/60 rounded-xl p-3 flex flex-col gap-2">
+                          <span className="text-cyan-400 font-mono font-bold text-sm sm:text-base tracking-widest select-all break-all text-center">
                             {activeLicense.license_key}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleCopyKey(activeLicense.license_key!)}
-                            className="w-full py-2 rounded-lg bg-green-950/80 hover:bg-green-900 text-green-300 hover:text-white transition-all flex items-center justify-center gap-1.5 text-xs font-bold font-sans border border-green-800/70 cursor-pointer shadow-sm"
+                            className="w-full py-2 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 hover:text-white transition-all flex items-center justify-center gap-1.5 text-xs font-bold font-sans border border-cyan-800/70 cursor-pointer shadow-sm"
                           >
                             {copiedKey === activeLicense.license_key ? (
                               <>
-                                <Check className="w-4 h-4 text-green-400" />
+                                <Check className="w-4 h-4 text-cyan-400" />
                                 <span>Key Copied to Clipboard!</span>
                               </>
                             ) : (
                               <>
-                                <Copy className="w-4 h-4 text-green-400" />
+                                <Copy className="w-4 h-4 text-cyan-400" />
                                 <span>Copy License Key</span>
                               </>
                             )}
@@ -490,7 +490,7 @@ export const CustomerLicenses = () => {
                       )}
                     </div>
                     <div className="text-[11px] text-gray-400 mt-3 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-green-400 shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                       <span>Paste into SecureInstaller when prompted</span>
                     </div>
                   </div>
@@ -577,7 +577,7 @@ export const CustomerLicenses = () => {
                             : countdown.urgency === 'warning'
                             ? 'text-amber-400'
                             : countdown.isPermanent
-                            ? 'text-emerald-400 text-lg'
+                            ? 'text-sky-400 text-lg'
                             : 'text-cyan-400'
                         }`}>
                           {countdown.countdownStr}
@@ -588,7 +588,7 @@ export const CustomerLicenses = () => {
                             : countdown.urgency === 'warning'
                             ? 'text-amber-300'
                             : countdown.isPermanent
-                            ? 'text-emerald-300'
+                            ? 'text-sky-300'
                             : 'text-gray-300'
                         }`}>
                           {countdown.moreToExpireText}
@@ -611,10 +611,10 @@ export const CustomerLicenses = () => {
                     <a
                       href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`}
                       download={installerName}
-                      className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all hover:scale-[1.02] cursor-pointer"
+                      className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all hover:scale-[1.02] cursor-pointer"
                     >
                       <Download className="w-4 h-4" /> Download {installerName}
-                      <span className="text-xs font-normal text-green-100 bg-green-700/60 px-2 py-0.5 rounded ml-1">
+                      <span className="text-xs font-normal text-cyan-100 bg-cyan-700/60 px-2 py-0.5 rounded ml-1">
                         {editionLabel}
                       </span>
                     </a>
@@ -623,7 +623,7 @@ export const CustomerLicenses = () => {
                       to="/dashboard/install"
                       className="inline-flex items-center gap-2 px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-gray-300 hover:text-white rounded-xl text-sm font-medium border border-zinc-700 transition-colors"
                     >
-                      <BookOpen className="w-4 h-4 text-green-400" />
+                      <BookOpen className="w-4 h-4 text-cyan-400" />
                       <span>Installation Manual &amp; Shortcuts</span>
                     </Link>
                   </div>

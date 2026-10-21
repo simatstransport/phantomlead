@@ -101,7 +101,7 @@ export const AdminCustomers = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-zinc-400 space-y-3">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <p className="font-mono text-xs tracking-wider uppercase">Loading customer fleet...</p>
       </div>
     );
@@ -114,13 +114,13 @@ export const AdminCustomers = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-green-400 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
                 IDENTITY &amp; ENROLLMENT REGISTRY
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <Users className="w-7 h-7 text-green-400" />
+              <Users className="w-7 h-7 text-cyan-400" />
               Customer Fleet Directory
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400">
@@ -141,9 +141,9 @@ export const AdminCustomers = () => {
             <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Total Enrolled</span>
             <div className="text-2xl font-black text-white font-mono">{totalCount}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-green-500/20">
-            <span className="text-[10px] font-mono uppercase text-green-400/80 block mb-1">Active Accounts</span>
-            <div className="text-2xl font-black text-green-400 font-mono">{activeCount}</div>
+          <div className="p-3.5 rounded-xl bg-black/60 border border-cyan-500/20">
+            <span className="text-[10px] font-mono uppercase text-cyan-400/80 block mb-1">Active Accounts</span>
+            <div className="text-2xl font-black text-cyan-400 font-mono">{activeCount}</div>
           </div>
           <div className="p-3.5 rounded-xl bg-black/60 border border-red-500/20">
             <span className="text-[10px] font-mono uppercase text-red-400/80 block mb-1">Blocked / Suspended</span>
@@ -165,7 +165,7 @@ export const AdminCustomers = () => {
             placeholder="Search by student name, email, phone, or college..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0d12] border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-green-500/60 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0d12] border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
           />
         </div>
 
@@ -176,7 +176,7 @@ export const AdminCustomers = () => {
               onClick={() => setStatusFilter(tab)}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
                 statusFilter === tab
-                  ? 'bg-green-500 text-black shadow-md shadow-green-500/20'
+                  ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/20'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -227,7 +227,7 @@ export const AdminCustomers = () => {
                           <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold font-mono text-xs shrink-0 ${
                             isBlocked 
                               ? 'bg-red-500/10 border border-red-500/30 text-red-400' 
-                              : 'bg-green-500/10 border border-green-500/30 text-green-400'
+                              : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400'
                           }`}>
                             {initials}
                           </div>
@@ -250,7 +250,7 @@ export const AdminCustomers = () => {
                         </div>
                         {customer.phone && (
                           <div className="flex items-center gap-1.5 text-zinc-400">
-                            <Phone className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                            <Phone className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                             <span className="font-mono text-[11px]">+91 {customer.phone}</span>
                           </div>
                         )}
@@ -281,9 +281,9 @@ export const AdminCustomers = () => {
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold ${
                           isBlocked 
                             ? 'bg-red-500/10 border border-red-500/30 text-red-400' 
-                            : 'bg-green-500/10 border border-green-500/30 text-green-400'
+                            : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400'
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${isBlocked ? 'bg-red-400' : 'bg-green-400 animate-pulse'}`} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${isBlocked ? 'bg-red-400' : 'bg-cyan-400 animate-pulse'}`} />
                           {isBlocked ? 'BLOCKED' : 'ACTIVE'}
                         </span>
                       </td>
@@ -295,7 +295,7 @@ export const AdminCustomers = () => {
                             onClick={() => handleToggleBlock(customer.id, customer.status)} 
                             className={`p-2 rounded-lg border text-xs font-mono transition-all cursor-pointer ${
                               isBlocked 
-                                ? 'bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20' 
+                                ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20' 
                                 : 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20'
                             }`}
                             title={isBlocked ? 'Unblock user' : 'Block user'}

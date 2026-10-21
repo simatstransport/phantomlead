@@ -39,26 +39,26 @@ export const CustomerInstallation = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-16 px-2 sm:px-4">
       {/* Page Header Deck */}
-      <div className="relative overflow-hidden rounded-2xl border border-green-500/30 bg-gradient-to-br from-[#0c120e] via-[#090b0a] to-[#050606] p-6 sm:p-8 shadow-[0_0_40px_rgba(34,197,94,0.06)]">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-[#070c18] via-[#050811] to-[#03050a] p-6 sm:p-8 shadow-[0_0_40px_rgba(6,182,212,0.06)]">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-sky-500/5 rounded-full blur-2xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-green-500/10 border border-green-500/30 text-green-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                 DEPLOYMENT MANUAL
               </span>
               <span className="text-xs font-mono text-zinc-500 border border-zinc-800 bg-zinc-900/60 px-2.5 py-0.5 rounded-full">
                 SEB v3.10.2 VERIFIED
               </span>
-              <span className="text-xs font-mono text-emerald-400/90 border border-emerald-900/50 bg-emerald-950/40 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-mono text-sky-400/90 border border-sky-900/50 bg-sky-950/40 px-2.5 py-0.5 rounded-full">
                 AUTO-WHITELIST ENABLED
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <BookOpen className="w-7 h-7 text-green-400 shrink-0" />
+              <BookOpen className="w-7 h-7 text-cyan-400 shrink-0" />
               Workstation Setup &amp; Field Guide
             </h1>
             <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
@@ -69,7 +69,7 @@ export const CustomerInstallation = () => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <Link
               to="/dashboard/licenses"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-green-500 hover:bg-green-400 text-black font-semibold text-xs tracking-wide shadow-lg shadow-green-500/20 transition-all active:scale-95"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs tracking-wide shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
             >
               <Key className="w-4 h-4" />
               View My License Keys
@@ -201,7 +201,7 @@ export const CustomerInstallation = () => {
             <p className="mb-2">
               <strong className="text-red-300">Why this is necessary:</strong> Windows Security (Defender) aggressively blocks custom DLL hooks, memory injections, and automated scripts used by custom Safe Exam Browser helpers.
             </p>
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono pt-1">
+            <div className="flex items-center gap-2 text-sky-400 text-xs font-mono pt-1">
               <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Good News: SecureInstaller automatically registers persistent exclusions during installation so your background monitor is never interrupted once set up.</span>
             </div>
@@ -220,7 +220,7 @@ export const CustomerInstallation = () => {
                     onClick={() => copyToClipboard('windowsdefender:')}
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-mono transition-colors"
                   >
-                    {copiedCmd ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedCmd ? <Check className="w-3.5 h-3.5 text-cyan-400" /> : <Copy className="w-3.5 h-3.5" />}
                     {copiedCmd ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
@@ -310,7 +310,7 @@ export const CustomerInstallation = () => {
                 <Lightbulb className="w-4 h-4" /> If Windows SmartScreen Pop-Up Appears:
               </div>
               <p className="leading-relaxed text-zinc-400">
-                If Windows shows a blue dialog stating <em className="text-zinc-200">"Windows protected your PC"</em>, click <strong className="text-white underline">More info</strong>, then click the newly revealed <strong className="text-green-400 underline">Run anyway</strong> button.
+                If Windows shows a blue dialog stating <em className="text-zinc-200">"Windows protected your PC"</em>, click <strong className="text-white underline">More info</strong>, then click the newly revealed <strong className="text-cyan-400 underline">Run anyway</strong> button.
               </p>
             </div>
           </div>
@@ -320,12 +320,12 @@ export const CustomerInstallation = () => {
         <section id="step-gemini" className="rounded-2xl border border-zinc-800 bg-[#0c0d12]/90 backdrop-blur-xl p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-center font-mono font-bold text-green-400 text-sm">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center font-mono font-bold text-cyan-400 text-sm">
                 02
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Key className="w-5 h-5 text-green-400" />
+                  <Key className="w-5 h-5 text-cyan-400" />
                   Obtain Google Gemini API Key
                 </h3>
                 <p className="text-xs text-zinc-400">
@@ -337,7 +337,7 @@ export const CustomerInstallation = () => {
               href="https://aistudio.google.com/app/apikey"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 text-xs font-semibold transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-semibold transition-all"
             >
               Google AI Studio
               <ExternalLink className="w-3.5 h-3.5" />
@@ -346,15 +346,15 @@ export const CustomerInstallation = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-xl bg-black/60 border border-zinc-800/80 space-y-2">
-              <div className="text-xs font-mono font-bold text-green-400">Step 2.1</div>
+              <div className="text-xs font-mono font-bold text-cyan-400">Step 2.1</div>
               <p className="text-xs font-semibold text-zinc-200">Sign in with Google</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Navigate to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-green-400 underline">Google AI Studio</a> and log in with your primary Google account.
+                Navigate to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-cyan-400 underline">Google AI Studio</a> and log in with your primary Google account.
               </p>
             </div>
 
             <div className="p-4 rounded-xl bg-black/60 border border-zinc-800/80 space-y-2">
-              <div className="text-xs font-mono font-bold text-green-400">Step 2.2</div>
+              <div className="text-xs font-mono font-bold text-cyan-400">Step 2.2</div>
               <p className="text-xs font-semibold text-zinc-200">Create Key</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Click the blue <strong className="text-white">Create API Key</strong> button. Choose an existing project or allow Google to create one.
@@ -362,7 +362,7 @@ export const CustomerInstallation = () => {
             </div>
 
             <div className="p-4 rounded-xl bg-black/60 border border-zinc-800/80 space-y-2">
-              <div className="text-xs font-mono font-bold text-green-400">Step 2.3</div>
+              <div className="text-xs font-mono font-bold text-cyan-400">Step 2.3</div>
               <p className="text-xs font-semibold text-zinc-200">Copy to Clipboard</p>
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Copy the generated key (starts with <code className="text-amber-400 font-mono">AIzaSy...</code>) and keep it secure. You will paste this into the installer.
@@ -587,20 +587,20 @@ export const CustomerInstallation = () => {
             </div>
 
             {/* Viva Paragraph */}
-            <div className="p-4 rounded-xl bg-black/60 border border-emerald-500/30 hover:border-emerald-400/60 transition-all space-y-3 group md:col-span-2">
+            <div className="p-4 rounded-xl bg-black/60 border border-sky-500/30 hover:border-sky-400/60 transition-all space-y-3 group md:col-span-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 text-sm">
                     📝
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
+                    <h4 className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
                       Viva &amp; Paragraph Explainer Helper
                     </h4>
                     <span className="text-[10px] font-mono text-zinc-400">module: viva_paragraph</span>
                   </div>
                 </div>
-                <kbd className="px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-700/60 text-emerald-300 font-mono text-xs font-bold shadow-[0_0_12px_rgba(34,197,94,0.3)]">
+                <kbd className="px-2.5 py-1 rounded bg-sky-950/80 border border-sky-700/60 text-sky-300 font-mono text-xs font-bold shadow-[0_0_12px_rgba(6,182,212,0.3)]">
                   Ctrl + L
                 </kbd>
               </div>
@@ -672,7 +672,7 @@ export const CustomerInstallation = () => {
                     4
                   </span>
                   <span>
-                    Click <strong className="text-green-400">Install</strong> and let it finish the setup.
+                    Click <strong className="text-cyan-400">Install</strong> and let it finish the setup.
                   </span>
                 </li>
 
@@ -680,7 +680,7 @@ export const CustomerInstallation = () => {
                   <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-700/60 px-2 py-0.5 rounded text-xs shrink-0">
                     5
                   </span>
-                  <span className="text-green-300">
+                  <span className="text-cyan-300">
                     Relaunch <strong>Safe Exam Browser</strong> — your extensions will run smoothly with fast answer generation again!
                   </span>
                 </li>

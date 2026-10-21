@@ -282,7 +282,7 @@ export const CustomerPackages = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-zinc-400 space-y-3">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <p className="font-mono text-xs tracking-wider uppercase">Loading security packages...</p>
       </div>
     );
@@ -295,13 +295,13 @@ export const CustomerPackages = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-green-400 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
                 SECURITY SUITE STORE • INSTANT ISSUANCE
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              <Package className="w-6 h-6 text-green-400" />
+              <Package className="w-6 h-6 text-cyan-400" />
               Hardened Safe Exam Browser Packages
             </h1>
           </div>
@@ -309,21 +309,21 @@ export const CustomerPackages = () => {
           {/* Stepper Pills */}
           <div className="flex items-center gap-2 text-xs font-mono">
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
-              step === 1 ? 'bg-green-500/10 border-green-500/40 text-green-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
+              step === 1 ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
             }`}>
               <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">1</span>
               <span>Packages</span>
             </div>
             <ChevronRight className="w-4 h-4 text-zinc-600" />
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
-              step === 2 ? 'bg-green-500/10 border-green-500/40 text-green-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
+              step === 2 ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
             }`}>
               <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">2</span>
               <span>Student Profile</span>
             </div>
             <ChevronRight className="w-4 h-4 text-zinc-600" />
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
-              step === 3 ? 'bg-green-500/10 border-green-500/40 text-green-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
+              step === 3 ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400' : 'bg-black/40 border-zinc-800 text-zinc-500'
             }`}>
               <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">3</span>
               <span>UPI Settlement</span>
@@ -359,13 +359,13 @@ export const CustomerPackages = () => {
                   key={pkg.id} 
                   className={`rounded-2xl flex flex-col transition-all duration-300 relative overflow-hidden group backdrop-blur-xl ${
                     isFeatured 
-                      ? 'bg-gradient-to-b from-[#0f1712] via-[#090b0a] to-[#060707] border-2 border-green-500/60 shadow-[0_0_35px_rgba(34,197,94,0.15)] hover:border-green-400' 
+                      ? 'bg-gradient-to-b from-[#081024] via-[#050811] to-[#060707] border-2 border-cyan-500/60 shadow-[0_0_35px_rgba(6,182,212,0.15)] hover:border-cyan-400' 
                       : 'bg-[#0c0d12]/90 border border-zinc-800 hover:border-zinc-700 shadow-xl'
                   }`}
                 >
                   {/* Featured Header Pill */}
                   {isFeatured && (
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-400 py-1.5 px-4 text-center">
+                    <div className="bg-gradient-to-r from-cyan-500 to-sky-400 py-1.5 px-4 text-center">
                       <span className="text-[10px] font-mono font-black text-black tracking-widest uppercase flex items-center justify-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" /> {guide?.badge || 'MOST POPULAR SUITE'}
                       </span>
@@ -392,12 +392,12 @@ export const CustomerPackages = () => {
                       <div className="p-4 rounded-xl bg-black/70 border border-zinc-800/90 space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] font-mono font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-green-400" /> Duration
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" /> Duration
                           </span>
                           <button
                             type="button"
                             onClick={() => setCustomSliderActive(prev => ({ ...prev, [pkg.id]: !isSliderOpen }))}
-                            className="text-[11px] font-mono text-green-400 hover:text-green-300 flex items-center gap-1 cursor-pointer transition-colors"
+                            className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 cursor-pointer transition-colors"
                           >
                             <SlidersHorizontal className="w-3 h-3" />
                             {isSliderOpen ? 'Quick Pills' : 'Slider'}
@@ -423,7 +423,7 @@ export const CustomerPackages = () => {
                                   onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
                                   className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
                                     isSelected 
-                                      ? 'bg-green-500 text-black shadow-[0_0_12px_rgba(34,197,94,0.3)]' 
+                                      ? 'bg-cyan-500 text-black shadow-[0_0_12px_rgba(6,182,212,0.3)]' 
                                       : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
                                   }`}
                                 >
@@ -448,7 +448,7 @@ export const CustomerPackages = () => {
                                 >
                                   -
                                 </button>
-                                <span className="font-mono text-xs font-bold text-green-400 min-w-16 text-center">
+                                <span className="font-mono text-xs font-bold text-cyan-400 min-w-16 text-center">
                                   {currentDuration === null ? 'Lifetime' : `${currentDuration} Mo`}
                                 </span>
                                 <button
@@ -471,7 +471,7 @@ export const CustomerPackages = () => {
                               step="1"
                               value={currentDuration === null ? 12 : currentDuration}
                               onChange={(e) => setPackageDurations({ ...packageDurations, [pkg.id]: parseInt(e.target.value) })}
-                              className="w-full accent-green-500 cursor-pointer h-1.5 bg-zinc-800 rounded-lg appearance-none"
+                              className="w-full accent-cyan-500 cursor-pointer h-1.5 bg-zinc-800 rounded-lg appearance-none"
                             />
 
                             <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
@@ -486,7 +486,7 @@ export const CustomerPackages = () => {
                               onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: null })}
                               className={`w-full py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
                                 currentDuration === null 
-                                  ? 'bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
+                                  ? 'bg-cyan-500 text-black shadow-[0_0_10px_rgba(6,182,212,0.3)]' 
                                   : 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800'
                               }`}
                             >
@@ -498,7 +498,7 @@ export const CustomerPackages = () => {
                         {/* Discount Badge */}
                         {discount && (
                           <div className="pt-1 text-center">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-green-400 bg-green-500/10 px-2.5 py-0.5 rounded-full border border-green-500/20">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/20">
                               <Sparkles className="w-3 h-3" /> {discount}
                             </span>
                           </div>
@@ -528,7 +528,7 @@ export const CustomerPackages = () => {
                         <div className="space-y-1.5">
                           {includesList.map((item: string) => (
                             <div key={item} className="flex items-center text-xs text-zinc-300">
-                              <CheckCircle className="w-3.5 h-3.5 text-green-400 mr-2 shrink-0" />
+                              <CheckCircle className="w-3.5 h-3.5 text-cyan-400 mr-2 shrink-0" />
                               <span>{item}</span>
                             </div>
                           ))}
@@ -540,8 +540,8 @@ export const CustomerPackages = () => {
                       onClick={() => handleBuyClick(pkg)} 
                       className={`w-full py-3 rounded-xl font-bold text-xs tracking-wider uppercase font-mono transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 ${
                         isFeatured
-                          ? 'bg-green-500 hover:bg-green-400 text-black shadow-green-500/25'
-                          : 'bg-zinc-800 hover:bg-green-500 hover:text-black text-white shadow-black/40'
+                          ? 'bg-cyan-500 hover:bg-cyan-400 text-black shadow-cyan-500/25'
+                          : 'bg-zinc-800 hover:bg-cyan-500 hover:text-black text-white shadow-black/40'
                       }`}
                     >
                       <span>Proceed to Purchase</span>
@@ -559,7 +559,7 @@ export const CustomerPackages = () => {
       {step === 2 && (
         <div className="max-w-xl mx-auto rounded-2xl border border-zinc-800 bg-[#0c0d12]/95 backdrop-blur-xl p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="border-b border-zinc-800/80 pb-4">
-            <div className="flex items-center gap-2 text-xs font-mono text-green-400 mb-1">
+            <div className="flex items-center gap-2 text-xs font-mono text-cyan-400 mb-1">
               <User className="w-4 h-4" /> STEP 02 • STUDENT VERIFICATION
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
@@ -572,7 +572,7 @@ export const CustomerPackages = () => {
               </div>
               <div className="text-right">
                 <span className="text-zinc-400 block font-mono text-[11px]">Subtotal:</span>
-                <span className="text-green-400 font-extrabold text-base">₹{selectedPrice}</span>
+                <span className="text-cyan-400 font-extrabold text-base">₹{selectedPrice}</span>
               </div>
             </div>
           </div>
@@ -580,7 +580,7 @@ export const CustomerPackages = () => {
           <form onSubmit={handleDetailsSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-green-400" /> Full Name
+                <User className="w-3.5 h-3.5 text-cyan-400" /> Full Name
               </label>
               <input 
                 required 
@@ -588,17 +588,17 @@ export const CustomerPackages = () => {
                 value={formData.fullName} 
                 onChange={e => setFormData({...formData, fullName: e.target.value})} 
                 placeholder="e.g. John Doe"
-                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm" 
+                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-cyan-500 text-white text-sm" 
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-green-400" /> Mobile Number (Indian 10-Digit)
+                  <Phone className="w-3.5 h-3.5 text-cyan-400" /> Mobile Number (Indian 10-Digit)
                 </label>
                 {phoneStatus.isValid ? (
-                  <span className="text-[11px] text-green-400 font-mono flex items-center gap-1">
+                  <span className="text-[11px] text-cyan-400 font-mono flex items-center gap-1">
                     <Check className="w-3.5 h-3.5" /> Valid
                   </span>
                 ) : phoneTouched && (
@@ -608,7 +608,7 @@ export const CustomerPackages = () => {
                 )}
               </div>
               <div className={`relative flex rounded-xl overflow-hidden border transition-colors ${
-                phoneTouched && !phoneStatus.isValid ? 'border-red-500' : 'border-zinc-800 focus-within:border-green-500'
+                phoneTouched && !phoneStatus.isValid ? 'border-red-500' : 'border-zinc-800 focus-within:border-cyan-500'
               }`}>
                 <div className="inline-flex items-center px-3.5 bg-zinc-900 border-r border-zinc-800 text-zinc-300 text-xs font-mono font-bold select-none gap-1.5">
                   <span>🇮🇳</span>
@@ -638,7 +638,7 @@ export const CustomerPackages = () => {
 
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-                <School className="w-3.5 h-3.5 text-green-400" /> College / University Name
+                <School className="w-3.5 h-3.5 text-cyan-400" /> College / University Name
               </label>
               <input 
                 required 
@@ -646,20 +646,20 @@ export const CustomerPackages = () => {
                 value={formData.collegeName} 
                 onChange={e => setFormData({...formData, collegeName: e.target.value})} 
                 placeholder="e.g. National Institute of Technology"
-                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm" 
+                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-cyan-500 text-white text-sm" 
               />
             </div>
 
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5 text-green-400" /> Academic Year / Branch
+                <GraduationCap className="w-3.5 h-3.5 text-cyan-400" /> Academic Year / Branch
               </label>
               <input 
                 required 
                 type="text" 
                 value={formData.academicYear} 
                 onChange={e => setFormData({...formData, academicYear: e.target.value})} 
-                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm" 
+                className="w-full px-4 py-2.5 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-cyan-500 text-white text-sm" 
                 placeholder="e.g. 3rd Year B.Tech CSE" 
               />
             </div>
@@ -674,7 +674,7 @@ export const CustomerPackages = () => {
               </button>
               <button 
                 type="submit" 
-                className="flex-1 py-3 bg-green-500 hover:bg-green-400 text-black rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 text-black rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"
               >
                 <span>Continue to Payment</span>
                 <ArrowRight className="w-4 h-4" />
@@ -688,7 +688,7 @@ export const CustomerPackages = () => {
       {step === 3 && (
         <div className="max-w-xl mx-auto rounded-2xl border border-zinc-800 bg-[#0c0d12]/95 backdrop-blur-xl p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="text-center space-y-2 border-b border-zinc-800/80 pb-5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 font-mono text-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs">
               <CreditCard className="w-3.5 h-3.5" /> STEP 03 • SECURE UPI SETTLEMENT
             </div>
             <h2 className="text-2xl font-bold text-white tracking-tight">
@@ -705,7 +705,7 @@ export const CustomerPackages = () => {
               <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block mb-1">
                 Amount Payable
               </span>
-              <div className="text-4xl font-black text-green-400 tracking-tight">
+              <div className="text-4xl font-black text-cyan-400 tracking-tight">
                 ₹{selectedPrice}
               </div>
               <span className="text-xs font-mono text-zinc-500">
@@ -721,7 +721,7 @@ export const CustomerPackages = () => {
                   onClick={copyUpiId}
                   className="flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-mono text-[11px] transition-colors"
                 >
-                  {copiedUpi ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedUpi ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
                   {copiedUpi ? 'Copied' : 'Copy'}
                 </button>
               </div>
@@ -733,7 +733,7 @@ export const CustomerPackages = () => {
 
           {/* Activation Roadmap */}
           <div className="p-4 rounded-xl bg-black/60 border border-zinc-800 space-y-2">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-green-400 font-semibold block">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold block">
               Activation Roadmap Upon Clearance
             </span>
             <ol className="space-y-1.5 text-xs text-zinc-400">
@@ -756,7 +756,7 @@ export const CustomerPackages = () => {
                 type="text" 
                 value={formData.upiId} 
                 onChange={e => setFormData({...formData, upiId: e.target.value})} 
-                className="w-full px-4 py-3 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-green-500 font-mono text-center text-lg text-white font-bold tracking-wider" 
+                className="w-full px-4 py-3 bg-black border border-zinc-800 rounded-xl focus:outline-none focus:border-cyan-500 font-mono text-center text-lg text-white font-bold tracking-wider" 
                 placeholder="e.g. 403819284719" 
               />
               <span className="text-[11px] text-zinc-500 mt-1 block text-center">
@@ -775,7 +775,7 @@ export const CustomerPackages = () => {
               <button 
                 type="submit" 
                 disabled={submittingPayment}
-                className="flex-1 py-3 bg-green-500 hover:bg-green-400 disabled:opacity-50 text-black rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-green-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
               >
                 {submittingPayment ? (
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />

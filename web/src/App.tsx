@@ -75,7 +75,7 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen px-4 relative z-10">
       <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
-          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
+          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)] object-cover" />
         </div>
         <h2 className="text-2xl font-bold text-center text-white mb-2">PhantomLead Platform</h2>
         <p className="text-gray-400 text-center mb-8 text-sm">Sign in to manage your software access</p>
@@ -86,7 +86,7 @@ const Login = () => {
             <input 
               type="email" required
               value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               placeholder="admin@example.com"
             />
           </div>
@@ -95,25 +95,25 @@ const Login = () => {
             <input 
               type="password" required
               value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               placeholder="••••••••"
             />
           </div>
           <button 
             type="submit" disabled={loading}
-            className="w-full mt-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+            className="w-full mt-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg font-medium transition-colors"
           >
             {loading ? 'Authenticating...' : 'Sign In to Portal'}
           </button>
         </form>
-        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-green-400'}`}>{notice.message}</p>}
+        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-cyan-400'}`}>{notice.message}</p>}
         {showResend && (
-          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-green-400 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-50">
+          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-cyan-400 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-50">
             {resending ? 'Sending...' : 'Resend confirmation email'}
           </button>
         )}
         <div className="mt-6 text-center text-sm text-gray-400">
-          Don't have an account? <Link to="/signup" className="text-green-400 hover:text-green-400">Sign up here</Link>
+          Don't have an account? <Link to="/signup" className="text-cyan-400 hover:text-cyan-400">Sign up here</Link>
         </div>
       </div>
     </div>
@@ -162,7 +162,7 @@ const SignUp = () => {
     <div className="flex items-center justify-center min-h-screen px-4 relative z-10">
       <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
         <div className="flex justify-center mb-6">
-          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)] object-cover" />
+          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)] object-cover" />
         </div>
         <h2 className="text-2xl font-bold text-center text-white mb-2">Create an Account</h2>
         <p className="text-gray-400 text-center mb-8 text-sm">Join to access your software packages</p>
@@ -173,7 +173,7 @@ const SignUp = () => {
             <input 
               type="email" required
               value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               placeholder="you@example.com"
             />
           </div>
@@ -182,25 +182,25 @@ const SignUp = () => {
             <input 
               type="password" required
               value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
               placeholder="••••••••"
             />
           </div>
           <button 
             type="submit" disabled={loading}
-            className="w-full mt-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+            className="w-full mt-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg font-medium transition-colors"
           >
             {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
-        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-green-400'}`}>{notice.message}</p>}
+        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-cyan-400'}`}>{notice.message}</p>}
         {confirmationPending && (
-          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-green-300 hover:text-green-200 underline underline-offset-2 disabled:opacity-50">
+          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-cyan-300 hover:text-cyan-200 underline underline-offset-2 disabled:opacity-50">
             {resending ? 'Sending...' : 'Resend confirmation email'}
           </button>
         )}
         <div className="mt-6 text-center text-sm text-gray-400">
-          Already have an account? <Link to="/login" className="text-green-400 hover:text-green-300">Sign in</Link>
+          Already have an account? <Link to="/login" className="text-cyan-400 hover:text-cyan-300">Sign in</Link>
         </div>
       </div>
     </div>
@@ -313,64 +313,64 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#0a0a0a] border-r border-green-900/30 flex flex-col transition-transform duration-300 ease-in-out`}>
-        <div className="h-16 flex items-center justify-between px-6 border-b border-green-900/30 bg-black">
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#070b14] border-r border-cyan-900/30 flex flex-col transition-transform duration-300 ease-in-out`}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-cyan-900/30 bg-black">
           <div className="flex items-center">
             <div className="relative w-8 h-8 mr-3">
-              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border-2 border-green-500/50 object-cover relative z-10" />
-              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-green-400 border-l-green-400/30 animate-spin z-0"></div>
-              <div className="absolute inset-[-6px] rounded-full border border-green-900/50 animate-[spin_3s_linear_reverse_infinite] z-0"></div>
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border-2 border-cyan-500/50 object-cover relative z-10" />
+              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-cyan-400 border-l-cyan-400/30 animate-spin z-0"></div>
+              <div className="absolute inset-[-6px] rounded-full border border-cyan-900/50 animate-[spin_3s_linear_reverse_infinite] z-0"></div>
             </div>
-            <span className="font-bold text-lg tracking-wider text-green-50">PhantomLead</span>
+            <span className="font-bold text-lg tracking-wider text-cyan-50">PhantomLead</span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <nav className="flex-1 p-4 space-y-2 relative z-10 bg-[#0a0a0a]/90">
+        <nav className="flex-1 p-4 space-y-2 relative z-10 bg-[#070b14]/90">
           {isAdmin ? (
             <>
-              <Link to="/admin" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><LayoutDashboard className="w-5 h-5 mr-3" /> Admin Overview</Link>
-              <Link to="/admin/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> All Licenses</Link>
-              <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
-              <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
-              <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
-              <Link to="/admin/settings" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Settings className="w-5 h-5 mr-3" /> Settings</Link>
-              <div className="pt-4 mt-4 border-t border-green-900/30">
-                <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/20"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
+              <Link to="/admin" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><LayoutDashboard className="w-5 h-5 mr-3" /> Admin Overview</Link>
+              <Link to="/admin/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> All Licenses</Link>
+              <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
+              <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
+              <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
+              <Link to="/admin/settings" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Settings className="w-5 h-5 mr-3" /> Settings</Link>
+              <div className="pt-4 mt-4 border-t border-cyan-900/30">
+                <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-cyan-400 hover:bg-cyan-500/20 rounded-lg transition-colors border border-cyan-500/20"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
               </div>
             </>
           ) : (
             <>
-              <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
-              <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
-              <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
+              <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
+              <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
+              <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
               {hasActiveLicense && (
-                <Link to="/dashboard/install" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"><BookOpen className="w-5 h-5 mr-3" /> Installation Guide</Link>
+                <Link to="/dashboard/install" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><BookOpen className="w-5 h-5 mr-3" /> Installation Guide</Link>
               )}
               {isActualAdmin && (
-                <div className="pt-4 mt-4 border-t border-green-900/30">
-                  <Link to="/admin" className="flex items-center px-4 py-2.5 text-green-400 hover:bg-green-500/20 rounded-lg transition-colors border border-green-500/20"><Shield className="w-5 h-5 mr-3" /> Return to Admin</Link>
+                <div className="pt-4 mt-4 border-t border-cyan-900/30">
+                  <Link to="/admin" className="flex items-center px-4 py-2.5 text-cyan-400 hover:bg-cyan-500/20 rounded-lg transition-colors border border-cyan-500/20"><Shield className="w-5 h-5 mr-3" /> Return to Admin</Link>
                 </div>
               )}
             </>
           )}
         </nav>
-        <div className="p-4 border-t border-green-900/30 bg-[#0a0a0a]">
+        <div className="p-4 border-t border-cyan-900/30 bg-[#070b14]">
           <button onClick={() => supabase.auth.signOut()} className="flex items-center px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg w-full transition-colors"><LogOut className="w-5 h-5 mr-3" /> Sign Out</button>
         </div>
       </div>
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
-        <header className="h-16 border-b border-green-900/30 flex items-center px-3 sm:px-6 md:px-8 bg-black/80 backdrop-blur shrink-0 gap-2">
+        <header className="h-16 border-b border-cyan-900/30 flex items-center px-3 sm:px-6 md:px-8 bg-black/80 backdrop-blur shrink-0 gap-2">
           <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-400 hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-gray-800/60" aria-label="Open Navigation Menu">
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="text-base sm:text-xl font-semibold text-green-50 font-mono tracking-wide truncate">{title}</h1>
+          <h1 className="text-base sm:text-xl font-semibold text-cyan-50 font-mono tracking-wide truncate">{title}</h1>
           <div className="ml-auto flex items-center gap-2 sm:gap-3 shrink-0">
-            <span className="text-xs sm:text-sm font-medium text-green-400 hidden sm:block max-w-[150px] truncate">{userName}</span>
-            <div className="w-8 h-8 bg-[#0a0a0a] rounded-full flex items-center justify-center border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.2)]"><User className="w-4 h-4 text-green-400" /></div>
+            <span className="text-xs sm:text-sm font-medium text-cyan-400 hidden sm:block max-w-[150px] truncate">{userName}</span>
+            <div className="w-8 h-8 bg-[#070b14] rounded-full flex items-center justify-center border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.2)]"><User className="w-4 h-4 text-cyan-400" /></div>
           </div>
         </header>
         <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto w-full max-w-full">
@@ -391,13 +391,13 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
     <DashboardLayout title="Customer Workstation" isAdmin={false} isActualAdmin={isActualAdmin}>
       <div className="space-y-6">
         {/* Welcome & Station Status Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-green-500/30 p-5 sm:p-6 shadow-xl">
-          <div className="absolute top-0 right-0 w-80 h-full bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-cyan-500/30 p-5 sm:p-6 shadow-xl">
+          <div className="absolute top-0 right-0 w-80 h-full bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/30 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
                   Safe Exam Station
                 </span>
                 <span className="text-gray-600">•</span>
@@ -414,7 +414,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             <div className="flex items-center gap-3">
               <Link 
                 to="/dashboard/packages" 
-                className="px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer whitespace-nowrap"
+                className="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer whitespace-nowrap"
               >
                 Browse Packages
               </Link>
@@ -424,10 +424,10 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
 
         {/* 3 Executive Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-green-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>LICENSE STATUS</span>
-              <Key className="w-4 h-4 text-green-400" />
+              <Key className="w-4 h-4 text-cyan-400" />
             </div>
             <div className="my-2">
               <div className="text-2xl font-black text-white font-mono">
@@ -437,24 +437,24 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                 {checkingLicense ? (
                   <span className="text-gray-500">Checking status...</span>
                 ) : hasActiveLicense ? (
-                  <span className="text-green-400 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping"></span>
+                  <span className="text-cyan-400 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
                     Operational &amp; Armed
                   </span>
                 ) : (
-                  <span className="text-emerald-400 flex items-center gap-1">
+                  <span className="text-sky-400 flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5" /> 100% Fresh Account
                   </span>
                 )}
               </div>
             </div>
-            <Link to="/dashboard/licenses" className="text-xs text-gray-400 hover:text-green-400 flex items-center gap-1 font-medium transition-colors">
+            <Link to="/dashboard/licenses" className="text-xs text-gray-400 hover:text-cyan-400 flex items-center gap-1 font-medium transition-colors">
               <span>View license details</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>HARDWARE NODE LOCK</span>
               <Laptop className="w-4 h-4 text-blue-400" />
@@ -468,7 +468,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             <span className="text-xs text-gray-500">Protected against device spoofing</span>
           </div>
 
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>EXAM ENVIRONMENT</span>
               <ShieldCheck className="w-4 h-4 text-purple-400" />
@@ -485,11 +485,11 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         </div>
 
         {/* Workstation Command Hub */}
-        <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 sm:p-7 shadow-xl">
+        <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-6 sm:p-7 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-gray-800/80">
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-green-400" /> Workstation Operations &amp; Installer
+                <Shield className="w-5 h-5 text-cyan-400" /> Workstation Operations &amp; Installer
               </h3>
               <p className="text-xs sm:text-sm text-gray-400 mt-0.5">
                 {checkingLicense 
@@ -503,7 +503,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               to="/dashboard/licenses" 
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-gray-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
             >
-              <Key className="w-3.5 h-3.5 text-green-400" />
+              <Key className="w-3.5 h-3.5 text-cyan-400" />
               <span>Open License Deck</span>
             </Link>
           </div>
@@ -537,10 +537,10 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                   <a 
                     href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} 
                     download={installerName} 
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all cursor-pointer"
                   >
                     <Download className="w-4 h-4" /> Download {installerName}
-                    <span className="text-xs font-normal text-green-100 bg-green-700/60 px-2 py-0.5 rounded ml-1">
+                    <span className="text-xs font-normal text-cyan-100 bg-cyan-700/60 px-2 py-0.5 rounded ml-1">
                       {editionLabel}
                     </span>
                   </a>
@@ -549,7 +549,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                     to="/dashboard/install" 
                     className="inline-flex items-center gap-2 px-4 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-gray-200 hover:text-white rounded-xl text-sm font-medium border border-zinc-700 transition-colors"
                   >
-                    <BookOpen className="w-4 h-4 text-green-400" />
+                    <BookOpen className="w-4 h-4 text-cyan-400" />
                     <span>Setup Manual &amp; Shortcuts</span>
                   </Link>
                 </div>
@@ -570,7 +570,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             );
           })() : (
             <div className="py-8 text-center space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+              <div className="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 mx-auto shadow-[0_0_20px_rgba(14,165,233,0.2)]">
                 <Sparkles className="w-7 h-7" />
               </div>
               <div className="space-y-1">
@@ -581,7 +581,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               </div>
               <Link 
                 to="/dashboard/packages" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all"
               >
                 <span>Browse Available Packages</span>
                 <ArrowRight className="w-4 h-4" />
@@ -635,13 +635,13 @@ const AdminDashboard = () => {
     <DashboardLayout title="Administrator Fleet Command" isAdmin={true}>
       <div className="space-y-6 pb-12">
         {/* Executive Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-green-500/30 p-6 shadow-xl">
-          <div className="absolute top-0 right-0 w-96 h-full bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-cyan-500/30 p-6 shadow-xl">
+          <div className="absolute top-0 right-0 w-96 h-full bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/30 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
                   Fleet Command Engine
                 </span>
                 <span className="text-gray-600">•</span>
@@ -658,7 +658,7 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-3">
               <Link 
                 to="/admin/licenses" 
-                className="px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all whitespace-nowrap cursor-pointer"
+                className="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all whitespace-nowrap cursor-pointer"
               >
                 + Issue License
               </Link>
@@ -674,7 +674,7 @@ const AdminDashboard = () => {
 
         {/* 4 Executive KPI Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>REGISTERED CUSTOMERS</span>
               <Users className="w-4 h-4 text-blue-400" />
@@ -689,7 +689,7 @@ const AdminDashboard = () => {
             </Link>
           </div>
 
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>PENDING PAYMENTS</span>
               <CreditCard className="w-4 h-4 text-yellow-400" />
@@ -706,31 +706,31 @@ const AdminDashboard = () => {
             </Link>
           </div>
 
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-green-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>ACTIVE LICENSES</span>
-              <Key className="w-4 h-4 text-green-400" />
+              <Key className="w-4 h-4 text-cyan-400" />
             </div>
             <div className="my-2">
-              <div className="text-3xl font-black text-green-400 font-mono">{loading ? '...' : stats.activeLicenses}</div>
-              <div className="text-xs text-green-300/80 mt-0.5">Live running deployments</div>
+              <div className="text-3xl font-black text-cyan-400 font-mono">{loading ? '...' : stats.activeLicenses}</div>
+              <div className="text-xs text-cyan-300/80 mt-0.5">Live running deployments</div>
             </div>
-            <Link to="/admin/licenses" className="text-xs text-gray-500 hover:text-green-400 flex items-center gap-1 transition-colors">
+            <Link to="/admin/licenses" className="text-xs text-gray-500 hover:text-cyan-400 flex items-center gap-1 transition-colors">
               <span>View global fleet</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
-          <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/30 transition-all">
+          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-sky-500/30 transition-all">
             <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
               <span>PLATFORM REVENUE</span>
-              <Zap className="w-4 h-4 text-emerald-400" />
+              <Zap className="w-4 h-4 text-sky-400" />
             </div>
             <div className="my-2">
               <div className="text-3xl font-black text-white font-mono">
                 {loading ? '...' : `₹${stats.revenue.toLocaleString()}`}
               </div>
-              <div className="text-xs text-emerald-400 mt-0.5">Approved UPI collections</div>
+              <div className="text-xs text-sky-400 mt-0.5">Approved UPI collections</div>
             </div>
             <span className="text-xs text-gray-500">Direct verified payments</span>
           </div>
@@ -739,10 +739,10 @@ const AdminDashboard = () => {
         {/* 2 Executive Command Decks */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Deck 1: Quick Operations Hub */}
-          <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
+          <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-gray-800">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <LayoutDashboard className="w-4 h-4 text-green-400" /> Operational Hub
+                <LayoutDashboard className="w-4 h-4 text-cyan-400" /> Operational Hub
               </h3>
               <span className="text-xs text-gray-500 font-mono">Core Actions</span>
             </div>
@@ -766,11 +766,11 @@ const AdminDashboard = () => {
 
               <Link 
                 to="/admin/licenses" 
-                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-green-500/50 hover:bg-zinc-900/60 transition-all group"
+                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-cyan-500/50 hover:bg-zinc-900/60 transition-all group"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <Key className="w-5 h-5 text-green-400 group-hover:scale-110 transition-transform" />
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/20 text-green-300 border border-green-500/40">
+                  <Key className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform" />
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
                     Live
                   </span>
                 </div>
@@ -803,13 +803,13 @@ const AdminDashboard = () => {
           </div>
 
           {/* Deck 2: Infrastructure & Sentinel Radar */}
-          <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+          <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-gray-800">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" /> Platform Infrastructure Radar
+                  <ShieldCheck className="w-4 h-4 text-sky-400" /> Platform Infrastructure Radar
                 </h3>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
+                <span className="text-[10px] font-mono text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-800/40">
                   HEALTH OK
                 </span>
               </div>
@@ -817,21 +817,21 @@ const AdminDashboard = () => {
               <div className="divide-y divide-gray-800/60 text-xs">
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="text-gray-400">Database Engine (PostgreSQL)</span>
-                  <span className="px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded font-mono font-semibold">
+                  <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded font-mono font-semibold">
                     Operational (Sub-50ms)
                   </span>
                 </div>
 
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="text-gray-400">Serverless Edge Functions</span>
-                  <span className="px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/30 rounded font-mono font-semibold">
+                  <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded font-mono font-semibold">
                     5 Deployed &amp; Active
                   </span>
                 </div>
 
                 <div className="py-2.5 flex items-center justify-between">
                   <span className="text-gray-400">Auto-Wipe &amp; Sentinel Protocol</span>
-                  <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded font-mono font-semibold">
+                  <span className="px-2 py-0.5 bg-sky-500/10 text-sky-400 border border-sky-500/30 rounded font-mono font-semibold">
                     Armed (Zero-Day Wipe)
                   </span>
                 </div>
@@ -931,7 +931,7 @@ function App() {
     setLoading(false);
   };
 
-  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full"></div></div>;
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full"></div></div>;
 
   return (
     <Router>

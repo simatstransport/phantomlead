@@ -169,7 +169,7 @@ export const AdminLicenses = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
-        <RefreshCw className="w-8 h-8 text-green-400 animate-spin" />
+        <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
         <p className="text-sm font-mono text-gray-400">Loading global fleet licenses...</p>
       </div>
     );
@@ -178,11 +178,11 @@ export const AdminLicenses = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Top Banner / Actions */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-zinc-950 via-[#0a0a0a] to-zinc-950 border border-green-500/20 rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-zinc-950 via-[#070b14] to-zinc-950 border border-cyan-500/20 rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest uppercase bg-green-500/10 text-green-400 border border-green-500/30 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
               Admin Fleet Deck
             </span>
             <span className="text-gray-600">•</span>
@@ -198,7 +198,7 @@ export const AdminLicenses = () => {
 
         <button 
           onClick={handleOpenModal} 
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all cursor-pointer whitespace-nowrap"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all cursor-pointer whitespace-nowrap"
         >
           <Plus className="w-4 h-4" /> Generate FREE License
         </button>
@@ -206,18 +206,18 @@ export const AdminLicenses = () => {
 
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#070b14] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
             <span>ACTIVE LICENSES</span>
-            <Shield className="w-4 h-4 text-green-400" />
+            <Shield className="w-4 h-4 text-cyan-400" />
           </div>
           <div className="text-2xl font-extrabold text-white mt-2 font-mono">
             {activeCount} <span className="text-xs text-gray-500 font-normal">/ {licenses.length} Total</span>
           </div>
-          <div className="text-[11px] text-green-400 mt-1">Live running deployments</div>
+          <div className="text-[11px] text-cyan-400 mt-1">Live running deployments</div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#070b14] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
             <span>BOUND PC NODES</span>
             <Laptop className="w-4 h-4 text-blue-400" />
@@ -228,7 +228,7 @@ export const AdminLicenses = () => {
           <div className="text-[11px] text-blue-400 mt-1">Hardware fingerprint locked</div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#070b14] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
             <span>10-MIN DEMO TRIALS</span>
             <Clock className="w-4 h-4 text-amber-400" />
@@ -239,7 +239,7 @@ export const AdminLicenses = () => {
           <div className="text-[11px] text-amber-400 mt-1">Auto-wipe countdown active</div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
+        <div className="bg-[#070b14] border border-gray-800/80 rounded-xl p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
             <span>HOST WIPES EXECUTED</span>
             <Trash2 className="w-4 h-4 text-red-400" />
@@ -252,7 +252,7 @@ export const AdminLicenses = () => {
       </div>
 
       {/* Main Table Card */}
-      <div className="bg-[#0a0a0a] border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
         {/* Search & Filter Toolbar */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-4 border-b border-gray-800">
           <div className="relative flex-1 max-w-md">
@@ -262,7 +262,7 @@ export const AdminLicenses = () => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search by customer name, email, or package..."
-              className="w-full pl-9 pr-4 py-2 bg-black border border-gray-800 focus:border-green-500 rounded-xl text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none"
+              className="w-full pl-9 pr-4 py-2 bg-black border border-gray-800 focus:border-cyan-500 rounded-xl text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none"
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
@@ -278,7 +278,7 @@ export const AdminLicenses = () => {
                 onClick={() => setStatusFilter(filter)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                   statusFilter === filter
-                    ? 'bg-green-600 text-white shadow-sm'
+                    ? 'bg-cyan-500 text-black shadow-sm'
                     : 'bg-zinc-900 text-gray-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >
@@ -312,7 +312,7 @@ export const AdminLicenses = () => {
                     {/* Customer */}
                     <td className="py-4 pr-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-900/60 to-zinc-900 border border-green-800/50 flex items-center justify-center text-xs font-bold text-green-300 shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-900/60 to-zinc-900 border border-cyan-800/50 flex items-center justify-center text-xs font-bold text-cyan-300 shrink-0">
                           {customerName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -344,7 +344,7 @@ export const AdminLicenses = () => {
                             Admin Managed
                           </span>
                         ) : (
-                          <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
+                          <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-sky-500/20 border border-sky-500/40 text-sky-300">
                             Lifetime Full
                           </span>
                         )}
@@ -387,10 +387,10 @@ export const AdminLicenses = () => {
                       <div className="flex flex-col gap-1 items-start">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1.5 ${
                           l.status === 'ACTIVE' 
-                            ? 'bg-green-500/15 text-green-400 border border-green-500/30' 
+                            ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30' 
                             : 'bg-red-500/15 text-red-400 border border-red-500/30'
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${l.status === 'ACTIVE' ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${l.status === 'ACTIVE' ? 'bg-cyan-400' : 'bg-red-400'}`}></span>
                           {l.status}
                         </span>
 
@@ -458,7 +458,7 @@ export const AdminLicenses = () => {
       {/* Generate Free License Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="w-full max-w-lg bg-gradient-to-b from-zinc-950 to-[#0a0a0a] border border-green-500/40 rounded-2xl p-6 sm:p-8 shadow-[0_0_35px_rgba(34,197,94,0.15)] relative">
+          <div className="w-full max-w-lg bg-gradient-to-b from-zinc-950 to-[#070b14] border border-cyan-500/40 rounded-2xl p-6 sm:p-8 shadow-[0_0_35px_rgba(6,182,212,0.15)] relative">
             <button 
               onClick={() => setIsModalOpen(false)}
               className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors"
@@ -467,8 +467,8 @@ export const AdminLicenses = () => {
             </button>
 
             <div className="flex items-center gap-2 mb-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-              <span className="text-xs font-mono uppercase tracking-widest text-green-400 font-bold">Admin Provisioning</span>
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">Admin Provisioning</span>
             </div>
             <h3 className="text-xl font-black text-white mb-4">Generate FREE License Key</h3>
             
@@ -476,12 +476,12 @@ export const AdminLicenses = () => {
               <div className={`mb-4 p-3.5 text-xs sm:text-sm rounded-xl flex items-start gap-2.5 ${
                 modalMessage.type === 'error' 
                   ? 'bg-red-500/10 border border-red-500/30 text-red-300' 
-                  : 'bg-green-500/10 border border-green-500/30 text-green-300'
+                  : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'
               }`}>
                 {modalMessage.type === 'error' ? (
                   <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                 ) : (
-                  <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                 )}
                 <div className="break-all font-mono">{modalMessage.text}</div>
               </div>
@@ -497,7 +497,7 @@ export const AdminLicenses = () => {
                   required
                   value={customerEmail} 
                   onChange={e => setCustomerEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm placeholder-gray-600"
+                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-cyan-500 text-white text-sm placeholder-gray-600"
                   placeholder="e.g. user@domain.com"
                 />
               </div>
@@ -510,7 +510,7 @@ export const AdminLicenses = () => {
                   required
                   value={duration === null ? '-1' : String(duration)} 
                   onChange={e => setDuration(parseInt(e.target.value))}
-                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm mb-3"
+                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-cyan-500 text-white text-sm mb-3"
                 >
                   <option value="-1">Permanent (True Lifetime - SecureInstaller_L)</option>
                   <option value="0">Permanent (Admin Controlled - SecureInstaller_A)</option>
@@ -538,7 +538,7 @@ export const AdminLicenses = () => {
                   required
                   value={packageCode} 
                   onChange={e => setPackageCode(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-green-500 text-white text-sm"
+                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-xl focus:outline-none focus:border-cyan-500 text-white text-sm"
                 >
                   {availablePackages.map(pkg => (
                     <option key={pkg.package_code} value={pkg.package_code}>
@@ -552,7 +552,7 @@ export const AdminLicenses = () => {
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(34,197,94,0.35)] transition-all disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Generating Cryptographic Key...' : 'Issue Free License Now'}
                 </button>

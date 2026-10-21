@@ -186,12 +186,12 @@ export const AdminPackages = () => {
   if (loading) return <div className="text-gray-400">Loading package manager...</div>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl">
+    <div className="bg-[#070b14] border border-gray-800 rounded-xl p-4 sm:p-6 shadow-2xl">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-800">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400">
+            <span className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
               <Package className="w-5 h-5" />
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Full Package Management</h2>
@@ -205,13 +205,13 @@ export const AdminPackages = () => {
           <Link
             to="/dashboard/packages"
             target="_blank"
-            className="px-3 sm:px-4 py-2 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all hover:border-green-500/50 shadow-sm"
+            className="px-3 sm:px-4 py-2 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all hover:border-cyan-500/50 shadow-sm"
           >
-            <ExternalLink className="w-4 h-4 text-green-400" /> Preview Store
+            <ExternalLink className="w-4 h-4 text-cyan-400" /> Preview Store
           </Link>
           <button
             onClick={handleOpenCreate}
-            className="px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer"
+            className="px-3 sm:px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg text-xs sm:text-sm font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Create Package
           </button>
@@ -235,7 +235,7 @@ export const AdminPackages = () => {
           <tbody className="text-sm divide-y divide-gray-800/60">
             {packages.map(p => (
               <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
-                <td className="py-4 font-mono text-green-400 font-bold">
+                <td className="py-4 font-mono text-cyan-400 font-bold">
                   {p.package_code}
                 </td>
                 <td className="py-4 font-semibold text-white">
@@ -254,7 +254,7 @@ export const AdminPackages = () => {
                   v{p.version || '1.0.0'}
                 </td>
                 <td className="py-4">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 w-max ${p.active ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 w-max ${p.active ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
                     {p.active ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                     {p.active ? 'Active in Store' : 'Disabled'}
                   </span>
@@ -263,14 +263,14 @@ export const AdminPackages = () => {
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => handleOpenEdit(p)}
-                      className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-green-500 text-gray-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                      className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-cyan-500 text-gray-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
                       title="Full access edit of all package properties"
                     >
-                      <Edit3 className="w-3.5 h-3.5 text-green-400" /> Full Edit
+                      <Edit3 className="w-3.5 h-3.5 text-cyan-400" /> Full Edit
                     </button>
                     <button
                       onClick={() => togglePackageStatus(p.id, p.active)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${p.active ? 'bg-yellow-950/30 text-yellow-400 border-yellow-800/50 hover:bg-yellow-900/40' : 'bg-green-950/30 text-green-400 border-green-800/50 hover:bg-green-900/40'}`}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${p.active ? 'bg-yellow-950/30 text-yellow-400 border-yellow-800/50 hover:bg-yellow-900/40' : 'bg-cyan-950/30 text-cyan-400 border-cyan-800/50 hover:bg-cyan-900/40'}`}
                       title={p.active ? 'Hide from student store' : 'Publish to student store'}
                     >
                       {p.active ? 'Disable' : 'Enable'}
@@ -304,7 +304,7 @@ export const AdminPackages = () => {
             <div className="flex justify-between items-start mb-6 pb-4 border-b border-gray-800">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-green-400" />
+                  <Layers className="w-5 h-5 text-cyan-400" />
                   {editingPackageId ? 'Full Edit: Package Properties' : 'Create New Package'}
                 </h3>
                 <p className="text-xs text-gray-400 mt-1">
@@ -326,7 +326,7 @@ export const AdminPackages = () => {
             )}
 
             {successMsg && (
-              <div className="p-3 mb-4 rounded-lg bg-green-950/60 border border-green-800 text-green-300 text-xs font-medium">
+              <div className="p-3 mb-4 rounded-lg bg-cyan-950/60 border border-cyan-800 text-cyan-300 text-xs font-medium">
                 {successMsg}
               </div>
             )}
@@ -342,7 +342,7 @@ export const AdminPackages = () => {
                     type="text"
                     value={modalForm.package_code}
                     onChange={e => setModalForm({...modalForm, package_code: e.target.value.toUpperCase()})}
-                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-green-500 font-bold"
+                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-cyan-500 font-bold"
                     placeholder="e.g. FULL_ACCESS"
                   />
                   <span className="text-[11px] text-gray-500 mt-1 block">
@@ -359,7 +359,7 @@ export const AdminPackages = () => {
                     type="text"
                     value={modalForm.package_name}
                     onChange={e => setModalForm({...modalForm, package_name: e.target.value})}
-                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:border-green-500 font-semibold"
+                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-500 font-semibold"
                     placeholder="e.g. Full Access Suite"
                   />
                   <span className="text-[11px] text-gray-500 mt-1 block">
@@ -376,7 +376,7 @@ export const AdminPackages = () => {
                   rows={2}
                   value={modalForm.description}
                   onChange={e => setModalForm({...modalForm, description: e.target.value})}
-                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:border-green-500 leading-relaxed"
+                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:border-cyan-500 leading-relaxed"
                   placeholder="e.g. Java coding, Viva paragraph, LMS MCQ"
                 />
                 <span className="text-[11px] text-gray-500 mt-1 block">
@@ -396,7 +396,7 @@ export const AdminPackages = () => {
                     step="50"
                     value={modalForm.price}
                     onChange={e => setModalForm({...modalForm, price: e.target.value})}
-                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-base font-bold focus:outline-none focus:border-green-500"
+                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-base font-bold focus:outline-none focus:border-cyan-500"
                     placeholder="e.g. 3000"
                   />
                   <span className="text-[11px] text-gray-500 mt-1 block">
@@ -412,7 +412,7 @@ export const AdminPackages = () => {
                     type="text"
                     value={modalForm.version}
                     onChange={e => setModalForm({...modalForm, version: e.target.value})}
-                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-green-500"
+                    className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-cyan-500"
                     placeholder="e.g. 3.10.2"
                   />
                   <span className="text-[11px] text-gray-500 mt-1 block">
@@ -430,7 +430,7 @@ export const AdminPackages = () => {
                 <button
                   type="button"
                   onClick={() => setModalForm({...modalForm, active: !modalForm.active})}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${modalForm.active ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400'}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${modalForm.active ? 'bg-cyan-500 text-black' : 'bg-gray-800 text-gray-400'}`}
                 >
                   {modalForm.active ? 'Active (Live)' : 'Disabled'}
                 </button>
@@ -440,7 +440,7 @@ export const AdminPackages = () => {
               <div className="mt-4 p-4 rounded-xl bg-black border border-gray-800">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Calculator className="w-3.5 h-3.5 text-green-400" /> Dynamic Adjustable Month Pricing Preview
+                    <Calculator className="w-3.5 h-3.5 text-cyan-400" /> Dynamic Adjustable Month Pricing Preview
                   </span>
                   <span className="text-[11px] text-gray-500">Auto-scales in student store</span>
                 </div>
@@ -465,9 +465,9 @@ export const AdminPackages = () => {
                     <div className="text-gray-400 text-[10px]">12 Months</div>
                     <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 12)}</div>
                   </div>
-                  <div className="p-2 rounded bg-[#111] border border-green-900/50 text-green-400">
-                    <div className="text-green-500 text-[10px] font-semibold">Lifetime</div>
-                    <div className="font-extrabold text-green-400 mt-0.5">₹{calculateDurationPrice(currentModalPrice, null, modalForm.package_code)}</div>
+                  <div className="p-2 rounded bg-[#111] border border-cyan-900/50 text-cyan-400">
+                    <div className="text-cyan-500 text-[10px] font-semibold">Lifetime</div>
+                    <div className="font-extrabold text-cyan-400 mt-0.5">₹{calculateDurationPrice(currentModalPrice, null, modalForm.package_code)}</div>
                   </div>
                 </div>
               </div>
@@ -484,7 +484,7 @@ export const AdminPackages = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-3 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-4 h-4" />
                   {isSubmitting ? 'Saving...' : editingPackageId ? 'Save Package Changes' : 'Create Package'}

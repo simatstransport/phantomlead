@@ -77,44 +77,44 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-[#0a0a0a] border border-green-500/30 rounded-xl p-8 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
-        <h2 className="text-2xl font-bold text-green-400 mb-2">Complete Your Profile</h2>
-        <p className="text-sm text-gray-400 mb-6">Welcome to PhantomLead. Please provide your student details to activate your dashboard.</p>
+      <div className="w-full max-w-md bg-[#070b14] border border-cyan-500/30 rounded-2xl p-8 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+        <h2 className="text-2xl font-bold text-cyan-400 mb-2 tracking-tight">Complete Your Profile</h2>
+        <p className="text-sm text-zinc-400 mb-6">Welcome to PhantomLead. Please provide your student details to activate your workstation dashboard.</p>
         
         {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Full Name</label>
             <input 
               type="text" 
               required
               value={formData.full_name} 
               onChange={e => setFormData({...formData, full_name: e.target.value})}
-              className="w-full px-4 py-2.5 bg-black border border-green-900/50 rounded-lg focus:outline-none focus:border-green-500 text-green-50 font-mono"
+              className="w-full px-4 py-2.5 bg-black border border-cyan-900/50 rounded-xl focus:outline-none focus:border-cyan-400 text-cyan-50 font-mono text-sm"
               placeholder="e.g. John Doe"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">College Name</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">College Name</label>
             <input 
               type="text" 
               required
               value={formData.college_name} 
               onChange={e => setFormData({...formData, college_name: e.target.value})}
-              className="w-full px-4 py-2.5 bg-black border border-green-900/50 rounded-lg focus:outline-none focus:border-green-500 text-green-50 font-mono"
+              className="w-full px-4 py-2.5 bg-black border border-cyan-900/50 rounded-xl focus:outline-none focus:border-cyan-400 text-cyan-50 font-mono text-sm"
               placeholder="e.g. MIT"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Academic Year</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Academic Year</label>
             <select 
               required
               value={formData.academic_year} 
               onChange={e => setFormData({...formData, academic_year: e.target.value})}
-              className="w-full px-4 py-2.5 bg-black border border-green-900/50 rounded-lg focus:outline-none focus:border-green-500 text-green-50 font-mono"
+              className="w-full px-4 py-2.5 bg-black border border-cyan-900/50 rounded-xl focus:outline-none focus:border-cyan-400 text-cyan-50 font-mono text-sm"
             >
               <option value="" disabled>Select your year</option>
               <option value="1st Year">1st Year</option>
@@ -128,7 +128,7 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
           <button 
             type="submit" 
             disabled={submitting}
-            className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors mt-6 disabled:opacity-50"
+            className="w-full py-3 px-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold font-mono text-xs uppercase tracking-wider rounded-xl transition-all mt-6 disabled:opacity-50 shadow-[0_0_20px_rgba(6,182,212,0.35)] cursor-pointer active:scale-95"
           >
             {submitting ? 'Saving...' : 'Save & Continue'}
           </button>

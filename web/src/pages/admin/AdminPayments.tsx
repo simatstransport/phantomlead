@@ -92,7 +92,7 @@ export const AdminPayments = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-zinc-400 space-y-3">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <p className="font-mono text-xs tracking-wider uppercase">Loading payment records...</p>
       </div>
     );
@@ -105,13 +105,13 @@ export const AdminPayments = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-green-400 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
                 TREASURY &amp; CLEARANCE DESK
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <CreditCard className="w-7 h-7 text-green-400" />
+              <CreditCard className="w-7 h-7 text-cyan-400" />
               Payment Verification &amp; Approvals
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400">
@@ -136,9 +136,9 @@ export const AdminPayments = () => {
               {pendingCount > 0 && <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />}
             </div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-green-500/20">
-            <span className="text-[10px] font-mono uppercase text-green-400/80 block mb-1">Cleared Revenue</span>
-            <div className="text-2xl font-black text-green-400 font-mono">₹{approvedRevenue.toLocaleString('en-IN')}</div>
+          <div className="p-3.5 rounded-xl bg-black/60 border border-cyan-500/20">
+            <span className="text-[10px] font-mono uppercase text-cyan-400/80 block mb-1">Cleared Revenue</span>
+            <div className="text-2xl font-black text-cyan-400 font-mono">₹{approvedRevenue.toLocaleString('en-IN')}</div>
           </div>
           <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800/80">
             <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Approved Orders</span>
@@ -160,7 +160,7 @@ export const AdminPayments = () => {
             placeholder="Search by student, email, package, or UPI UTR reference..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0d12] border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-green-500/60 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0d12] border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
           />
         </div>
 
@@ -171,14 +171,14 @@ export const AdminPayments = () => {
               onClick={() => setStatusFilter(tab)}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                 statusFilter === tab
-                  ? 'bg-green-500 text-black shadow-md shadow-green-500/20'
+                  ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/20'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
               <span>{tab === 'PENDING' ? 'Pending' : tab === 'ALL' ? 'All' : tab === 'APPROVED' ? 'Approved' : 'Rejected'}</span>
               {tab === 'PENDING' && pendingCount > 0 && (
                 <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                  statusFilter === 'PENDING' ? 'bg-black text-green-400' : 'bg-amber-500/20 text-amber-300'
+                  statusFilter === 'PENDING' ? 'bg-black text-cyan-400' : 'bg-amber-500/20 text-amber-300'
                 }`}>
                   {pendingCount}
                 </span>
@@ -235,7 +235,7 @@ export const AdminPayments = () => {
                         <span className="font-bold text-zinc-200 block text-xs">
                           {p.packages?.package_name || 'Security Package'}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-green-400">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-cyan-400">
                           <Clock className="w-3 h-3" />
                           {durationLabel}
                         </span>
@@ -264,7 +264,7 @@ export const AdminPayments = () => {
                               title="Copy UTR ID"
                             >
                               {copiedTxnId === p.id ? (
-                                <Check className="w-3.5 h-3.5 text-green-400" />
+                                <Check className="w-3.5 h-3.5 text-cyan-400" />
                               ) : (
                                 <Copy className="w-3.5 h-3.5" />
                               )}
@@ -279,11 +279,11 @@ export const AdminPayments = () => {
                           isPending 
                             ? 'bg-amber-500/10 border border-amber-500/30 text-amber-400' 
                             : isApproved
-                              ? 'bg-green-500/10 border border-green-500/30 text-green-400'
+                              ? 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400'
                               : 'bg-red-500/10 border border-red-500/30 text-red-400'
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${
-                            isPending ? 'bg-amber-400 animate-pulse' : isApproved ? 'bg-green-400' : 'bg-red-400'
+                            isPending ? 'bg-amber-400 animate-pulse' : isApproved ? 'bg-cyan-400' : 'bg-red-400'
                           }`} />
                           {p.status}
                         </span>
@@ -296,7 +296,7 @@ export const AdminPayments = () => {
                             <button 
                               onClick={() => handleApproval(p.id, 'APPROVED')} 
                               disabled={isProcessing}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500 hover:bg-green-400 disabled:opacity-50 text-black text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-md shadow-green-500/20 active:scale-95 cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-md shadow-cyan-500/20 active:scale-95 cursor-pointer"
                             >
                               {isProcessing ? (
                                 <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />

@@ -67,11 +67,11 @@ export const AdminSettings = () => {
   if (loading) return <div className="text-gray-400">Loading settings...</div>;
 
   return (
-    <div className="max-w-3xl bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 sm:p-6 shadow-xl">
+    <div className="max-w-3xl bg-[#070b14] border border-gray-800 rounded-xl p-4 sm:p-6 shadow-xl">
       <div className="flex items-center justify-between pb-4 sm:pb-6 mb-4 sm:mb-6 border-b border-gray-800">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-            <ShieldCheck className="w-5 sm:w-6 h-5 sm:h-6 text-green-400" /> Platform Settings
+            <ShieldCheck className="w-5 sm:w-6 h-5 sm:h-6 text-cyan-400" /> Platform Settings
           </h2>
           <p className="text-xs text-gray-400 mt-1">
             Global controls for Maintenance Mode, end-time scheduling, user signups, and branding.
@@ -81,7 +81,7 @@ export const AdminSettings = () => {
       
       <form onSubmit={handleSave} className="space-y-6">
         {/* MAINTENANCE MODE SECTION */}
-        <div className="p-5 bg-[#0e1410] border border-green-900/40 rounded-xl space-y-4">
+        <div className="p-5 bg-[#0e1410] border border-cyan-900/40 rounded-xl space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="font-bold text-base text-white flex items-center gap-2">
@@ -127,14 +127,14 @@ export const AdminSettings = () => {
               {/* Maintenance End Time Picker */}
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-green-400" /> Maintenance End Date & Time (IST / Local)
+                  <Clock className="w-3.5 h-3.5 text-cyan-400" /> Maintenance End Date & Time (IST / Local)
                 </label>
                 <div className="flex flex-wrap items-center gap-3">
                   <input
                     type="datetime-local"
                     value={settings.maintenance_end_time || ''}
                     onChange={e => setSettings({ ...settings, maintenance_end_time: e.target.value })}
-                    className="px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-green-500"
+                    className="px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white font-mono text-sm focus:outline-none focus:border-cyan-500"
                   />
                   
                   {/* Quick Preset Buttons */}
@@ -192,7 +192,7 @@ export const AdminSettings = () => {
                   value={settings.maintenance_message || ''}
                   onChange={e => setSettings({ ...settings, maintenance_message: e.target.value })}
                   placeholder="e.g. Upgrading systems for SafeExamBrowser 3.10.2 integration. Please come and log in at the scheduled time."
-                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-xs focus:outline-none focus:border-green-500 leading-relaxed"
+                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-xs focus:outline-none focus:border-cyan-500 leading-relaxed"
                 />
               </div>
             </div>
@@ -217,7 +217,7 @@ export const AdminSettings = () => {
                 checked={settings.allow_signups} 
                 onChange={e => setSettings({ ...settings, allow_signups: e.target.checked })} 
               />
-              <div className="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+              <div className="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
             </label>
           </div>
         </div>
@@ -230,16 +230,16 @@ export const AdminSettings = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Company Name</label>
-              <input type="text" value={settings.company_name} onChange={e => setSettings({ ...settings, company_name: e.target.value })} className="w-full px-3.5 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" />
+              <input type="text" value={settings.company_name} onChange={e => setSettings({ ...settings, company_name: e.target.value })} className="w-full px-3.5 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-cyan-600 text-white text-sm" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Contact Number</label>
-              <input type="text" value={settings.contact_number} onChange={e => setSettings({ ...settings, contact_number: e.target.value })} className="w-full px-3.5 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" />
+              <input type="text" value={settings.contact_number} onChange={e => setSettings({ ...settings, contact_number: e.target.value })} className="w-full px-3.5 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-cyan-600 text-white text-sm" />
             </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Support Email</label>
-            <input type="email" value={settings.support_email} onChange={e => setSettings({ ...settings, support_email: e.target.value })} className="w-full px-3.5 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-green-600 text-white text-sm" />
+            <input type="email" value={settings.support_email} onChange={e => setSettings({ ...settings, support_email: e.target.value })} className="w-full px-3.5 py-2 bg-black border border-gray-800 rounded-lg focus:outline-none focus:border-cyan-600 text-white text-sm" />
           </div>
         </div>
 
@@ -250,7 +250,7 @@ export const AdminSettings = () => {
           <button 
             type="submit" 
             disabled={saving} 
-            className="flex items-center px-6 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold disabled:opacity-50 transition-all cursor-pointer shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+            className="flex items-center px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg font-bold disabled:opacity-50 transition-all cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.3)]"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Saving...' : 'Save Settings'}

@@ -69,7 +69,7 @@ export const AdminWipeFolders = () => {
   if (loading) return <div className="text-gray-400">Loading customer data...</div>;
 
   return (
-    <div className="bg-[#0a0a0a] border border-red-900/50 rounded-xl p-4 sm:p-6 shadow-lg shadow-red-900/10">
+    <div className="bg-[#070b14] border border-red-900/50 rounded-xl p-4 sm:p-6 shadow-lg shadow-red-900/10">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-red-500 flex items-center gap-2">
@@ -113,15 +113,15 @@ export const AdminWipeFolders = () => {
                     <AlertTriangle className="w-4 h-4 mr-1.5 text-red-400 flex-shrink-0" /> WIPE FAILED (VIEW ERROR)
                   </span>
                 ) : l.uninstalled_at ? (
-                  <span className="text-xs text-green-400 flex items-center font-bold bg-green-950/40 px-3 py-1.5 rounded-lg border border-green-800 w-max">
-                    <Check className="w-4 h-4 mr-1.5 text-green-400" /> EXTENSIONS DELETED
+                  <span className="text-xs text-cyan-400 flex items-center font-bold bg-cyan-950/40 px-3 py-1.5 rounded-lg border border-cyan-800 w-max">
+                    <Check className="w-4 h-4 mr-1.5 text-cyan-400" /> EXTENSIONS DELETED
                   </span>
                 ) : l.status === 'REVOKED' ? (
                   <span className="text-xs text-yellow-400 flex items-center font-bold bg-yellow-950/40 px-3 py-1.5 rounded-lg border border-yellow-800 w-max">
                     <Clock className="w-4 h-4 mr-1.5 text-yellow-400 animate-spin" /> WIPE IN PROGRESS...
                   </span>
                 ) : (
-                  <span className="text-xs text-green-500 flex items-center font-bold bg-green-950/40 px-3 py-1.5 rounded-lg border border-green-900 w-max">
+                  <span className="text-xs text-cyan-500 flex items-center font-bold bg-cyan-950/40 px-3 py-1.5 rounded-lg border border-cyan-900 w-max">
                     Installed (Active)
                   </span>
                 )}

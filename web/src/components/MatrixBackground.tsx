@@ -51,10 +51,10 @@ export const MatrixBackground = () => {
       if (elapsed < fpsInterval) return;
       lastTime = time - (elapsed % fpsInterval);
 
-      ctx.fillStyle = 'rgba(3, 8, 5, 0.08)';
+      ctx.fillStyle = 'rgba(2, 6, 23, 0.08)';
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = '#00ff41'; // Matrix neon green
+      ctx.fillStyle = '#00f0ff'; // Neon Electric Blue / Cyan
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
@@ -92,7 +92,7 @@ export const MatrixBackground = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 pointer-events-none opacity-[0.05] sm:opacity-[0.06] z-0 block w-full h-full"
+      className="fixed inset-0 pointer-events-none opacity-[0.06] sm:opacity-[0.08] z-0 block w-full h-full"
     />
   );
 };
