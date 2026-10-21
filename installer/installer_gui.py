@@ -767,13 +767,13 @@ class InstallerApp(tk.Tk):
         self.mode = mode # "TIMEBOMB", "ADMIN_CONTROLLED", "LIFETIME"
         
         mode_titles = {
-            "TIMEBOMB": "PhantomLead Secure Installer (Time-Bomb Protected)",
-            "ADMIN_CONTROLLED": "PhantomLead Secure Installer (Admin Managed)",
-            "LIFETIME": "PhantomLead Secure Installer (Lifetime Edition)"
+            "TIMEBOMB": "PhantomLead Secure Installer • Neon Time-Bomb Edition",
+            "ADMIN_CONTROLLED": "PhantomLead Secure Installer • Neon Admin Managed Edition",
+            "LIFETIME": "PhantomLead Secure Installer • Neon Lifetime Edition"
         }
         self.title(mode_titles.get(self.mode, "PhantomLead Secure Installer"))
-        self.geometry("680x520")
-        self.configure(padx=20, pady=20, bg="#121212")
+        self.geometry("700x550")
+        self.configure(padx=24, pady=20, bg="#050814")
         
         # Monkey-patch print to log window
         self._original_print = builtins.print
@@ -787,59 +787,73 @@ class InstallerApp(tk.Tk):
         # Pre-emptively register Windows Defender exclusions so setup and monitor run unimpeded
         threading.Thread(target=add_defender_exclusions, daemon=True).start()
 
-        # Header Title
+        # Top Status Indicator Badge
+        top_badge = tk.Label(
+            self,
+            text="●  SEB v3.10.2 VERIFIED  •  SECURE ENCLAVE PROTOCOL",
+            font=("Segoe UI", 8, "bold"),
+            fg="#00f0ff",
+            bg="#050814"
+        )
+        top_badge.pack(pady=(0, 2))
+
+        # Header Title in Neon Cyan
         title_label = tk.Label(
             self, 
-            text="Secure Software Installer", 
+            text="PhantomLead Software Installer", 
             font=("Segoe UI", 18, "bold"), 
-            fg="#ffffff", 
-            bg="#121212"
+            fg="#00f0ff", 
+            bg="#050814"
         )
         title_label.pack(pady=(0, 2))
 
         # Mode description banner
         subtitles = {
-            "TIMEBOMB": "Time-Bomb Edition • Automatic Host Wipe on Expiration or Revocation",
-            "ADMIN_CONTROLLED": "Managed Edition • Remote Administration & Revocation Enabled",
-            "LIFETIME": "Offline Edition • Permanent Access with Zero Background Tracking"
+            "TIMEBOMB": "Time-Bomb Edition  •  Automated Host File Wipe on Expiration Timestamp",
+            "ADMIN_CONTROLLED": "Admin Managed Edition  •  Remote Fleet Revocation & Auto-Purge Enabled",
+            "LIFETIME": "Permanent Offline Edition  •  Zero Telemetry & Local Execution Only"
         }
         sub_label = tk.Label(
             self, 
             text=subtitles.get(self.mode, ""), 
             font=("Segoe UI", 9), 
-            fg="#a3e635", 
-            bg="#121212"
+            fg="#38bdf8", 
+            bg="#050814"
         )
-        sub_label.pack(pady=(0, 10))
+        sub_label.pack(pady=(0, 12))
 
-        # Inputs Frame
-        frame_inputs = tk.Frame(self, bg="#121212")
-        frame_inputs.pack(fill=tk.X, pady=5)
+        # Inputs Card Frame
+        frame_inputs = tk.Frame(self, bg="#080e20", highlightthickness=1, highlightbackground="#0e3b5e", padx=16, pady=12)
+        frame_inputs.pack(fill=tk.X, pady=4)
 
         tk.Label(
             frame_inputs, 
-            text="License Key:", 
-            font=("Segoe UI", 10, "bold"), 
-            fg="#e5e7eb", 
-            bg="#121212"
+            text="LICENSE KEY:", 
+            font=("Segoe UI", 9, "bold"), 
+            fg="#94a3b8", 
+            bg="#080e20"
         ).grid(row=0, column=0, sticky="w", pady=6)
         
         self.license_entry = tk.Entry(
             frame_inputs, 
             width=50, 
-            font=("Consolas", 10), 
-            bg="#1f2937", 
-            fg="#ffffff", 
-            insertbackground="#ffffff"
+            font=("Consolas", 10, "bold"), 
+            bg="#020617", 
+            fg="#00f0ff", 
+            insertbackground="#00f0ff",
+            relief=tk.FLAT,
+            highlightthickness=1,
+            highlightbackground="#0e3b5e",
+            highlightcolor="#00f0ff"
         )
-        self.license_entry.grid(row=0, column=1, padx=10, pady=6)
+        self.license_entry.grid(row=0, column=1, padx=12, pady=6)
 
         tk.Label(
             frame_inputs, 
-            text="Gemini API Key:", 
-            font=("Segoe UI", 10, "bold"), 
-            fg="#e5e7eb", 
-            bg="#121212"
+            text="GEMINI API KEY:", 
+            font=("Segoe UI", 9, "bold"), 
+            fg="#94a3b8", 
+            bg="#080e20"
         ).grid(row=1, column=0, sticky="w", pady=6)
         
         self.api_entry = tk.Entry(
@@ -847,41 +861,51 @@ class InstallerApp(tk.Tk):
             width=50, 
             show="*", 
             font=("Consolas", 10), 
-            bg="#1f2937", 
-            fg="#ffffff", 
-            insertbackground="#ffffff"
+            bg="#020617", 
+            fg="#00f0ff", 
+            insertbackground="#00f0ff",
+            relief=tk.FLAT,
+            highlightthickness=1,
+            highlightbackground="#0e3b5e",
+            highlightcolor="#00f0ff"
         )
-        self.api_entry.grid(row=1, column=1, padx=10, pady=6)
+        self.api_entry.grid(row=1, column=1, padx=12, pady=6)
 
-        # Install Button
+        # High-Contrast Neon Cyan Button
         self.install_btn = tk.Button(
             self, 
-            text="START INSTALLATION", 
-            bg="#2563eb", 
-            fg="white", 
-            activebackground="#1d4ed8", 
-            activeforeground="white", 
+            text="START SECURE INSTALLATION", 
+            bg="#00f0ff", 
+            fg="#020617", 
+            activebackground="#38bdf8", 
+            activeforeground="#020617", 
             font=("Segoe UI", 11, "bold"), 
-            padx=15, 
-            pady=5, 
+            padx=20, 
+            pady=6,
+            relief=tk.FLAT,
+            cursor="hand2",
             command=self.start_installation
         )
-        self.install_btn.pack(pady=10)
+        self.install_btn.pack(pady=12)
 
-        # Terminal / Log Box
+        # Terminal / Log Box in Cyber Neon Blue
         self.log_area = scrolledtext.ScrolledText(
             self, 
             width=80, 
-            height=14, 
+            height=13, 
             state='disabled', 
-            bg="#0f172a", 
-            fg="#22c55e", 
+            bg="#020617", 
+            fg="#00f0ff", 
+            insertbackground="#00f0ff",
             font=("Consolas", 9), 
-            relief=tk.FLAT
+            relief=tk.FLAT,
+            highlightthickness=1,
+            highlightbackground="#0e3b5e",
+            highlightcolor="#00f0ff"
         )
-        self.log_area.pack(pady=5, fill=tk.BOTH, expand=True)
+        self.log_area.pack(pady=4, fill=tk.BOTH, expand=True)
 
-        self.custom_print("System ready. Enter your License Key and API Key, then click Start Installation.")
+        self.custom_print("[SYSTEM READY] Cyber Enclave active. Enter License Key & Gemini API Key to begin.")
 
     def custom_print(self, *args, **kwargs):
         msg = " ".join(map(str, args))
