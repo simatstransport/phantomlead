@@ -2,8 +2,9 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
 import { 
   Trash2, AlertTriangle, Clock, Search, Plus, 
-  Laptop, Shield, RefreshCw, X, CheckCircle2
+  Laptop, Shield, RefreshCw, X, CheckCircle2, Download, Loader2
 } from 'lucide-react';
+import { downloadInstaller } from '../../utils/download';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
@@ -20,6 +21,18 @@ export const AdminLicenses = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalMessage, setModalMessage] = useState({ type: '', text: '' });
   const [availablePackages, setAvailablePackages] = useState<any[]>([]);
+  const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+
+  const handleDownload = async (name: string) => {
+    setDownloadingFile(name);
+    try {
+      await downloadInstaller(name);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDownloadingFile(null);
+    }
+  };
 
   useEffect(() => {
     fetchLicenses();
@@ -196,12 +209,48 @@ export const AdminLicenses = () => {
           </p>
         </div>
 
-        <button 
-          onClick={handleOpenModal} 
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all cursor-pointer whitespace-nowrap"
-        >
-          <Plus className="w-4 h-4" /> Generate FREE License
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Quick Installer Downloads */}
+          <div className="flex items-center gap-1.5 bg-black/40 border border-white/10 rounded-xl p-1 text-xs">
+            <span className="text-[11px] font-mono text-emerald-400 font-bold px-2 flex items-center gap-1">
+              <Download className="w-3 h-3 text-emerald-400" /> Binaries:
+            </span>
+            <button
+              onClick={() => handleDownload('SecureInstaller_L.exe')}
+              disabled={downloadingFile === 'SecureInstaller_L.exe'}
+              className="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-mono text-[11px] font-bold border border-emerald-500/30 transition-all flex items-center gap-1"
+              title="Download Lifetime Edition (.exe)"
+            >
+              {downloadingFile === 'SecureInstaller_L.exe' ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+              L-Life
+            </button>
+            <button
+              onClick={() => handleDownload('SecureInstaller_T.exe')}
+              disabled={downloadingFile === 'SecureInstaller_T.exe'}
+              className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-mono text-[11px] font-bold border border-amber-500/30 transition-all flex items-center gap-1"
+              title="Download Time-Bomb Demo Edition (.exe)"
+            >
+              {downloadingFile === 'SecureInstaller_T.exe' ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+              T-Demo
+            </button>
+            <button
+              onClick={() => handleDownload('SecureInstaller_A.exe')}
+              disabled={downloadingFile === 'SecureInstaller_A.exe'}
+              className="px-2.5 py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 font-mono text-[11px] font-bold border border-purple-500/30 transition-all flex items-center gap-1"
+              title="Download Admin Managed Edition (.exe)"
+            >
+              {downloadingFile === 'SecureInstaller_A.exe' ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+              A-Admin
+            </button>
+          </div>
+
+          <button 
+            onClick={handleOpenModal} 
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-emerald-500/25 transition-all cursor-pointer whitespace-nowrap active:scale-95"
+          >
+            <Plus className="w-4 h-4 text-slate-950" /> Generate FREE License
+          </button>
+        </div>
       </div>
 
       {/* KPI Stats Cards */}

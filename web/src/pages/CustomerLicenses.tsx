@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { 
   Download, Copy, Check, Clock, Calendar, ShieldCheck, Laptop, 
   AlertTriangle, Sparkles, BookOpen, Cpu, RefreshCw, HardDrive, 
-  CheckCircle2, ArrowRight, Key
+  CheckCircle2, ArrowRight, Key, Loader2
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
+import { downloadInstaller } from '../utils/download';
 
 type CustomerLicense = {
   id: string;
@@ -125,6 +126,31 @@ export const CustomerLicenses = () => {
   const [error, setError] = useState<string | null>(null);
   const [keyError, setKeyError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState<number>(Date.now());
+  const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
+
+  const handleDownload = async (installerName: string) => {
+    setDownloadingFile(installerName);
+    setDownloadNotice(`Fetching ${installerName}...`);
+    try {
+      await downloadInstaller(installerName, (state) => {
+        if (state.status === 'downloading') {
+          setDownloadNotice(`Downloading ${installerName} (${state.progress}%)...`);
+        } else if (state.status === 'completed') {
+          setDownloadNotice(`✓ Download started for ${installerName}! Check your browser downloads.`);
+          setTimeout(() => setDownloadNotice(null), 5000);
+        } else if (state.status === 'error') {
+          setDownloadNotice('Download warning: Direct fallback initiated.');
+          setTimeout(() => setDownloadNotice(null), 5000);
+        }
+      });
+    } catch {
+      setDownloadNotice('Download initiated.');
+      setTimeout(() => setDownloadNotice(null), 4000);
+    } finally {
+      setDownloadingFile(null);
+    }
+  };
 
   // Live 1-second ticker for exact countdown
   useEffect(() => {
@@ -603,19 +629,37 @@ export const CustomerLicenses = () => {
                   </div>
                 </div>
 
+                {/* Download Notice Banner */}
+                {downloadNotice && (
+                  <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center gap-2 animate-in fade-in duration-200 mb-4">
+                    {downloadingFile ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
+                    ) : (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    )}
+                    <span>{downloadNotice}</span>
+                  </div>
+                )}
+
                 {/* Bottom Dock Action Bar */}
                 <div className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex flex-wrap items-center gap-3">
-                    <a
-                      href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`}
-                      download={installerName}
-                      className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-emerald-500 via-indigo-600 to-purple-600 hover:from-emerald-400 hover:to-purple-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] cursor-pointer active:scale-95"
+                    <button
+                      type="button"
+                      onClick={() => handleDownload(installerName)}
+                      disabled={downloadingFile === installerName}
+                      className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-bold text-sm shadow-lg shadow-emerald-500/25 transition-all hover:scale-[1.02] cursor-pointer active:scale-95 disabled:opacity-75 disabled:cursor-wait"
                     >
-                      <Download className="w-4 h-4" /> Download {installerName}
-                      <span className="text-xs font-normal text-white bg-black/30 px-2 py-0.5 rounded ml-1 border border-white/20">
+                      {downloadingFile === installerName ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                      ) : (
+                        <Download className="w-4 h-4 text-slate-950" />
+                      )}
+                      <span>{downloadingFile === installerName ? 'Downloading Executable...' : `Download ${installerName}`}</span>
+                      <span className="text-xs font-bold text-slate-950 bg-white/40 px-2 py-0.5 rounded ml-1 border border-black/15">
                         {editionLabel}
                       </span>
-                    </a>
+                    </button>
 
                     <Link
                       to="/dashboard/install"

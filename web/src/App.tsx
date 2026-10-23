@@ -4,8 +4,10 @@ import { supabase } from './services/supabase';
 import { 
   Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
   Users, Download, Settings, Menu, X, BookOpen, AlertTriangle,
-  Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2
+  Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2,
+  Loader2, HardDrive
 } from 'lucide-react';
+import { downloadInstaller } from './utils/download';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
@@ -459,6 +461,31 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
 const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
   const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
   const licenseDetails = (window as any).activeLicenseDetails;
+  const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
+
+  const handleDownload = async (installerName: string) => {
+    setDownloadingFile(installerName);
+    setDownloadNotice(`Fetching ${installerName}...`);
+    try {
+      await downloadInstaller(installerName, (state) => {
+        if (state.status === 'downloading') {
+          setDownloadNotice(`Downloading ${installerName} (${state.progress}%)...`);
+        } else if (state.status === 'completed') {
+          setDownloadNotice(`✓ Download started for ${installerName}! Check your browser downloads.`);
+          setTimeout(() => setDownloadNotice(null), 5000);
+        } else if (state.status === 'error') {
+          setDownloadNotice(`Download warning: Direct save fallback activated.`);
+          setTimeout(() => setDownloadNotice(null), 5000);
+        }
+      });
+    } catch {
+      setDownloadNotice('Download initiated.');
+      setTimeout(() => setDownloadNotice(null), 4000);
+    } finally {
+      setDownloadingFile(null);
+    }
+  };
 
   return (
     <DashboardLayout title="Workstation Command Center" isAdmin={false} isActualAdmin={isActualAdmin}>
@@ -592,8 +619,8 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         </div>
 
         {/* Workstation Operations & Client Installer Deck */}
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-5 border-b border-white/10">
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-white/10">
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
                 <Shield className="w-5 h-5 text-emerald-400" /> Workstation Operations &amp; Client Installer
@@ -603,7 +630,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                   ? 'Verifying cryptographic security token...' 
                   : hasActiveLicense 
                   ? 'Your active license package is configured and ready for execution.' 
-                  : 'Your account is completely clean. Choose a package to activate Safe Exam Browser extensions.'}
+                  : 'Your account is completely clean. Choose a package or download installers directly below.'}
               </p>
             </div>
             <Link 
@@ -614,6 +641,18 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               <span>Open License Deck</span>
             </Link>
           </div>
+
+          {/* Download Notification Banner */}
+          {downloadNotice && (
+            <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center gap-2 animate-in fade-in duration-200">
+              {downloadingFile ? (
+                <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              )}
+              <span>{downloadNotice}</span>
+            </div>
+          )}
 
           {!checkingLicense && hasActiveLicense ? (() => {
             let installerName = 'SecureInstaller_L.exe';
@@ -641,16 +680,22 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             return (
               <div className="space-y-5">
                 <div className="flex flex-wrap items-center gap-4">
-                  <a 
-                    href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} 
-                    download={installerName} 
-                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-black text-sm shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95"
+                  <button 
+                    type="button"
+                    onClick={() => handleDownload(installerName)}
+                    disabled={downloadingFile === installerName}
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-black text-sm shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95 disabled:opacity-75 disabled:cursor-wait"
                   >
-                    <Download className="w-4 h-4" /> Download {installerName}
+                    {downloadingFile === installerName ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                    ) : (
+                      <Download className="w-4 h-4 text-slate-950" />
+                    )}
+                    <span>{downloadingFile === installerName ? 'Downloading Executable...' : `Download ${installerName}`}</span>
                     <span className="text-xs font-bold text-slate-950 bg-white/40 px-2 py-0.5 rounded-lg ml-1 border border-black/10">
                       {editionLabel}
                     </span>
-                  </a>
+                  </button>
 
                   <Link 
                     to="/dashboard/install" 
@@ -676,14 +721,14 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               </div>
             );
           })() : (
-            <div className="py-10 text-center space-y-4">
+            <div className="py-8 text-center space-y-4">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-transparent border border-emerald-500/30 flex items-center justify-center text-emerald-300 mx-auto shadow-lg shadow-emerald-500/10">
                 <Sparkles className="w-8 h-8" />
               </div>
               <div className="space-y-1.5">
                 <h4 className="text-xl font-bold text-white">Your Account is Fresh &amp; Ready</h4>
                 <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
-                  No licenses are currently active. Browse our available packages to activate Safe Exam Browser extensions immediately.
+                  No licenses are currently active. Browse our available packages or grab a direct installer below.
                 </p>
               </div>
               <div className="pt-2">
@@ -697,6 +742,60 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               </div>
             </div>
           )}
+
+          {/* Direct Installer Download Hub (Always Available for Instant Testing / Reinstalling) */}
+          <div className="pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
+            <span className="flex items-center gap-1.5 font-medium text-slate-300">
+              <HardDrive className="w-4 h-4 text-emerald-400" />
+              <span>Direct Executable Download Deck:</span>
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleDownload('SecureInstaller_L.exe')}
+                disabled={downloadingFile === 'SecureInstaller_L.exe'}
+                className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {downloadingFile === 'SecureInstaller_L.exe' ? (
+                  <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
+                ) : (
+                  <Download className="w-3 h-3 text-emerald-400" />
+                )}
+                <span>SecureInstaller_L.exe</span>
+                <span className="text-[10px] text-emerald-400/80 font-normal">(Lifetime)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDownload('SecureInstaller_T.exe')}
+                disabled={downloadingFile === 'SecureInstaller_T.exe'}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {downloadingFile === 'SecureInstaller_T.exe' ? (
+                  <Loader2 className="w-3 h-3 animate-spin text-amber-400" />
+                ) : (
+                  <Download className="w-3 h-3 text-amber-400" />
+                )}
+                <span>SecureInstaller_T.exe</span>
+                <span className="text-[10px] text-amber-400/80 font-normal">(Timed)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDownload('SecureInstaller_A.exe')}
+                disabled={downloadingFile === 'SecureInstaller_A.exe'}
+                className="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {downloadingFile === 'SecureInstaller_A.exe' ? (
+                  <Loader2 className="w-3 h-3 animate-spin text-purple-400" />
+                ) : (
+                  <Download className="w-3 h-3 text-purple-400" />
+                )}
+                <span>SecureInstaller_A.exe</span>
+                <span className="text-[10px] text-purple-400/80 font-normal">(Admin)</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayout>

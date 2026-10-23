@@ -16,12 +16,40 @@ import {
   Terminal,
   ShieldCheck,
   Zap,
-  Lock
+  Lock,
+  Loader2,
+  CheckCircle2
 } from 'lucide-react';
+import { downloadInstaller } from '../utils/download';
 import { Link } from 'react-router-dom';
 
 export const CustomerInstallation = () => {
   const [copiedCmd, setCopiedCmd] = useState(false);
+  const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
+
+  const handleDownload = async (installerName: string) => {
+    setDownloadingFile(installerName);
+    setDownloadNotice(`Fetching ${installerName}...`);
+    try {
+      await downloadInstaller(installerName, (state) => {
+        if (state.status === 'downloading') {
+          setDownloadNotice(`Downloading ${installerName} (${state.progress}%)...`);
+        } else if (state.status === 'completed') {
+          setDownloadNotice(`✓ Download started for ${installerName}! Check your browser downloads.`);
+          setTimeout(() => setDownloadNotice(null), 5000);
+        } else if (state.status === 'error') {
+          setDownloadNotice('Download warning: Direct fallback initiated.');
+          setTimeout(() => setDownloadNotice(null), 5000);
+        }
+      });
+    } catch {
+      setDownloadNotice('Download initiated.');
+      setTimeout(() => setDownloadNotice(null), 4000);
+    } finally {
+      setDownloadingFile(null);
+    }
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -429,6 +457,52 @@ export const CustomerInstallation = () => {
                 </p>
               </div>
             </div>
+
+            {/* Direct Download Action Button */}
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => handleDownload('SecureInstaller_L.exe')}
+                disabled={downloadingFile === 'SecureInstaller_L.exe'}
+                className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95 disabled:opacity-75 disabled:cursor-wait"
+              >
+                {downloadingFile === 'SecureInstaller_L.exe' ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                ) : (
+                  <Download className="w-4 h-4 text-slate-950" />
+                )}
+                <span>{downloadingFile === 'SecureInstaller_L.exe' ? 'Downloading...' : 'Download SecureInstaller_L.exe'}</span>
+              </button>
+            </div>
+          </div>
+
+          {downloadNotice && (
+            <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center gap-2 animate-in fade-in duration-200">
+              {downloadingFile ? (
+                <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              )}
+              <span>{downloadNotice}</span>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 pt-1">
+            <span className="font-semibold text-slate-300">Other Tiers:</span>
+            <button
+              onClick={() => handleDownload('SecureInstaller_T.exe')}
+              disabled={downloadingFile === 'SecureInstaller_T.exe'}
+              className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[11px] font-bold transition-all"
+            >
+              SecureInstaller_T.exe (Timed / Demo)
+            </button>
+            <button
+              onClick={() => handleDownload('SecureInstaller_A.exe')}
+              disabled={downloadingFile === 'SecureInstaller_A.exe'}
+              className="px-2.5 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono text-[11px] font-bold transition-all"
+            >
+              SecureInstaller_A.exe (Admin Managed)
+            </button>
           </div>
 
           <div className="p-5 rounded-2xl glass-panel border border-emerald-500/30 space-y-4">
