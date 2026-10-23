@@ -61,7 +61,15 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
       if (updateError) throw updateError;
       
       if (!data || data.length === 0) {
-        throw new Error('Customer record not found. Please contact support.');
+        const { error: insertError } = await supabase.from('customers').insert({
+          user_id: session.user.id,
+          email: session.user.email,
+          full_name: formData.full_name,
+          college_name: formData.college_name,
+          academic_year: formData.academic_year,
+          phone: ''
+        });
+        if (insertError) throw insertError;
       }
 
       setNeedsOnboarding(false);
