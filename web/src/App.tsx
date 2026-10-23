@@ -42,10 +42,10 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 relative z-10 py-12">
-      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-cyan-400 before:to-transparent">
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-emerald-400 before:to-transparent">
         {/* Subtle Decorative Ambient Lights */}
-        <div className="absolute -top-16 -right-16 w-44 h-44 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
           <div className="flex justify-center mb-6">
@@ -53,10 +53,10 @@ const Login = () => {
               <img 
                 src="/logo.jpg" 
                 alt="Logo" 
-                className="w-full h-full rounded-full border-2 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.5)] object-cover relative z-10" 
+                className="w-full h-full rounded-full border-2 border-emerald-400/80 shadow-[0_0_28px_rgba(16,185,129,0.5)] object-cover relative z-10" 
               />
-              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-cyan-400 border-l-purple-500 animate-spin z-0" />
-              <div className="absolute inset-[-8px] rounded-full border border-sky-500/20 animate-[spin_5s_linear_reverse_infinite] z-0" />
+              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-emerald-400 border-l-teal-500 animate-spin z-0" />
+              <div className="absolute inset-[-8px] rounded-full border border-emerald-500/20 animate-[spin_5s_linear_reverse_infinite] z-0" />
             </div>
           </div>
 
@@ -72,7 +72,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
-            className="w-full py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-900 rounded-2xl font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-95 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(6,182,212,0.35)] disabled:opacity-60 group border border-white/40"
+            className="w-full py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-900 rounded-2xl font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-95 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(16,185,129,0.35)] disabled:opacity-60 group border border-white/40"
           >
             <svg className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path
@@ -98,7 +98,7 @@ const Login = () => {
           </button>
 
           {notice && (
-            <div className={`mt-5 p-3.5 rounded-xl text-xs font-mono text-center ${notice.kind === 'error' ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
+            <div className={`mt-5 p-3.5 rounded-xl text-xs font-mono text-center ${notice.kind === 'error' ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300' : 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'}`}>
               {notice.message}
             </div>
           )}
@@ -106,11 +106,11 @@ const Login = () => {
           {/* Security Trust Badges */}
           <div className="mt-8 pt-6 border-t border-white/10 flex flex-col items-center gap-2 text-slate-500 text-[11px] font-mono text-center">
             <div className="flex items-center gap-2 text-slate-400">
-              <Shield className="w-3.5 h-3.5 text-cyan-400" />
+              <Shield className="w-3.5 h-3.5 text-emerald-400" />
               <span>OAuth 2.0 Encrypted • Hardware Node Binding</span>
             </div>
             <p className="text-[10px] text-slate-500">
-              New accounts are provisioned instantly upon first Google sign-in.
+              New student accounts are provisioned instantly upon first Google sign-in.
             </p>
           </div>
         </div>
@@ -229,11 +229,11 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       {/* Modern Frosted Sidebar */}
       <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 glass-panel border-r border-white/10 flex flex-col transition-transform duration-200 ease-out`}>
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#080c14]/60">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#060807]/70">
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8">
-              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border border-cyan-400 object-cover relative z-10" />
-              <div className="absolute inset-[-3px] rounded-full border border-transparent border-t-cyan-400 border-l-purple-500 animate-spin z-0" />
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border border-emerald-400 object-cover relative z-10" />
+              <div className="absolute inset-[-3px] rounded-full border border-transparent border-t-emerald-400 border-l-teal-500 animate-spin z-0" />
             </div>
             <span className="font-extrabold text-lg tracking-tight text-gradient-rainbow">
               PhantomLead
@@ -327,7 +327,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 <Link 
                   to="/dashboard" 
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center px-3.5 py-2.5 text-cyan-300 hover:bg-cyan-500/20 rounded-xl transition-all border border-cyan-500/30 font-medium text-xs sm:text-sm"
+                  className="flex items-center px-3.5 py-2.5 text-emerald-300 hover:bg-emerald-500/20 rounded-xl transition-all border border-emerald-500/30 font-medium text-xs sm:text-sm"
                 >
                   <User className="w-4 h-4 mr-3" /> View as Customer
                 </Link>
@@ -343,11 +343,11 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/dashboard') 
-                    ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
-                    : 'text-slate-400 hover:text-cyan-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
+                    : 'text-slate-400 hover:text-emerald-300 hover:bg-white/[0.04]'
                 }`}
               >
-                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard') ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'}`} />
+                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
                 Dashboard
               </Link>
               <Link 
@@ -404,7 +404,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
         </nav>
 
         {/* User Footer / Logout */}
-        <div className="p-4 border-t border-white/10 bg-[#080c14]/60">
+        <div className="p-4 border-t border-white/10 bg-[#060807]/70">
           <button 
             onClick={() => supabase.auth.signOut()}
             className="flex items-center w-full px-3.5 py-2.5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl text-xs font-mono transition-all group cursor-pointer"
@@ -429,18 +429,18 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 text-xs font-mono">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-emerald-500/30 text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-slate-300">SEB 3.10.2 Armed</span>
+              <span className="text-emerald-300">SEB 3.10.2 Armed</span>
             </div>
 
             <div className="flex items-center gap-2.5 pl-2 border-l border-white/10">
               <span className="text-xs font-medium text-slate-300 hidden sm:block max-w-[140px] truncate">
                 {userName}
               </span>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 p-[1.5px] shadow-sm">
-                <div className="w-full h-full bg-[#080c14] rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-cyan-300" />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 p-[1.5px] shadow-sm">
+                <div className="w-full h-full bg-[#060807] rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-emerald-300" />
                 </div>
               </div>
             </div>
@@ -466,14 +466,14 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         {/* Modern Multi-Color Hero Banner */}
         <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
           {/* Glowing Atmospheric Mesh */}
-          <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-bl from-cyan-500/15 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/4 w-64 h-32 bg-emerald-500/10 blur-2xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-bl from-emerald-500/15 via-teal-500/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/4 w-64 h-32 bg-purple-500/10 blur-2xl pointer-events-none" />
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                   SAFE EXAM WORKSTATION
                 </span>
                 <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
@@ -496,13 +496,13 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Link 
                 to="/dashboard/packages" 
-                className="px-5 py-3 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-indigo-500/25 transition-all cursor-pointer whitespace-nowrap active:scale-95"
+                className="px-5 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-emerald-500/25 transition-all cursor-pointer whitespace-nowrap active:scale-95"
               >
                 Browse All Packages
               </Link>
               <Link 
                 to="/dashboard/licenses" 
-                className="px-4 py-3 glass-panel hover:bg-slate-800/80 text-slate-200 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap border border-white/10"
+                className="px-4 py-3 glass-panel hover:bg-emerald-950/30 text-slate-200 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap border border-white/10"
               >
                 My License Keys
               </Link>
@@ -512,11 +512,11 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
 
         {/* 3 Modern Colorful Executive Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          {/* Tile 1: License Status - Cyber Cyan */}
-          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-cyan-500/20 hover:border-cyan-400/50 flex flex-col justify-between relative overflow-hidden group">
+          {/* Tile 1: License Status - Cyber Emerald */}
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between relative overflow-hidden group">
             <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span className="tracking-wider uppercase font-semibold text-cyan-300">LICENSE STATUS</span>
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-sm">
+              <span className="tracking-wider uppercase font-semibold text-emerald-300">LICENSE STATUS</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
                 <Key className="w-4 h-4" />
               </div>
             </div>
@@ -528,18 +528,18 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                 {checkingLicense ? (
                   <span className="text-slate-500">Checking credentials...</span>
                 ) : hasActiveLicense ? (
-                  <span className="text-cyan-300 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  <span className="text-emerald-300 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                     Armed &amp; Operational
                   </span>
                 ) : (
-                  <span className="text-sky-300 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-sky-400" /> Fresh Account (Unbound)
+                  <span className="text-teal-300 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-teal-400" /> Fresh Account (Unbound)
                   </span>
                 )}
               </div>
             </div>
-            <Link to="/dashboard/licenses" className="text-xs text-slate-400 hover:text-cyan-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
+            <Link to="/dashboard/licenses" className="text-xs text-slate-400 hover:text-emerald-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
               <span>View license details</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -596,7 +596,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-5 border-b border-white/10">
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
-                <Shield className="w-5 h-5 text-cyan-400" /> Workstation Operations &amp; Client Installer
+                <Shield className="w-5 h-5 text-emerald-400" /> Workstation Operations &amp; Client Installer
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 mt-1">
                 {checkingLicense 
@@ -608,9 +608,9 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             </div>
             <Link 
               to="/dashboard/licenses" 
-              className="inline-flex items-center gap-2 px-4 py-2 glass-panel hover:bg-slate-800/80 border border-white/15 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 glass-panel hover:bg-emerald-950/30 border border-white/15 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
             >
-              <Key className="w-3.5 h-3.5 text-cyan-400" />
+              <Key className="w-3.5 h-3.5 text-emerald-400" />
               <span>Open License Deck</span>
             </Link>
           </div>
@@ -644,10 +644,10 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                   <a 
                     href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} 
                     download={installerName} 
-                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-cyan-500/25 transition-all cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-black text-sm shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95"
                   >
                     <Download className="w-4 h-4" /> Download {installerName}
-                    <span className="text-xs font-medium text-white bg-black/30 px-2 py-0.5 rounded-lg ml-1 border border-white/20">
+                    <span className="text-xs font-bold text-slate-950 bg-white/40 px-2 py-0.5 rounded-lg ml-1 border border-black/10">
                       {editionLabel}
                     </span>
                   </a>
@@ -656,7 +656,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                     to="/dashboard/install" 
                     className="inline-flex items-center gap-2 px-5 py-3.5 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-sm font-medium border border-white/10 transition-colors"
                   >
-                    <BookOpen className="w-4 h-4 text-cyan-400" />
+                    <BookOpen className="w-4 h-4 text-emerald-400" />
                     <span>Setup Manual &amp; Shortcuts</span>
                   </Link>
                 </div>
@@ -677,7 +677,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             );
           })() : (
             <div className="py-10 text-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-transparent border border-white/15 flex items-center justify-center text-cyan-300 mx-auto shadow-lg shadow-cyan-500/10">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-transparent border border-emerald-500/30 flex items-center justify-center text-emerald-300 mx-auto shadow-lg shadow-emerald-500/10">
                 <Sparkles className="w-8 h-8" />
               </div>
               <div className="space-y-1.5">
@@ -689,7 +689,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               <div className="pt-2">
                 <Link 
                   to="/dashboard/packages" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl font-bold text-xs font-mono uppercase tracking-wider shadow-lg shadow-indigo-500/25 transition-all cursor-pointer active:scale-95"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-black text-xs font-mono uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95"
                 >
                   <span>Select a Package Now</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1060,8 +1060,8 @@ function App() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#080c14] flex items-center justify-center">
-      <div className="animate-spin w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full shadow-[0_0_20px_rgba(6,182,212,0.4)]" />
+    <div className="min-h-screen bg-[#060807] flex items-center justify-center">
+      <div className="animate-spin w-10 h-10 border-4 border-emerald-400 border-t-transparent rounded-full shadow-[0_0_20px_rgba(16,185,129,0.4)]" />
     </div>
   );
 
@@ -1084,7 +1084,7 @@ function App() {
 
       {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
 
-      <div className="min-h-screen bg-[#080c14] text-slate-100 font-sans relative overflow-hidden">
+      <div className="min-h-screen bg-[#060807] text-slate-100 font-sans relative overflow-hidden">
         <AnimatedGlow />
         <MatrixBackground />
 

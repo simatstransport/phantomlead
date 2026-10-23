@@ -40,14 +40,14 @@ export const CustomerInstallation = () => {
     <div className="max-w-6xl mx-auto space-y-8 pb-16 px-2 sm:px-4">
       {/* Page Header Deck with Ambient Gradient Aurora */}
       <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-cyan-500/15 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/15 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-emerald-500/10 blur-2xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 DEPLOYMENT PROTOCOL
               </span>
               <span className="text-xs font-mono text-slate-300 border border-white/10 bg-slate-900/60 px-2.5 py-0.5 rounded-full">
@@ -58,7 +58,7 @@ export const CustomerInstallation = () => {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-              <BookOpen className="w-7 h-7 text-cyan-400 shrink-0" />
+              <BookOpen className="w-7 h-7 text-emerald-400 shrink-0" />
               Workstation Setup &amp; <span className="text-gradient-rainbow">Field Manual</span>
             </h1>
             <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
@@ -69,7 +69,7 @@ export const CustomerInstallation = () => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <Link
               to="/dashboard/licenses"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold text-xs font-mono uppercase tracking-wider shadow-lg shadow-cyan-500/25 transition-all active:scale-95"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-indigo-600 to-purple-600 hover:from-emerald-400 hover:to-purple-500 text-white font-bold text-xs font-mono uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all active:scale-95"
             >
               <Key className="w-4 h-4" />
               View License Keys
@@ -80,7 +80,7 @@ export const CustomerInstallation = () => {
         {/* Quick Jump Bar with Distinct Colors */}
         <div className="mt-8 pt-5 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
           <span className="text-slate-400 font-mono text-[11px] uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1.5 font-bold">
-            <Command className="w-3.5 h-3.5 text-cyan-400" /> Jump To:
+            <Command className="w-3.5 h-3.5 text-emerald-400" /> Jump To:
           </span>
           <button 
             onClick={() => scrollToSection('step-warning')}
@@ -210,7 +210,7 @@ export const CustomerInstallation = () => {
           {/* Part 1: How to Open Windows Security */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-              <Terminal className="w-4 h-4 text-cyan-400" /> Method 1: Launch Windows Security Fast
+              <Terminal className="w-4 h-4 text-emerald-400" /> Method 1: Launch Windows Security Fast
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2.5">
@@ -306,11 +306,11 @@ export const CustomerInstallation = () => {
 
             {/* SmartScreen Bypass Dialog Visualizer */}
             <div className="mt-3 p-4 rounded-2xl bg-blue-950/20 border border-blue-500/30 text-xs text-slate-300 space-y-2">
-              <div className="flex items-center gap-2 text-cyan-300 font-bold">
-                <Lightbulb className="w-4 h-4 text-cyan-400" /> If Windows SmartScreen Pop-Up Appears:
+              <div className="flex items-center gap-2 text-emerald-300 font-bold">
+                <Lightbulb className="w-4 h-4 text-emerald-400" /> If Windows SmartScreen Pop-Up Appears:
               </div>
               <p className="leading-relaxed text-slate-400">
-                If Windows shows a blue dialog stating <em className="text-slate-200">"Windows protected your PC"</em>, click <strong className="text-white underline">More info</strong>, then click the newly revealed <strong className="text-cyan-400 underline">Run anyway</strong> button.
+                If Windows shows a blue dialog stating <em className="text-slate-200">"Windows protected your PC"</em>, click <strong className="text-white underline">More info</strong>, then click the newly revealed <strong className="text-emerald-400 underline">Run anyway</strong> button.
               </p>
             </div>
           </div>
@@ -538,20 +538,20 @@ export const CustomerInstallation = () => {
             </div>
 
             {/* C Coding */}
-            <div className="p-4 rounded-2xl bg-black/60 border border-cyan-500/30 hover:border-cyan-400/60 transition-all space-y-3 group">
+            <div className="p-4 rounded-2xl bg-black/60 border border-emerald-500/30 hover:border-emerald-400/60 transition-all space-y-3 group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-base">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-base">
                     ⚙️
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                    <h4 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
                       C Coding Helper
                     </h4>
                     <span className="text-[10px] font-mono text-slate-400">module: c_coding</span>
                   </div>
                 </div>
-                <kbd className="px-3 py-1 rounded-xl bg-cyan-950/80 border border-cyan-500/60 text-cyan-300 font-mono text-xs font-bold shadow-[0_0_15px_rgba(6,182,212,0.35)]">
+                <kbd className="px-3 py-1 rounded-xl bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-mono text-xs font-bold shadow-[0_0_15px_rgba(16,185,129,0.35)]">
                   Ctrl + Y
                 </kbd>
               </div>
@@ -672,7 +672,7 @@ export const CustomerInstallation = () => {
                     4
                   </span>
                   <span>
-                    Click <strong className="text-cyan-400">Install</strong> and let it finish the setup.
+                    Click <strong className="text-emerald-400">Install</strong> and let it finish the setup.
                   </span>
                 </li>
 
@@ -680,7 +680,7 @@ export const CustomerInstallation = () => {
                   <span className="font-mono text-amber-400 font-bold bg-amber-950/80 border border-amber-600/60 px-2.5 py-0.5 rounded-lg text-xs shrink-0">
                     5
                   </span>
-                  <span className="text-cyan-300 font-medium">
+                  <span className="text-emerald-300 font-medium">
                     Relaunch <strong>Safe Exam Browser</strong> — your extensions will run smoothly with fast answer generation again!
                   </span>
                 </li>

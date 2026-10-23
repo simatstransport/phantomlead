@@ -87,12 +87,12 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
       <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-7 sm:p-8 shadow-2xl border border-white/10">
         <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
               FIRST TIME ENROLLMENT
             </span>
           </div>
@@ -113,14 +113,14 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-cyan-400" /> Full Name
+                <User className="w-3.5 h-3.5 text-emerald-400" /> Full Name
               </label>
               <input 
                 type="text" 
                 required
                 value={formData.full_name} 
                 onChange={e => setFormData({...formData, full_name: e.target.value})}
-                className="w-full px-4 py-2.5 bg-slate-950/70 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 text-white font-mono text-sm transition-all"
+                className="w-full px-4 py-2.5 bg-slate-950/70 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400 text-white font-mono text-sm transition-all"
                 placeholder="e.g. Alex Mercer"
               />
             </div>
@@ -161,7 +161,7 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
             <button 
               type="submit" 
               disabled={submitting}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold font-mono text-xs uppercase tracking-wider rounded-xl transition-all mt-6 disabled:opacity-50 shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-500 via-indigo-600 to-purple-600 hover:from-emerald-400 hover:to-purple-500 text-white font-bold font-mono text-xs uppercase tracking-wider rounded-xl transition-all mt-6 disabled:opacity-50 shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
             >
               {submitting ? 'Configuring Profile...' : 'Save & Enter Platform'}
             </button>

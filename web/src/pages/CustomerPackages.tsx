@@ -334,11 +334,11 @@ export const CustomerPackages = () => {
             {/* Step 1 */}
             <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
               step === 1 
-                ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/50 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.2)]' 
+                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
                 : 'glass-panel text-slate-400 border-white/5'
             }`}>
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 1 ? 'bg-cyan-400 text-black' : 'bg-slate-800 text-slate-400'
+                step === 1 ? 'bg-emerald-400 text-black' : 'bg-slate-800 text-slate-400'
               }`}>1</span>
               <span className="font-semibold">Packages</span>
             </div>
@@ -436,12 +436,12 @@ export const CustomerPackages = () => {
                   check: 'text-sky-400',
                 }
               }[guide.theme] || {
-                card: 'glass-panel border-white/10 hover:border-white/30',
-                badge: 'bg-cyan-500 text-black',
-                btn: 'bg-cyan-500 hover:bg-cyan-400 text-black',
-                accent: 'text-cyan-400',
-                tagBg: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
-                check: 'text-cyan-400',
+                card: 'glass-panel border-white/10 hover:border-emerald-500/30',
+                badge: 'bg-emerald-500 text-black',
+                btn: 'bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold shadow-lg shadow-emerald-500/25',
+                accent: 'text-emerald-400',
+                tagBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+                check: 'text-emerald-400',
               };
 
               return (
