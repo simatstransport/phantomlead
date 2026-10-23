@@ -764,7 +764,7 @@ def create_heartbeat(license_key):
 class InstallerApp(tk.Tk):
     def __init__(self, mode="TIMEBOMB"):
         super().__init__()
-        self.mode = mode # "TIMEBOMB", "ADMIN_CONTROLLED", "LIFETIME"
+        self.mode = mode  # "TIMEBOMB", "ADMIN_CONTROLLED", "LIFETIME"
         
         mode_titles = {
             "TIMEBOMB": "PhantomLead Enclave • Cyber Time-Bomb Edition",
@@ -772,8 +772,9 @@ class InstallerApp(tk.Tk):
             "LIFETIME": "PhantomLead Enclave • Lifetime Vault Edition"
         }
         self.title(mode_titles.get(self.mode, "PhantomLead Secure Installer"))
-        self.geometry("720x570")
-        self.configure(padx=24, pady=20, bg="#080c14")
+        self.geometry("760x650")
+        self.minsize(740, 620)
+        self.configure(padx=24, pady=18, bg="#060807")
         
         # Monkey-patch print to log window
         self._original_print = builtins.print
@@ -787,130 +788,300 @@ class InstallerApp(tk.Tk):
         # Pre-emptively register Windows Defender exclusions so setup and monitor run unimpeded
         threading.Thread(target=add_defender_exclusions, daemon=True).start()
 
-        # Top Status Indicator Badge
-        top_badge_frame = tk.Frame(self, bg="#0e1726", highlightthickness=1, highlightbackground="#1e293b", padx=12, pady=3)
-        top_badge_frame.pack(pady=(0, 6))
+        # =========================================================
+        # 1. TOP SYSTEM HUD BAR (Tactical Multi-Pill)
+        # =========================================================
+        top_hud_frame = tk.Frame(self, bg="#060807")
+        top_hud_frame.pack(fill=tk.X, pady=(0, 6))
 
-        top_badge = tk.Label(
-            top_badge_frame,
-            text="●  SEB v3.10.2 VERIFIED  •  ENCLAVE HARDWARE-LOCK PROTOCOL",
+        # Enclave Status Pill (Cyber Mint)
+        status_pill = tk.Frame(top_hud_frame, bg="#0A160F", highlightthickness=1, highlightbackground="#10B981", padx=10, pady=3)
+        status_pill.pack(side=tk.LEFT)
+        tk.Label(
+            status_pill,
+            text="●  ENCLAVE ACTIVE  •  SEB 3.10.2 VERIFIED",
             font=("Segoe UI", 8, "bold"),
-            fg="#10b981",
-            bg="#0e1726"
-        )
-        top_badge.pack()
+            fg="#34D399",
+            bg="#0A160F"
+        ).pack()
 
-        # Header Title in Electric Cyan
+        # AI Ready Pill (Solar Gold)
+        ai_pill = tk.Frame(top_hud_frame, bg="#181206", highlightthickness=1, highlightbackground="#D97706", padx=10, pady=3)
+        ai_pill.pack(side=tk.RIGHT)
+        tk.Label(
+            ai_pill,
+            text="✦  GEMINI 1.5 PRO READY",
+            font=("Segoe UI", 8, "bold"),
+            fg="#FBBF24",
+            bg="#181206"
+        ).pack()
+
+        # =========================================================
+        # 2. MAIN TITLE & EDITION BADGE
+        # =========================================================
         title_label = tk.Label(
             self, 
-            text="PhantomLead Cyber Workstation", 
+            text="PHANTOMLEAD WORKSTATION", 
             font=("Segoe UI", 18, "bold"), 
-            fg="#38bdf8", 
-            bg="#080c14"
+            fg="#F8FAFC", 
+            bg="#060807"
         )
-        title_label.pack(pady=(0, 2))
+        title_label.pack(pady=(2, 2))
 
-        # Mode description banner
-        subtitles = {
-            "TIMEBOMB": "Time-Bomb Edition  •  Automated Host File Wipe on Expiration Timestamp",
-            "ADMIN_CONTROLLED": "Admin Managed Edition  •  Remote Fleet Revocation & Auto-Purge Enabled",
-            "LIFETIME": "Permanent Offline Edition  •  Zero Telemetry & Local Execution Only"
+        # Dynamic Multi-Colored Edition Pill
+        edition_configs = {
+            "LIFETIME": {
+                "text": "🛡️ PERMANENT LIFETIME VAULT  •  Zero Telemetry & Local Execution Only",
+                "bg": "#072013",
+                "border": "#059669",
+                "fg": "#6EE7B7"
+            },
+            "TIMEBOMB": {
+                "text": "⏱️ CYBER TIME-BOMB EDITION  •  Automated Host File Wipe on Expiration",
+                "bg": "#221105",
+                "border": "#D97706",
+                "fg": "#FCD34D"
+            },
+            "ADMIN_CONTROLLED": {
+                "text": "⚡ ADMIN FLEET SENTINEL  •  Remote Fleet Revocation & Auto-Purge Enabled",
+                "bg": "#190D26",
+                "border": "#9333EA",
+                "fg": "#D8B4FE"
+            }
         }
-        sub_label = tk.Label(
-            self, 
-            text=subtitles.get(self.mode, ""), 
-            font=("Segoe UI", 9), 
-            fg="#818cf8", 
-            bg="#080c14"
-        )
-        sub_label.pack(pady=(0, 12))
+        cfg = edition_configs.get(self.mode, edition_configs["LIFETIME"])
 
-        # Inputs Card Frame
-        frame_inputs = tk.Frame(self, bg="#0d1322", highlightthickness=1, highlightbackground="#1e293b", padx=18, pady=14)
-        frame_inputs.pack(fill=tk.X, pady=4)
+        edition_frame = tk.Frame(self, bg=cfg["bg"], highlightthickness=1, highlightbackground=cfg["border"], padx=14, pady=3)
+        edition_frame.pack(pady=(0, 10))
+        tk.Label(
+            edition_frame,
+            text=cfg["text"],
+            font=("Segoe UI", 8, "bold"),
+            fg=cfg["fg"],
+            bg=cfg["bg"]
+        ).pack()
+
+        # =========================================================
+        # 3. CARD 1: CRYPTOGRAPHIC LICENSE KEY (Cyber Emerald Glow)
+        # =========================================================
+        card_lic = tk.Frame(self, bg="#08140D", highlightthickness=1, highlightbackground="#10B981", padx=14, pady=10)
+        card_lic.pack(fill=tk.X, pady=(0, 8))
+
+        lic_header = tk.Frame(card_lic, bg="#08140D")
+        lic_header.pack(fill=tk.X, pady=(0, 6))
 
         tk.Label(
-            frame_inputs, 
-            text="LICENSE KEY:", 
-            font=("Segoe UI", 9, "bold"), 
-            fg="#94a3b8", 
-            bg="#0d1322"
-        ).grid(row=0, column=0, sticky="w", pady=6)
-        
+            lic_header,
+            text="⚿  ENCLAVE LICENSE KEY",
+            font=("Segoe UI", 9, "bold"),
+            fg="#34D399",
+            bg="#08140D"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            lic_header,
+            text="[ Cryptographic Node Lock • Single-PC HWID ]",
+            font=("Segoe UI", 8),
+            fg="#6EE7B7",
+            bg="#08140D"
+        ).pack(side=tk.RIGHT)
+
+        lic_input_row = tk.Frame(card_lic, bg="#08140D")
+        lic_input_row.pack(fill=tk.X)
+
         self.license_entry = tk.Entry(
-            frame_inputs, 
-            width=50, 
-            font=("Consolas", 10, "bold"), 
-            bg="#040711", 
-            fg="#38bdf8", 
-            insertbackground="#00f0ff",
+            lic_input_row,
+            font=("Consolas", 11, "bold"),
+            bg="#030A05",
+            fg="#34D399",
+            insertbackground="#10B981",
             relief=tk.FLAT,
             highlightthickness=1,
-            highlightbackground="#1e293b",
-            highlightcolor="#00f0ff"
+            highlightbackground="#059669",
+            highlightcolor="#34D399"
         )
-        self.license_entry.grid(row=0, column=1, padx=12, pady=6)
+        self.license_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=4, padx=(0, 8))
+
+        btn_paste_lic = tk.Button(
+            lic_input_row,
+            text="📋 Paste",
+            font=("Segoe UI", 8, "bold"),
+            bg="#062817",
+            fg="#A7F3D0",
+            activebackground="#059669",
+            activeforeground="#FFFFFF",
+            relief=tk.FLAT,
+            padx=12,
+            pady=3,
+            cursor="hand2",
+            command=self.paste_license
+        )
+        btn_paste_lic.pack(side=tk.RIGHT)
+
+        # =========================================================
+        # 4. CARD 2: GEMINI AI API KEY (Solar Amber / Gold Glow)
+        # =========================================================
+        card_api = tk.Frame(self, bg="#161105", highlightthickness=1, highlightbackground="#D97706", padx=14, pady=10)
+        card_api.pack(fill=tk.X, pady=(0, 10))
+
+        api_header = tk.Frame(card_api, bg="#161105")
+        api_header.pack(fill=tk.X, pady=(0, 6))
 
         tk.Label(
-            frame_inputs, 
-            text="GEMINI API KEY:", 
-            font=("Segoe UI", 9, "bold"), 
-            fg="#94a3b8", 
-            bg="#0d1322"
-        ).grid(row=1, column=0, sticky="w", pady=6)
-        
+            api_header,
+            text="✦  GEMINI AI COGNITIVE ENGINE KEY",
+            font=("Segoe UI", 9, "bold"),
+            fg="#FBBF24",
+            bg="#161105"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            api_header,
+            text="[ Google Gemini 1.5 Pro / Flash • Live SEB Prompt Injection ]",
+            font=("Segoe UI", 8),
+            fg="#FDE68A",
+            bg="#161105"
+        ).pack(side=tk.RIGHT)
+
+        api_input_row = tk.Frame(card_api, bg="#161105")
+        api_input_row.pack(fill=tk.X)
+
         self.api_entry = tk.Entry(
-            frame_inputs, 
-            width=50, 
-            show="*", 
-            font=("Consolas", 10), 
-            bg="#040711", 
-            fg="#38bdf8", 
-            insertbackground="#00f0ff",
+            api_input_row,
+            show="*",
+            font=("Consolas", 11, "bold"),
+            bg="#0C0902",
+            fg="#FDE047",
+            insertbackground="#F59E0B",
             relief=tk.FLAT,
             highlightthickness=1,
-            highlightbackground="#1e293b",
-            highlightcolor="#00f0ff"
+            highlightbackground="#B45309",
+            highlightcolor="#FBBF24"
         )
-        self.api_entry.grid(row=1, column=1, padx=12, pady=6)
+        self.api_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, ipady=4, padx=(0, 8))
 
-        # High-Contrast Modern Button
+        self.api_visible = False
+        self.btn_toggle_api = tk.Button(
+            api_input_row,
+            text="👁 Show",
+            font=("Segoe UI", 8, "bold"),
+            bg="#281A05",
+            fg="#FDE68A",
+            activebackground="#B45309",
+            activeforeground="#FFFFFF",
+            relief=tk.FLAT,
+            padx=10,
+            pady=3,
+            cursor="hand2",
+            command=self.toggle_api_visibility
+        )
+        self.btn_toggle_api.pack(side=tk.RIGHT, padx=(4, 0))
+
+        btn_paste_api = tk.Button(
+            api_input_row,
+            text="📋 Paste",
+            font=("Segoe UI", 8, "bold"),
+            bg="#281A05",
+            fg="#FDE68A",
+            activebackground="#B45309",
+            activeforeground="#FFFFFF",
+            relief=tk.FLAT,
+            padx=12,
+            pady=3,
+            cursor="hand2",
+            command=self.paste_api
+        )
+        btn_paste_api.pack(side=tk.RIGHT)
+
+        # =========================================================
+        # 5. HIGH-CONTRAST NEON DEPLOY BUTTON
+        # =========================================================
         self.install_btn = tk.Button(
             self, 
-            text="⚡  START SECURE INSTALLATION", 
-            bg="#00f0ff", 
-            fg="#080c14", 
-            activebackground="#38bdf8", 
-            activeforeground="#080c14", 
+            text="⚡  INITIALIZE SECURE INJECTION & SETUP", 
+            bg="#10B981", 
+            fg="#040905", 
+            activebackground="#34D399", 
+            activeforeground="#040905", 
             font=("Segoe UI", 11, "bold"), 
-            padx=24, 
-            pady=7,
+            padx=28, 
+            pady=8,
             relief=tk.FLAT,
             cursor="hand2",
             command=self.start_installation
         )
-        self.install_btn.pack(pady=12)
+        self.install_btn.pack(pady=(0, 10))
 
-        # Terminal / Log Box in Clean Cyber Navy & Ice Blue
+        # =========================================================
+        # 6. TERMINAL & EXECUTION HUD CONSOLE (Phosphor Emerald)
+        # =========================================================
+        log_header = tk.Frame(self, bg="#060807")
+        log_header.pack(fill=tk.X, pady=(0, 2))
+
+        tk.Label(
+            log_header,
+            text="[ EXECUTION TELEMETRY HUD ]",
+            font=("Consolas", 8, "bold"),
+            fg="#4ADE80",
+            bg="#060807"
+        ).pack(side=tk.LEFT)
+
+        tk.Label(
+            log_header,
+            text="LOCAL SECURE RUNTIME",
+            font=("Consolas", 8),
+            fg="#64748B",
+            bg="#060807"
+        ).pack(side=tk.RIGHT)
+
         self.log_area = scrolledtext.ScrolledText(
             self, 
             width=80, 
-            height=13, 
+            height=10, 
             state='disabled', 
-            bg="#040711", 
-            fg="#a5f3fc", 
-            insertbackground="#00f0ff",
+            bg="#030504", 
+            fg="#86EFAC", 
+            insertbackground="#34D399", 
             font=("Consolas", 9), 
             relief=tk.FLAT,
             highlightthickness=1,
-            highlightbackground="#1e293b",
-            highlightcolor="#00f0ff"
+            highlightbackground="#132418",
+            highlightcolor="#10B981"
         )
-        self.log_area.pack(pady=4, fill=tk.BOTH, expand=True)
+        self.log_area.pack(fill=tk.BOTH, expand=True)
 
-        self.custom_print("[SYSTEM INITIALIZED] Cyber Enclave v2.0 Armed & Ready.")
-        self.custom_print("[SECURITY AUDIT] Cryptographic hardware fingerprinting active.")
-        self.custom_print("[INPUT REQUIRED] Please enter License Key & Gemini API Key above.")
+        self.custom_print("╔══════════════════════════════════════════════════════════════╗")
+        self.custom_print("║  PHANTOMLEAD CYBER ENCLAVE v2.0 READY • SEB INJECTION MATRIX ║")
+        self.custom_print("╚══════════════════════════════════════════════════════════════╝")
+        self.custom_print("[✓ HWID] Cryptographic hardware fingerprinting armed.")
+        self.custom_print("[✦ AI]   Gemini cognitive assistance pipeline armed.")
+        self.custom_print("[➜ AUTH] Please paste License Key & Gemini API Key above to deploy.")
+
+    def paste_license(self):
+        try:
+            val = self.clipboard_get().strip()
+            self.license_entry.delete(0, tk.END)
+            self.license_entry.insert(0, val)
+        except Exception:
+            pass
+
+    def paste_api(self):
+        try:
+            val = self.clipboard_get().strip()
+            self.api_entry.delete(0, tk.END)
+            self.api_entry.insert(0, val)
+        except Exception:
+            pass
+
+    def toggle_api_visibility(self):
+        if self.api_visible:
+            self.api_entry.config(show="*")
+            self.btn_toggle_api.config(text="👁 Show")
+            self.api_visible = False
+        else:
+            self.api_entry.config(show="")
+            self.btn_toggle_api.config(text="🔒 Hide")
+            self.api_visible = True
 
     def custom_print(self, *args, **kwargs):
         msg = " ".join(map(str, args))
