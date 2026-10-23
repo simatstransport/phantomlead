@@ -1,33 +1,22 @@
 export const AnimatedGlow = () => {
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Top Left - Vibrant Electric Cyan & Sky Blue Mesh */}
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 select-none">
+      {/* Top Center - Clean Electric Sky / Cyan Ambient Spotlight */}
       <div 
-        className="absolute -top-[12%] -left-[10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-cyan-500/25 via-sky-500/15 to-transparent blur-[140px] animate-[pulse_8s_ease-in-out_infinite] mix-blend-screen"
+        className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[85vw] max-w-[1200px] h-[480px] rounded-[100%] bg-gradient-to-b from-sky-400/15 via-cyan-500/8 to-transparent blur-[110px] pointer-events-none"
+        style={{ transform: 'translate3d(-50%, 0, 0)' }}
       />
       
-      {/* Top Right - Cosmic Violet & Radiant Fuchsia Glow */}
+      {/* Top Right - Sleek Iris / Violet Depth */}
       <div 
-        className="absolute -top-[10%] -right-[12%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-bl from-purple-600/25 via-fuchsia-500/20 to-transparent blur-[140px] animate-[pulse_10s_ease-in-out_infinite_reverse] mix-blend-screen"
-      />
-      
-      {/* Center - Deep High-Tech Indigo & Electric Blue Nebula */}
-      <div 
-        className="absolute top-[30%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-tr from-indigo-600/15 via-blue-500/10 to-transparent blur-[160px] animate-[pulse_12s_ease-in-out_infinite] mix-blend-screen"
+        className="absolute -top-[10%] -right-[5%] w-[45vw] max-w-[650px] h-[420px] rounded-full bg-gradient-to-bl from-indigo-500/10 via-purple-600/5 to-transparent blur-[120px] pointer-events-none"
       />
 
-      {/* Bottom Left - Mint Emerald / Cyber Green Accent */}
+      {/* Bottom Center - Subtle Dark Azure Horizon */}
       <div 
-        className="absolute -bottom-[20%] left-[5%] w-[45vw] h-[45vw] rounded-full bg-emerald-500/15 blur-[150px] animate-[pulse_9s_ease-in-out_infinite_reverse] mix-blend-screen"
+        className="absolute -bottom-[20%] left-1/2 -translate-x-1/2 w-[70vw] max-w-[1000px] h-[350px] rounded-[100%] bg-gradient-to-t from-cyan-600/6 via-indigo-600/4 to-transparent blur-[130px] pointer-events-none"
+        style={{ transform: 'translate3d(-50%, 0, 0)' }}
       />
-
-      {/* Bottom Right - Warm Amber / Sunset Coral Accent */}
-      <div 
-        className="absolute -bottom-[15%] right-[5%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-tl from-amber-500/10 via-rose-500/10 to-transparent blur-[150px] animate-[pulse_11s_ease-in-out_infinite] mix-blend-screen"
-      />
-
-      {/* Subtle Cyber Grid Texture */}
-      <div className="absolute inset-0 cyber-grid opacity-60" />
     </div>
   );
 };

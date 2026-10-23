@@ -4,93 +4,105 @@
 
 @layer base {
   body {
-    @apply bg-[#050814] text-slate-100 font-sans antialiased;
+    @apply bg-[#080c14] text-slate-100 font-sans antialiased;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.08) 0px, transparent 50%);
+      radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 65%),
+      radial-gradient(circle at 100% 50%, rgba(99, 102, 241, 0.05) 0px, transparent 55%),
+      radial-gradient(circle at 0% 100%, rgba(6, 182, 212, 0.05) 0px, transparent 55%);
     background-attachment: fixed;
   }
 
   ::selection {
-    background: rgba(99, 102, 241, 0.35);
-    color: #e0e7ff;
+    background: rgba(56, 189, 248, 0.3);
+    color: #f0f9ff;
   }
 }
 
-/* Modern Cyber Scrollbar with Gradient Thumb */
+@keyframes pageProgress {
+  0% { transform: translateX(-100%); }
+  60% { transform: translateX(-15%); }
+  100% { transform: translateX(0%); }
+}
+
+/* Precision Slim Scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #050814;
+  background: #080c14;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #38bdf8 0%, #6366f1 50%, #a855f7 100%);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.5) 0%, rgba(99, 102, 241, 0.5) 100%);
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #00f0ff 0%, #818cf8 50%, #c084fc 100%);
-  box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
+  background: linear-gradient(180deg, #38bdf8 0%, #818cf8 100%);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
 }
 
 /* Glassmorphism & Cyber Accents */
 .glass-panel {
-  background: rgba(13, 17, 34, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(13, 19, 32, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 20px 40px -15px rgba(0, 0, 0, 0.65);
 }
 
 .glass-panel-interactive {
-  background: rgba(13, 17, 34, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(13, 19, 32, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel-interactive:hover {
-  background: rgba(20, 26, 51, 0.85);
-  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(18, 27, 45, 0.88);
+  border-color: rgba(56, 189, 248, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.25);
+  box-shadow: 
+    0 0 0 1px rgba(56, 189, 248, 0.15) inset,
+    0 16px 36px -10px rgba(6, 182, 212, 0.22);
 }
 
 /* Gradient Text Utilities */
 .text-gradient-cyan {
-  background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 50%, #818cf8 100%);
+  background: linear-gradient(135deg, #f0f9ff 0%, #38bdf8 50%, #0284c7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-violet {
-  background: linear-gradient(135deg, #c084fc 0%, #a855f7 50%, #ec4899 100%);
+  background: linear-gradient(135deg, #faf5ff 0%, #c084fc 50%, #9333ea 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-amber {
-  background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%);
+  background: linear-gradient(135deg, #fffbeb 0%, #fbbf24 50%, #ea580c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-rainbow {
-  background: linear-gradient(135deg, #00f0ff 0%, #818cf8 35%, #c084fc 70%, #f472b6 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #c084fc 80%, #f472b6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 /* Cyber subtle grid background overlay */
 .cyber-grid {
-  background-size: 36px 36px;
+  background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
 }

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
 import { 
@@ -42,10 +42,10 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 relative z-10 py-12">
-      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10">
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-cyan-400 before:to-transparent">
         {/* Subtle Decorative Ambient Lights */}
-        <div className="absolute -top-16 -right-16 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-16 -right-16 w-44 h-44 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
           <div className="flex justify-center mb-6">
@@ -53,17 +53,17 @@ const Login = () => {
               <img 
                 src="/logo.jpg" 
                 alt="Logo" 
-                className="w-full h-full rounded-full border-2 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.6)] object-cover relative z-10" 
+                className="w-full h-full rounded-full border-2 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.5)] object-cover relative z-10" 
               />
               <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-cyan-400 border-l-purple-500 animate-spin z-0" />
-              <div className="absolute inset-[-8px] rounded-full border border-indigo-500/30 animate-[spin_4s_linear_reverse_infinite] z-0" />
+              <div className="absolute inset-[-8px] rounded-full border border-sky-500/20 animate-[spin_5s_linear_reverse_infinite] z-0" />
             </div>
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-2 tracking-tight">
             PhantomLead <span className="text-gradient-rainbow">Console</span>
           </h2>
-          <p className="text-slate-400 text-center mb-8 text-xs sm:text-sm">
+          <p className="text-slate-400 text-center mb-8 text-xs sm:text-sm leading-relaxed">
             Single-click authenticated entry to your Safe Exam Browser workstation, packages, and license key vault.
           </p>
 
@@ -98,7 +98,7 @@ const Login = () => {
           </button>
 
           {notice && (
-            <div className={`mt-5 p-3.5 rounded-xl text-xs font-mono text-center ${notice.kind === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
+            <div className={`mt-5 p-3.5 rounded-xl text-xs font-mono text-center ${notice.kind === 'error' ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
               {notice.message}
             </div>
           )}
@@ -199,6 +199,8 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { hasActiveLicense } = useHasActiveLicense(isAdmin || false);
   const [userName, setUserName] = useState('');
+  const location = useLocation();
+  const isCurrent = (path: string) => location.pathname === path;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -219,15 +221,15 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/70 z-40 md:hidden backdrop-blur-md transition-opacity"
+          className="fixed inset-0 bg-black/75 z-40 md:hidden backdrop-blur-md transition-opacity"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Modern Frosted Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 glass-panel border-r border-white/10 flex flex-col transition-transform duration-300 ease-in-out`}>
+      <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 glass-panel border-r border-white/10 flex flex-col transition-transform duration-200 ease-out`}>
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-slate-950/40">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#080c14]/60">
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8">
               <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border border-cyan-400 object-cover relative z-10" />
@@ -249,26 +251,84 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
                 Fleet Command
               </div>
-              <Link to="/admin" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 rounded-xl transition-all group">
-                <LayoutDashboard className="w-4 h-4 mr-3 text-cyan-400 group-hover:scale-110 transition-transform" /> Admin Overview
+              <Link 
+                to="/admin" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/admin') 
+                    ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
+                    : 'text-slate-400 hover:text-cyan-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin') ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'}`} />
+                Admin Overview
               </Link>
-              <Link to="/admin/licenses" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl transition-all group">
-                <Key className="w-4 h-4 mr-3 text-emerald-400 group-hover:scale-110 transition-transform" /> All Licenses
+              <Link 
+                to="/admin/licenses" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/admin/licenses') 
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
+                    : 'text-slate-400 hover:text-emerald-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Key className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/licenses') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                All Licenses
               </Link>
-              <Link to="/admin/packages" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-purple-300 hover:bg-purple-500/10 rounded-xl transition-all group">
-                <Package className="w-4 h-4 mr-3 text-purple-400 group-hover:scale-110 transition-transform" /> All Packages
+              <Link 
+                to="/admin/packages" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/admin/packages') 
+                    ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
+                    : 'text-slate-400 hover:text-purple-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/packages') ? 'text-purple-400' : 'text-slate-500 group-hover:text-purple-400'}`} />
+                All Packages
               </Link>
-              <Link to="/admin/payments" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 rounded-xl transition-all group">
-                <CreditCard className="w-4 h-4 mr-3 text-amber-400 group-hover:scale-110 transition-transform" /> Payments
+              <Link 
+                to="/admin/payments" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/admin/payments') 
+                    ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]' 
+                    : 'text-slate-400 hover:text-amber-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <CreditCard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/payments') ? 'text-amber-400' : 'text-slate-500 group-hover:text-amber-400'}`} />
+                Payments
               </Link>
-              <Link to="/admin/customers" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-blue-300 hover:bg-blue-500/10 rounded-xl transition-all group">
-                <Users className="w-4 h-4 mr-3 text-blue-400 group-hover:scale-110 transition-transform" /> Customers
+              <Link 
+                to="/admin/customers" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/admin/customers') 
+                    ? 'bg-blue-500/15 text-blue-300 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]' 
+                    : 'text-slate-400 hover:text-blue-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Users className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/customers') ? 'text-blue-400' : 'text-slate-500 group-hover:text-blue-400'}`} />
+                Customers
               </Link>
-              <Link to="/admin/settings" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all group">
-                <Settings className="w-4 h-4 mr-3 text-rose-400 group-hover:scale-110 transition-transform" /> Settings
+              <Link 
+                to="/admin/settings" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/admin/settings') 
+                    ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.15)]' 
+                    : 'text-slate-400 hover:text-rose-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Settings className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/settings') ? 'text-rose-400' : 'text-slate-500 group-hover:text-rose-400'}`} />
+                Settings
               </Link>
               <div className="pt-4 mt-4 border-t border-white/10">
-                <Link to="/dashboard" className="flex items-center px-3.5 py-2.5 text-cyan-300 hover:bg-cyan-500/20 rounded-xl transition-all border border-cyan-500/30">
+                <Link 
+                  to="/dashboard" 
+                  onClick={() => setSidebarOpen(false)}
+                  className="flex items-center px-3.5 py-2.5 text-cyan-300 hover:bg-cyan-500/20 rounded-xl transition-all border border-cyan-500/30 font-medium text-xs sm:text-sm"
+                >
                   <User className="w-4 h-4 mr-3" /> View as Customer
                 </Link>
               </div>
@@ -278,23 +338,63 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
                 Workstation Navigation
               </div>
-              <Link to="/dashboard" className="flex items-center px-3.5 py-2.5 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 rounded-xl font-medium shadow-sm">
-                <LayoutDashboard className="w-4 h-4 mr-3 text-cyan-400" /> Dashboard
+              <Link 
+                to="/dashboard" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/dashboard') 
+                    ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
+                    : 'text-slate-400 hover:text-cyan-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard') ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'}`} />
+                Dashboard
               </Link>
-              <Link to="/dashboard/licenses" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl transition-all group">
-                <Key className="w-4 h-4 mr-3 text-emerald-400 group-hover:scale-110 transition-transform" /> My Licenses
+              <Link 
+                to="/dashboard/licenses" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/dashboard/licenses') 
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
+                    : 'text-slate-400 hover:text-emerald-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Key className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard/licenses') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                My Licenses
               </Link>
-              <Link to="/dashboard/packages" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-purple-300 hover:bg-purple-500/10 rounded-xl transition-all group">
-                <Package className="w-4 h-4 mr-3 text-purple-400 group-hover:scale-110 transition-transform" /> Buy Packages
+              <Link 
+                to="/dashboard/packages" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                  isCurrent('/dashboard/packages') 
+                    ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
+                    : 'text-slate-400 hover:text-purple-300 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard/packages') ? 'text-purple-400' : 'text-slate-500 group-hover:text-purple-400'}`} />
+                Buy Packages
               </Link>
               {hasActiveLicense && (
-                <Link to="/dashboard/install" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 rounded-xl transition-all group">
-                  <BookOpen className="w-4 h-4 mr-3 text-amber-400 group-hover:scale-110 transition-transform" /> Installation Guide
+                <Link 
+                  to="/dashboard/install" 
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
+                    isCurrent('/dashboard/install') 
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]' 
+                      : 'text-slate-400 hover:text-amber-300 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <BookOpen className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard/install') ? 'text-amber-400' : 'text-slate-500 group-hover:text-amber-400'}`} />
+                  Installation Guide
                 </Link>
               )}
               {isActualAdmin && (
                 <div className="pt-4 mt-4 border-t border-white/10">
-                  <Link to="/admin" className="flex items-center px-3.5 py-2.5 text-purple-300 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/30">
+                  <Link 
+                    to="/admin" 
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center px-3.5 py-2.5 text-purple-300 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/30 font-medium text-xs sm:text-sm"
+                  >
                     <Shield className="w-4 h-4 mr-3" /> Return to Fleet Admin
                   </Link>
                 </div>
@@ -304,10 +404,10 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
         </nav>
 
         {/* User Footer / Logout */}
-        <div className="p-4 border-t border-white/10 bg-slate-950/40">
+        <div className="p-4 border-t border-white/10 bg-[#080c14]/60">
           <button 
             onClick={() => supabase.auth.signOut()}
-            className="flex items-center w-full px-3.5 py-2.5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl text-xs font-mono transition-all group"
+            className="flex items-center w-full px-3.5 py-2.5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl text-xs font-mono transition-all group cursor-pointer"
           >
             <LogOut className="w-4 h-4 mr-3 text-rose-400 group-hover:-translate-x-0.5 transition-transform" /> 
             Sign Out
@@ -320,7 +420,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
         {/* Top Navbar */}
         <header className="h-16 glass-panel border-b border-white/10 flex items-center justify-between px-4 sm:px-6 relative z-10">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="md:hidden text-slate-400 hover:text-white">
+            <button onClick={() => setSidebarOpen(true)} className="md:hidden text-slate-400 hover:text-white p-1">
               <Menu className="w-6 h-6" />
             </button>
             <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate flex items-center gap-2">
@@ -339,7 +439,7 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 {userName}
               </span>
               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 p-[1.5px] shadow-sm">
-                <div className="w-full h-full bg-[#050814] rounded-full flex items-center justify-center">
+                <div className="w-full h-full bg-[#080c14] rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-cyan-300" />
                 </div>
               </div>
@@ -960,7 +1060,7 @@ function App() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#050814] flex items-center justify-center">
+    <div className="min-h-screen bg-[#080c14] flex items-center justify-center">
       <div className="animate-spin w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full shadow-[0_0_20px_rgba(6,182,212,0.4)]" />
     </div>
   );
@@ -984,7 +1084,7 @@ function App() {
 
       {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
 
-      <div className="min-h-screen bg-[#050814] text-slate-100 font-sans relative overflow-hidden">
+      <div className="min-h-screen bg-[#080c14] text-slate-100 font-sans relative overflow-hidden">
         <AnimatedGlow />
         <MatrixBackground />
 
