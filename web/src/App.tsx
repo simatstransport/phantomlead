@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
 import { 
@@ -21,21 +21,9 @@ import { MatrixBackground } from './components/MatrixBackground';
 import { AnimatedGlow } from './components/AnimatedGlow';
 import { MaintenancePage } from './pages/MaintenancePage';
 
-const resendSignupConfirmation = (email: string) => supabase.auth.resend({
-  type: 'signup',
-  email,
-  options: { emailRedirectTo: window.location.origin }
-});
-
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [resending, setResending] = useState(false);
-  const [showResend, setShowResend] = useState(false);
   const [notice, setNotice] = useState<{ kind: 'error' | 'success'; message: string } | null>(null);
-  const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -50,40 +38,6 @@ const Login = () => {
       setGoogleLoading(false);
       setNotice({ kind: 'error', message: error.message });
     }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      const needsConfirmation = error.message.toLowerCase().includes('email not confirmed');
-      setShowResend(needsConfirmation);
-      setNotice({
-        kind: 'error',
-        message: needsConfirmation
-          ? 'Confirm your email before signing in. Check your inbox and spam folder, or resend the confirmation email below.'
-          : error.message
-      });
-    } else {
-      navigate('/dashboard');
-    }
-  };
-
-  const handleResendConfirmation = async () => {
-    const normalizedEmail = email.trim();
-    if (!normalizedEmail) {
-      setNotice({ kind: 'error', message: 'Enter your email address first.' });
-      return;
-    }
-
-    setResending(true);
-    const { error } = await resendSignupConfirmation(normalizedEmail);
-    setResending(false);
-    setNotice(error
-      ? { kind: 'error', message: `Could not resend confirmation: ${error.message}` }
-      : { kind: 'success', message: 'Confirmation email requested. Check your inbox and spam folder.' });
   };
 
   return (
@@ -106,11 +60,11 @@ const Login = () => {
             </div>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-1.5 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-2 tracking-tight">
             PhantomLead <span className="text-gradient-rainbow">Console</span>
           </h2>
-          <p className="text-slate-400 text-center mb-6 text-xs sm:text-sm">
-            Sign in to access your secure exam workstation
+          <p className="text-slate-400 text-center mb-8 text-xs sm:text-sm">
+            Single-click authenticated entry to your Safe Exam Browser workstation, packages, and license key vault.
           </p>
 
           {/* Google 1-Click Sign-In Button */}
@@ -118,9 +72,9 @@ const Login = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
-            className="w-full py-3 px-4 glass-panel hover:bg-slate-800/80 border border-white/15 rounded-xl font-bold text-xs text-white flex items-center justify-center gap-3 transition-all cursor-pointer active:scale-95 shadow-sm disabled:opacity-50 group"
+            className="w-full py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-900 rounded-2xl font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-95 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(6,182,212,0.35)] disabled:opacity-60 group border border-white/40"
           >
-            <svg className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -138,261 +92,26 @@ const Login = () => {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>{googleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
+            <span className="font-semibold tracking-wide">
+              {googleLoading ? 'Connecting to Google...' : 'Continue with Google'}
+            </span>
           </button>
 
-          {/* Divider */}
-          <div className="relative flex items-center justify-center my-5">
-            <div className="border-t border-white/10 w-full" />
-            <span className="bg-[#050814] px-3 text-[10px] font-mono uppercase tracking-wider text-slate-500 shrink-0">
-              or continue with email
-            </span>
-            <div className="border-t border-white/10 w-full" />
-          </div>
-          
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
-                Email Address
-              </label>
-              <input 
-                type="email" 
-                required
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
-                placeholder="student@example.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
-                Password
-              </label>
-              <input 
-                type="password" 
-                required
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
-                placeholder="••••••••••••"
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl font-bold font-mono text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-            >
-              {loading ? 'Authenticating...' : 'Sign In to Portal'}
-            </button>
-          </form>
-
           {notice && (
-            <div className={`mt-4 p-3 rounded-xl text-xs ${notice.kind === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
+            <div className={`mt-5 p-3.5 rounded-xl text-xs font-mono text-center ${notice.kind === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
               {notice.message}
             </div>
           )}
 
-          {showResend && (
-            <button 
-              type="button" 
-              onClick={handleResendConfirmation} 
-              disabled={resending} 
-              className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2 disabled:opacity-50 block text-center w-full"
-            >
-              {resending ? 'Sending...' : 'Resend confirmation email'}
-            </button>
-          )}
-
-          <div className="mt-8 pt-5 border-t border-white/10 text-center text-xs text-slate-400">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-2">
-              Create an account
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [resending, setResending] = useState(false);
-  const [confirmationPending, setConfirmationPending] = useState(false);
-  const [notice, setNotice] = useState<{ kind: 'error' | 'success'; message: string } | null>(null);
-  const navigate = useNavigate();
-
-  const handleGoogleSignUp = async () => {
-    setGoogleLoading(true);
-    setNotice(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`
-      }
-    });
-    if (error) {
-      setGoogleLoading(false);
-      setNotice({ kind: 'error', message: error.message });
-    }
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: { emailRedirectTo: window.location.origin }
-    });
-    setLoading(false);
-    
-    if (error) {
-      setNotice({ kind: 'error', message: error.message });
-    } else if (data.session) {
-      navigate('/dashboard');
-    } else {
-      setConfirmationPending(true);
-      setNotice({ kind: 'success', message: 'Account created. Confirm your email before signing in. Check your inbox and spam folder.' });
-    }
-  };
-
-  const handleResendConfirmation = async () => {
-    setResending(true);
-    const { error } = await resendSignupConfirmation(email.trim());
-    setResending(false);
-    setNotice(error
-      ? { kind: 'error', message: `Could not resend confirmation: ${error.message}` }
-      : { kind: 'success', message: 'Confirmation email requested. Check your inbox and spam folder.' });
-  };
-
-  return (
-    <div className="flex items-center justify-center min-h-screen px-4 relative z-10 py-12">
-      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10">
-        <div className="absolute -top-16 -right-16 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10">
-          <div className="flex justify-center mb-6">
-            <div className="relative w-20 h-20">
-              <img 
-                src="/logo.jpg" 
-                alt="Logo" 
-                className="w-full h-full rounded-full border-2 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.6)] object-cover relative z-10" 
-              />
-              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-purple-400 border-l-cyan-400 animate-spin z-0" />
+          {/* Security Trust Badges */}
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col items-center gap-2 text-slate-500 text-[11px] font-mono text-center">
+            <div className="flex items-center gap-2 text-slate-400">
+              <Shield className="w-3.5 h-3.5 text-cyan-400" />
+              <span>OAuth 2.0 Encrypted • Hardware Node Binding</span>
             </div>
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-1.5 tracking-tight">
-            Create an <span className="text-gradient-rainbow">Account</span>
-          </h2>
-          <p className="text-slate-400 text-center mb-6 text-xs sm:text-sm">
-            Join PhantomLead to activate your Safe Exam suite
-          </p>
-
-          {/* Google 1-Click Sign-In Button */}
-          <button
-            type="button"
-            onClick={handleGoogleSignUp}
-            disabled={googleLoading}
-            className="w-full py-3 px-4 glass-panel hover:bg-slate-800/80 border border-white/15 rounded-xl font-bold text-xs text-white flex items-center justify-center gap-3 transition-all cursor-pointer active:scale-95 shadow-sm disabled:opacity-50 group"
-          >
-            <svg className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-              />
-            </svg>
-            <span>{googleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
-          </button>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center my-5">
-            <div className="border-t border-white/10 w-full" />
-            <span className="bg-[#050814] px-3 text-[10px] font-mono uppercase tracking-wider text-slate-500 shrink-0">
-              or continue with email
-            </span>
-            <div className="border-t border-white/10 w-full" />
-          </div>
-          
-          <form onSubmit={handleSignUp} className="space-y-4">
-            <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
-                Email Address
-              </label>
-              <input 
-                type="email" 
-                required
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
-                placeholder="you@example.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
-                Create Password
-              </label>
-              <input 
-                type="password" 
-                required
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
-                placeholder="••••••••••••"
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white rounded-xl font-bold font-mono text-xs uppercase tracking-wider shadow-lg shadow-purple-500/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-            >
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </button>
-          </form>
-
-          {notice && (
-            <div className={`mt-4 p-3 rounded-xl text-xs ${notice.kind === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
-              {notice.message}
-            </div>
-          )}
-
-          {confirmationPending && (
-            <button 
-              type="button" 
-              onClick={handleResendConfirmation} 
-              disabled={resending} 
-              className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2 disabled:opacity-50 block text-center w-full"
-            >
-              {resending ? 'Sending...' : 'Resend confirmation email'}
-            </button>
-          )}
-
-          <div className="mt-8 pt-5 border-t border-white/10 text-center text-xs text-slate-400">
-            Already have an account?{' '}
-            <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-2">
-              Sign in
-            </Link>
+            <p className="text-[10px] text-slate-500">
+              New accounts are provisioned instantly upon first Google sign-in.
+            </p>
           </div>
         </div>
       </div>
@@ -1279,7 +998,7 @@ function App() {
           <Routes>
             <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
             <Route path="/admin/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
-            <Route path="/signup" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <SignUp />} />
+            <Route path="/signup" element={<Navigate to="/login" replace />} />
             <Route path="/dashboard" element={session ? <CustomerDashboard isActualAdmin={isAdmin} /> : <Navigate to="/login" />} />
             <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false} isActualAdmin={isAdmin}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
             <Route path="/dashboard/packages" element={session ? <DashboardLayout title="Buy Packages" isAdmin={false} isActualAdmin={isAdmin}><CustomerPackages /></DashboardLayout> : <Navigate to="/login" />} />
