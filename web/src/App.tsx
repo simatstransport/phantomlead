@@ -5,7 +5,7 @@ import {
   Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
   Users, Download, Settings, Menu, X, BookOpen, AlertTriangle,
   Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2,
-  Loader2, HardDrive
+  Loader2
 } from 'lucide-react';
 import { downloadInstaller } from './utils/download';
 import { AdminPayments } from './pages/admin/AdminPayments';
@@ -743,59 +743,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             </div>
           )}
 
-          {/* Direct Installer Download Hub (Always Available for Instant Testing / Reinstalling) */}
-          <div className="pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-            <span className="flex items-center gap-1.5 font-medium text-slate-300">
-              <HardDrive className="w-4 h-4 text-emerald-400" />
-              <span>Direct Executable Download Deck:</span>
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleDownload('SecureInstaller_L.exe')}
-                disabled={downloadingFile === 'SecureInstaller_L.exe'}
-                className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
-              >
-                {downloadingFile === 'SecureInstaller_L.exe' ? (
-                  <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
-                ) : (
-                  <Download className="w-3 h-3 text-emerald-400" />
-                )}
-                <span>SecureInstaller_L.exe</span>
-                <span className="text-[10px] text-emerald-400/80 font-normal">(Lifetime)</span>
-              </button>
 
-              <button
-                type="button"
-                onClick={() => handleDownload('SecureInstaller_T.exe')}
-                disabled={downloadingFile === 'SecureInstaller_T.exe'}
-                className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
-              >
-                {downloadingFile === 'SecureInstaller_T.exe' ? (
-                  <Loader2 className="w-3 h-3 animate-spin text-amber-400" />
-                ) : (
-                  <Download className="w-3 h-3 text-amber-400" />
-                )}
-                <span>SecureInstaller_T.exe</span>
-                <span className="text-[10px] text-amber-400/80 font-normal">(Timed)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDownload('SecureInstaller_A.exe')}
-                disabled={downloadingFile === 'SecureInstaller_A.exe'}
-                className="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-50"
-              >
-                {downloadingFile === 'SecureInstaller_A.exe' ? (
-                  <Loader2 className="w-3 h-3 animate-spin text-purple-400" />
-                ) : (
-                  <Download className="w-3 h-3 text-purple-400" />
-                )}
-                <span>SecureInstaller_A.exe</span>
-                <span className="text-[10px] text-purple-400/80 font-normal">(Admin)</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </DashboardLayout>

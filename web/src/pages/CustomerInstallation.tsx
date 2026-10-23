@@ -487,23 +487,6 @@ export const CustomerInstallation = () => {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 pt-1">
-            <span className="font-semibold text-slate-300">Other Tiers:</span>
-            <button
-              onClick={() => handleDownload('SecureInstaller_T.exe')}
-              disabled={downloadingFile === 'SecureInstaller_T.exe'}
-              className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono text-[11px] font-bold transition-all"
-            >
-              SecureInstaller_T.exe (Timed / Demo)
-            </button>
-            <button
-              onClick={() => handleDownload('SecureInstaller_A.exe')}
-              disabled={downloadingFile === 'SecureInstaller_A.exe'}
-              className="px-2.5 py-1 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono text-[11px] font-bold transition-all"
-            >
-              SecureInstaller_A.exe (Admin Managed)
-            </button>
-          </div>
 
           <div className="p-5 rounded-2xl glass-panel border border-emerald-500/30 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
