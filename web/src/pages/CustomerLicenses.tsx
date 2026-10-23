@@ -170,35 +170,7 @@ export const CustomerLicenses = () => {
     setKeyError(null);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-
-      const { data: customer, error: customerError } = await supabase
-        .from('customers')
-        .select('id, full_name')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (customerError) {
-        console.error('Customer fetch error:', customerError);
-        setError('Could not verify customer record.');
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-
-      if (!customer) {
-        setActiveLicense(null);
-        setLoading(false);
-        setRefreshing(false);
-        return;
-      }
-
-      const { data: licenses, error: licenseError } = await supabase
+      const { data, error: queryError } = await supabase
         .from('licenses')
         .select(`
           id,
@@ -208,18 +180,15 @@ export const CustomerLicenses = () => {
           issued_at,
           expires_at,
           device_id,
-          license_key,
           packages (package_name, package_code),
           customers (full_name),
           devices (registered_at, hostname)
         `)
-        .eq('customer_id', customer.id)
-        .eq('status', 'ACTIVE')
         .order('issued_at', { ascending: false });
 
-      if (licenseError) {
-        console.error('License fetch error:', licenseError);
-        setError('Could not retrieve active license data.');
+      if (queryError) {
+        console.error('License fetch error:', queryError);
+        setError(queryError.message || 'Could not retrieve active license data.');
         setLoading(false);
         setRefreshing(false);
         return;
@@ -227,22 +196,54 @@ export const CustomerLicenses = () => {
 
       const now = Date.now();
       const validLicenses: CustomerLicense[] = [];
+      const expiredLicenses: any[] = [];
 
-      if (licenses) {
-        for (const lic of licenses as any[]) {
-          if (lic.expires_at && new Date(lic.expires_at).getTime() <= now) {
-            // Expired: auto delete logs and license to keep user account 100% fresh
-            supabase.from('installation_logs').delete().eq('license_id', lic.id).then(() => {
-              supabase.from('licenses').delete().eq('id', lic.id);
-            });
-          } else {
-            validLicenses.push(lic);
-          }
+      for (const lic of (data || [])) {
+        const isExpired = lic.expires_at && new Date(lic.expires_at).getTime() <= now;
+        const isRevoked = lic.status === 'REVOKED' || lic.status === 'EXPIRED';
+
+        if (isExpired || isRevoked) {
+          expiredLicenses.push(lic);
+        } else if (lic.status === 'ACTIVE') {
+          validLicenses.push({
+            ...(lic as any),
+            license_key: null
+          });
+        }
+      }
+
+      // Purge expired licenses in background
+      if (expiredLicenses.length > 0) {
+        for (const expLic of expiredLicenses) {
+          supabase.from('installation_logs').delete().eq('license_id', expLic.id).then(() => {
+            supabase.from('licenses').delete().eq('id', expLic.id);
+          });
         }
       }
 
       if (validLicenses.length > 0) {
-        setActiveLicense(validLicenses[0]);
+        const primaryLicense = validLicenses[0];
+        setActiveLicense(primaryLicense);
+
+        // Fetch decrypted activation keys via get-my-license-keys edge function
+        try {
+          const { data: keyData, error: keyQueryError } = await supabase.functions.invoke('get-my-license-keys', { method: 'GET' });
+          if (keyQueryError) {
+            console.warn('Key fetch error:', keyQueryError);
+            setKeyError('License records loaded, but activation keys are unavailable.');
+          } else if (keyData?.keys) {
+            const keys = new Map<string, string | null>(
+              (keyData.keys || []).map((entry: { license_id: string; license_key: string | null }) => [entry.license_id, entry.license_key])
+            );
+            const decryptedKey = keys.get(primaryLicense.id) || null;
+            setActiveLicense(prev => prev ? {
+              ...prev,
+              license_key: decryptedKey
+            } : null);
+          }
+        } catch (kErr) {
+          console.warn('Failed to invoke get-my-license-keys:', kErr);
+        }
       } else {
         setActiveLicense(null);
       }
