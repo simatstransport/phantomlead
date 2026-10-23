@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
+import { User, School, GraduationCap } from 'lucide-react';
 
 export const OnboardingModal = ({ session, onComplete }: { session: any, onComplete: () => void }) => {
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,6 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
     }
 
     try {
-      // Update the existing customer record (created by trigger)
       const { data, error: updateError } = await supabase.from('customers').update({
         full_name: formData.full_name,
         college_name: formData.college_name,
@@ -76,63 +76,89 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
   if (loading || !needsOnboarding) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-[#070b14] border border-cyan-500/30 rounded-2xl p-8 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-        <h2 className="text-2xl font-bold text-cyan-400 mb-2 tracking-tight">Complete Your Profile</h2>
-        <p className="text-sm text-zinc-400 mb-6">Welcome to PhantomLead. Please provide your student details to activate your workstation dashboard.</p>
-        
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded">{error}</div>}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-7 sm:p-8 shadow-2xl border border-white/10">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1">Full Name</label>
-            <input 
-              type="text" 
-              required
-              value={formData.full_name} 
-              onChange={e => setFormData({...formData, full_name: e.target.value})}
-              className="w-full px-4 py-2.5 bg-black border border-cyan-900/50 rounded-xl focus:outline-none focus:border-cyan-400 text-cyan-50 font-mono text-sm"
-              placeholder="e.g. John Doe"
-            />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
+              FIRST TIME ENROLLMENT
+            </span>
           </div>
+
+          <h2 className="text-2xl font-black text-white tracking-tight mb-2">
+            Complete Your Student Profile
+          </h2>
+          <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+            Please register your academic details to configure your workstation and bind security licenses.
+          </p>
           
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1">College Name</label>
-            <input 
-              type="text" 
-              required
-              value={formData.college_name} 
-              onChange={e => setFormData({...formData, college_name: e.target.value})}
-              className="w-full px-4 py-2.5 bg-black border border-cyan-900/50 rounded-xl focus:outline-none focus:border-cyan-400 text-cyan-50 font-mono text-sm"
-              placeholder="e.g. MIT"
-            />
-          </div>
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-300 text-xs rounded-xl">
+              {error}
+            </div>
+          )}
 
-          <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1">Academic Year</label>
-            <select 
-              required
-              value={formData.academic_year} 
-              onChange={e => setFormData({...formData, academic_year: e.target.value})}
-              className="w-full px-4 py-2.5 bg-black border border-cyan-900/50 rounded-xl focus:outline-none focus:border-cyan-400 text-cyan-50 font-mono text-sm"
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-cyan-400" /> Full Name
+              </label>
+              <input 
+                type="text" 
+                required
+                value={formData.full_name} 
+                onChange={e => setFormData({...formData, full_name: e.target.value})}
+                className="w-full px-4 py-2.5 bg-slate-950/70 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 text-white font-mono text-sm transition-all"
+                placeholder="e.g. Alex Mercer"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <School className="w-3.5 h-3.5 text-purple-400" /> College / University Name
+              </label>
+              <input 
+                type="text" 
+                required
+                value={formData.college_name} 
+                onChange={e => setFormData({...formData, college_name: e.target.value})}
+                className="w-full px-4 py-2.5 bg-slate-950/70 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 text-white font-mono text-sm transition-all"
+                placeholder="e.g. National Institute of Technology"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
+                <GraduationCap className="w-3.5 h-3.5 text-pink-400" /> Academic Year / Branch
+              </label>
+              <select 
+                required
+                value={formData.academic_year} 
+                onChange={e => setFormData({...formData, academic_year: e.target.value})}
+                className="w-full px-4 py-2.5 bg-slate-950/70 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-400 text-white font-mono text-sm transition-all"
+              >
+                <option value="" disabled className="bg-slate-950">Select your year</option>
+                <option value="1st Year" className="bg-slate-950">1st Year</option>
+                <option value="2nd Year" className="bg-slate-950">2nd Year</option>
+                <option value="3rd Year" className="bg-slate-950">3rd Year</option>
+                <option value="4th Year" className="bg-slate-950">4th Year</option>
+                <option value="Graduated" className="bg-slate-950">Graduated / Alumni</option>
+              </select>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={submitting}
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold font-mono text-xs uppercase tracking-wider rounded-xl transition-all mt-6 disabled:opacity-50 shadow-lg shadow-indigo-500/30 cursor-pointer active:scale-95"
             >
-              <option value="" disabled>Select your year</option>
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
-              <option value="3rd Year">3rd Year</option>
-              <option value="4th Year">4th Year</option>
-              <option value="Graduated">Graduated / Alumni</option>
-            </select>
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={submitting}
-            className="w-full py-3 px-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold font-mono text-xs uppercase tracking-wider rounded-xl transition-all mt-6 disabled:opacity-50 shadow-[0_0_20px_rgba(6,182,212,0.35)] cursor-pointer active:scale-95"
-          >
-            {submitting ? 'Saving...' : 'Save & Continue'}
-          </button>
-        </form>
+              {submitting ? 'Configuring Profile...' : 'Save & Enter Platform'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { supabase } from './services/supabase';
 import { 
   Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
   Users, Download, Settings, Menu, X, BookOpen, AlertTriangle,
-  Sparkles, ArrowRight, Laptop, Zap, ShieldCheck
+  Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2
 } from 'lucide-react';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
@@ -19,7 +19,6 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
 import { AnimatedGlow } from './components/AnimatedGlow';
-import { HowItWorksCard } from './components/HowItWorksCard';
 import { MaintenancePage } from './pages/MaintenancePage';
 
 const resendSignupConfirmation = (email: string) => supabase.auth.resend({
@@ -72,48 +71,93 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 relative z-10">
-      <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
-        <div className="flex justify-center mb-6">
-          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)] object-cover" />
-        </div>
-        <h2 className="text-2xl font-bold text-center text-white mb-2">PhantomLead Platform</h2>
-        <p className="text-gray-400 text-center mb-8 text-sm">Sign in to manage your software access</p>
-        
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-            <input 
-              type="email" required
-              value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              placeholder="admin@example.com"
-            />
+    <div className="flex items-center justify-center min-h-screen px-4 relative z-10 py-12">
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10">
+        {/* Subtle Decorative Ambient Lights */}
+        <div className="absolute -top-16 -right-16 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex justify-center mb-6">
+            <div className="relative w-20 h-20">
+              <img 
+                src="/logo.jpg" 
+                alt="Logo" 
+                className="w-full h-full rounded-full border-2 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.6)] object-cover relative z-10" 
+              />
+              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-cyan-400 border-l-purple-500 animate-spin z-0" />
+              <div className="absolute inset-[-8px] rounded-full border border-indigo-500/30 animate-[spin_4s_linear_reverse_infinite] z-0" />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
-            <input 
-              type="password" required
-              value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              placeholder="••••••••"
-            />
+
+          <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-1.5 tracking-tight">
+            PhantomLead <span className="text-gradient-rainbow">Console</span>
+          </h2>
+          <p className="text-slate-400 text-center mb-8 text-xs sm:text-sm">
+            Sign in to access your secure exam workstation
+          </p>
+          
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
+                Email Address
+              </label>
+              <input 
+                type="email" 
+                required
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
+                placeholder="student@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
+                Password
+              </label>
+              <input 
+                type="password" 
+                required
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
+                placeholder="••••••••••••"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl font-bold font-mono text-xs uppercase tracking-wider shadow-lg shadow-indigo-500/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? 'Authenticating...' : 'Sign In to Portal'}
+            </button>
+          </form>
+
+          {notice && (
+            <div className={`mt-4 p-3 rounded-xl text-xs ${notice.kind === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
+              {notice.message}
+            </div>
+          )}
+
+          {showResend && (
+            <button 
+              type="button" 
+              onClick={handleResendConfirmation} 
+              disabled={resending} 
+              className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2 disabled:opacity-50 block text-center w-full"
+            >
+              {resending ? 'Sending...' : 'Resend confirmation email'}
+            </button>
+          )}
+
+          <div className="mt-8 pt-5 border-t border-white/10 text-center text-xs text-slate-400">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-2">
+              Create an account
+            </Link>
           </div>
-          <button 
-            type="submit" disabled={loading}
-            className="w-full mt-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Authenticating...' : 'Sign In to Portal'}
-          </button>
-        </form>
-        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-cyan-400'}`}>{notice.message}</p>}
-        {showResend && (
-          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-cyan-400 hover:text-indigo-200 underline underline-offset-2 disabled:opacity-50">
-            {resending ? 'Sending...' : 'Resend confirmation email'}
-          </button>
-        )}
-        <div className="mt-6 text-center text-sm text-gray-400">
-          Don't have an account? <Link to="/signup" className="text-cyan-400 hover:text-cyan-400">Sign up here</Link>
         </div>
       </div>
     </div>
@@ -159,48 +203,91 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 relative z-10">
-      <div className="w-full max-w-md bg-zinc-950 border border-gray-800 rounded-xl shadow-2xl p-8">
-        <div className="flex justify-center mb-6">
-          <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full border border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)] object-cover" />
-        </div>
-        <h2 className="text-2xl font-bold text-center text-white mb-2">Create an Account</h2>
-        <p className="text-gray-400 text-center mb-8 text-sm">Join to access your software packages</p>
-        
-        <form onSubmit={handleSignUp} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-            <input 
-              type="email" required
-              value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              placeholder="you@example.com"
-            />
+    <div className="flex items-center justify-center min-h-screen px-4 relative z-10 py-12">
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10">
+        <div className="absolute -top-16 -right-16 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex justify-center mb-6">
+            <div className="relative w-20 h-20">
+              <img 
+                src="/logo.jpg" 
+                alt="Logo" 
+                className="w-full h-full rounded-full border-2 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.6)] object-cover relative z-10" 
+              />
+              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-purple-400 border-l-cyan-400 animate-spin z-0" />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Create Password</label>
-            <input 
-              type="password" required
-              value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              placeholder="••••••••"
-            />
+
+          <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-1.5 tracking-tight">
+            Create an <span className="text-gradient-rainbow">Account</span>
+          </h2>
+          <p className="text-slate-400 text-center mb-8 text-xs sm:text-sm">
+            Join PhantomLead to activate your Safe Exam suite
+          </p>
+          
+          <form onSubmit={handleSignUp} className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
+                Email Address
+              </label>
+              <input 
+                type="email" 
+                required
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5">
+                Create Password
+              </label>
+              <input 
+                type="password" 
+                required
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition-all placeholder:text-slate-600"
+                placeholder="••••••••••••"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white rounded-xl font-bold font-mono text-xs uppercase tracking-wider shadow-lg shadow-purple-500/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </form>
+
+          {notice && (
+            <div className={`mt-4 p-3 rounded-xl text-xs ${notice.kind === 'error' ? 'bg-red-500/10 border border-red-500/30 text-red-300' : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300'}`}>
+              {notice.message}
+            </div>
+          )}
+
+          {confirmationPending && (
+            <button 
+              type="button" 
+              onClick={handleResendConfirmation} 
+              disabled={resending} 
+              className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2 disabled:opacity-50 block text-center w-full"
+            >
+              {resending ? 'Sending...' : 'Resend confirmation email'}
+            </button>
+          )}
+
+          <div className="mt-8 pt-5 border-t border-white/10 text-center text-xs text-slate-400">
+            Already have an account?{' '}
+            <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-2">
+              Sign in
+            </Link>
           </div>
-          <button 
-            type="submit" disabled={loading}
-            className="w-full mt-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Creating...' : 'Create Account'}
-          </button>
-        </form>
-        {notice && <p role={notice.kind === 'error' ? 'alert' : 'status'} className={`mt-4 text-sm ${notice.kind === 'error' ? 'text-red-400' : 'text-cyan-400'}`}>{notice.message}</p>}
-        {confirmationPending && (
-          <button type="button" onClick={handleResendConfirmation} disabled={resending} className="mt-3 text-sm text-cyan-300 hover:text-cyan-200 underline underline-offset-2 disabled:opacity-50">
-            {resending ? 'Sending...' : 'Resend confirmation email'}
-          </button>
-        )}
-        <div className="mt-6 text-center text-sm text-gray-400">
-          Already have an account? <Link to="/login" className="text-cyan-400 hover:text-cyan-300">Sign in</Link>
         </div>
       </div>
     </div>
@@ -285,7 +372,7 @@ const useHasActiveLicense = (isAdmin: boolean) => {
 
 const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children: React.ReactNode, title: string, isAdmin?: boolean, isActualAdmin?: boolean }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-    const { hasActiveLicense } = useHasActiveLicense(isAdmin || false);
+  const { hasActiveLicense } = useHasActiveLicense(isAdmin || false);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
@@ -307,73 +394,136 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/70 z-40 md:hidden backdrop-blur-md transition-opacity"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#070b14] border-r border-cyan-900/30 flex flex-col transition-transform duration-300 ease-in-out`}>
-        <div className="h-16 flex items-center justify-between px-6 border-b border-cyan-900/30 bg-black">
-          <div className="flex items-center">
-            <div className="relative w-8 h-8 mr-3">
-              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border-2 border-cyan-500/50 object-cover relative z-10" />
-              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-cyan-400 border-l-cyan-400/30 animate-spin z-0"></div>
-              <div className="absolute inset-[-6px] rounded-full border border-cyan-900/50 animate-[spin_3s_linear_reverse_infinite] z-0"></div>
+      {/* Modern Frosted Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 glass-panel border-r border-white/10 flex flex-col transition-transform duration-300 ease-in-out`}>
+        {/* Brand Header */}
+        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-slate-950/40">
+          <div className="flex items-center gap-3">
+            <div className="relative w-8 h-8">
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border border-cyan-400 object-cover relative z-10" />
+              <div className="absolute inset-[-3px] rounded-full border border-transparent border-t-cyan-400 border-l-purple-500 animate-spin z-0" />
             </div>
-            <span className="font-bold text-lg tracking-wider text-cyan-50">PhantomLead</span>
+            <span className="font-extrabold text-lg tracking-tight text-gradient-rainbow">
+              PhantomLead
+            </span>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <nav className="flex-1 p-4 space-y-2 relative z-10 bg-[#070b14]/90">
+
+        {/* Navigation Items */}
+        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
           {isAdmin ? (
             <>
-              <Link to="/admin" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><LayoutDashboard className="w-5 h-5 mr-3" /> Admin Overview</Link>
-              <Link to="/admin/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> All Licenses</Link>
-              <Link to="/admin/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> All Packages</Link>
-              <Link to="/admin/payments" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><CreditCard className="w-5 h-5 mr-3" /> Payments</Link>
-              <Link to="/admin/customers" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Users className="w-5 h-5 mr-3" /> Customers</Link>
-              <Link to="/admin/settings" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Settings className="w-5 h-5 mr-3" /> Settings</Link>
-              <div className="pt-4 mt-4 border-t border-cyan-900/30">
-                <Link to="/dashboard" className="flex items-center px-4 py-2.5 text-cyan-400 hover:bg-cyan-500/20 rounded-lg transition-colors border border-cyan-500/20"><User className="w-5 h-5 mr-3" /> View as Customer</Link>
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+                Fleet Command
+              </div>
+              <Link to="/admin" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-cyan-300 hover:bg-cyan-500/10 rounded-xl transition-all group">
+                <LayoutDashboard className="w-4 h-4 mr-3 text-cyan-400 group-hover:scale-110 transition-transform" /> Admin Overview
+              </Link>
+              <Link to="/admin/licenses" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl transition-all group">
+                <Key className="w-4 h-4 mr-3 text-emerald-400 group-hover:scale-110 transition-transform" /> All Licenses
+              </Link>
+              <Link to="/admin/packages" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-purple-300 hover:bg-purple-500/10 rounded-xl transition-all group">
+                <Package className="w-4 h-4 mr-3 text-purple-400 group-hover:scale-110 transition-transform" /> All Packages
+              </Link>
+              <Link to="/admin/payments" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 rounded-xl transition-all group">
+                <CreditCard className="w-4 h-4 mr-3 text-amber-400 group-hover:scale-110 transition-transform" /> Payments
+              </Link>
+              <Link to="/admin/customers" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-blue-300 hover:bg-blue-500/10 rounded-xl transition-all group">
+                <Users className="w-4 h-4 mr-3 text-blue-400 group-hover:scale-110 transition-transform" /> Customers
+              </Link>
+              <Link to="/admin/settings" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all group">
+                <Settings className="w-4 h-4 mr-3 text-rose-400 group-hover:scale-110 transition-transform" /> Settings
+              </Link>
+              <div className="pt-4 mt-4 border-t border-white/10">
+                <Link to="/dashboard" className="flex items-center px-3.5 py-2.5 text-cyan-300 hover:bg-cyan-500/20 rounded-xl transition-all border border-cyan-500/30">
+                  <User className="w-4 h-4 mr-3" /> View as Customer
+                </Link>
               </div>
             </>
           ) : (
             <>
-              <Link to="/dashboard" className="flex items-center px-4 py-2.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-lg"><LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard</Link>
-              <Link to="/dashboard/licenses" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Key className="w-5 h-5 mr-3" /> My Licenses</Link>
-              <Link to="/dashboard/packages" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><Package className="w-5 h-5 mr-3" /> Buy Packages</Link>
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+                Workstation Navigation
+              </div>
+              <Link to="/dashboard" className="flex items-center px-3.5 py-2.5 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 rounded-xl font-medium shadow-sm">
+                <LayoutDashboard className="w-4 h-4 mr-3 text-cyan-400" /> Dashboard
+              </Link>
+              <Link to="/dashboard/licenses" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl transition-all group">
+                <Key className="w-4 h-4 mr-3 text-emerald-400 group-hover:scale-110 transition-transform" /> My Licenses
+              </Link>
+              <Link to="/dashboard/packages" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-purple-300 hover:bg-purple-500/10 rounded-xl transition-all group">
+                <Package className="w-4 h-4 mr-3 text-purple-400 group-hover:scale-110 transition-transform" /> Buy Packages
+              </Link>
               {hasActiveLicense && (
-                <Link to="/dashboard/install" className="flex items-center px-4 py-2.5 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"><BookOpen className="w-5 h-5 mr-3" /> Installation Guide</Link>
+                <Link to="/dashboard/install" className="flex items-center px-3.5 py-2.5 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 rounded-xl transition-all group">
+                  <BookOpen className="w-4 h-4 mr-3 text-amber-400 group-hover:scale-110 transition-transform" /> Installation Guide
+                </Link>
               )}
               {isActualAdmin && (
-                <div className="pt-4 mt-4 border-t border-cyan-900/30">
-                  <Link to="/admin" className="flex items-center px-4 py-2.5 text-cyan-400 hover:bg-cyan-500/20 rounded-lg transition-colors border border-cyan-500/20"><Shield className="w-5 h-5 mr-3" /> Return to Admin</Link>
+                <div className="pt-4 mt-4 border-t border-white/10">
+                  <Link to="/admin" className="flex items-center px-3.5 py-2.5 text-purple-300 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/30">
+                    <Shield className="w-4 h-4 mr-3" /> Return to Fleet Admin
+                  </Link>
                 </div>
               )}
             </>
           )}
         </nav>
-        <div className="p-4 border-t border-cyan-900/30 bg-[#070b14]">
-          <button onClick={() => supabase.auth.signOut()} className="flex items-center px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg w-full transition-colors"><LogOut className="w-5 h-5 mr-3" /> Sign Out</button>
-        </div>
-      </div>
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
-        <header className="h-16 border-b border-cyan-900/30 flex items-center px-3 sm:px-6 md:px-8 bg-black/80 backdrop-blur shrink-0 gap-2">
-          <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-400 hover:text-white p-1.5 -ml-1 rounded-lg hover:bg-gray-800/60" aria-label="Open Navigation Menu">
-            <Menu className="w-6 h-6" />
+
+        {/* User Footer / Logout */}
+        <div className="p-4 border-t border-white/10 bg-slate-950/40">
+          <button 
+            onClick={() => supabase.auth.signOut()}
+            className="flex items-center w-full px-3.5 py-2.5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl text-xs font-mono transition-all group"
+          >
+            <LogOut className="w-4 h-4 mr-3 text-rose-400 group-hover:-translate-x-0.5 transition-transform" /> 
+            Sign Out
           </button>
-          <h1 className="text-base sm:text-xl font-semibold text-cyan-50 font-mono tracking-wide truncate">{title}</h1>
-          <div className="ml-auto flex items-center gap-2 sm:gap-3 shrink-0">
-            <span className="text-xs sm:text-sm font-medium text-cyan-400 hidden sm:block max-w-[150px] truncate">{userName}</span>
-            <div className="w-8 h-8 bg-[#070b14] rounded-full flex items-center justify-center border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.2)]"><User className="w-4 h-4 text-cyan-400" /></div>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
+        {/* Top Navbar */}
+        <header className="h-16 glass-panel border-b border-white/10 flex items-center justify-between px-4 sm:px-6 relative z-10">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setSidebarOpen(true)} className="md:hidden text-slate-400 hover:text-white">
+              <Menu className="w-6 h-6" />
+            </button>
+            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate flex items-center gap-2">
+              <span>{title}</span>
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-white/10 text-xs font-mono">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-slate-300">SEB 3.10.2 Armed</span>
+            </div>
+
+            <div className="flex items-center gap-2.5 pl-2 border-l border-white/10">
+              <span className="text-xs font-medium text-slate-300 hidden sm:block max-w-[140px] truncate">
+                {userName}
+              </span>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-purple-600 p-[1.5px] shadow-sm">
+                <div className="w-full h-full bg-[#050814] rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-cyan-300" />
+                </div>
+              </div>
+            </div>
           </div>
         </header>
-        <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto w-full max-w-full">
+
+        {/* Scrollable Page Body */}
+        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto w-full max-w-full">
           {children}
         </main>
       </div>
@@ -381,127 +531,159 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
   );
 };
 
-
-
 const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
   const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
   const licenseDetails = (window as any).activeLicenseDetails;
 
   return (
-    <DashboardLayout title="Customer Workstation" isAdmin={false} isActualAdmin={isActualAdmin}>
-      <div className="space-y-6">
-        {/* Welcome & Station Status Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-cyan-500/30 p-5 sm:p-6 shadow-xl">
-          <div className="absolute top-0 right-0 w-80 h-full bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                  Safe Exam Station
+    <DashboardLayout title="Workstation Command Center" isAdmin={false} isActualAdmin={isActualAdmin}>
+      <div className="space-y-6 max-w-7xl mx-auto">
+        {/* Modern Multi-Color Hero Banner */}
+        <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
+          {/* Glowing Atmospheric Mesh */}
+          <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-bl from-cyan-500/15 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/4 w-64 h-32 bg-emerald-500/10 blur-2xl pointer-events-none" />
+
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  SAFE EXAM WORKSTATION
                 </span>
-                <span className="text-gray-600">•</span>
-                <span className="text-xs text-gray-400 font-mono">SEB v3.10.2 Ready</span>
+                <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                  SEB v3.10.2 VERIFIED
+                </span>
+                <span className="text-xs font-mono text-purple-400 bg-purple-950/40 border border-purple-500/30 px-2.5 py-0.5 rounded-full">
+                  GEMINI 1.5 PRO READY
+                </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Welcome to Your PhantomLead Console
+
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Welcome to Your <span className="text-gradient-rainbow">PhantomLead Console</span>
               </h2>
-              <p className="text-xs sm:text-sm text-gray-400 max-w-2xl">
-                Manage your active exam helper licenses, download secure installation packages, and verify workstation DRM status.
+
+              <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                Seamless AI Java and code injection for Safe Exam Browser. Download hardened client installers, monitor machine bindings, and access live exam helpers.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Link 
                 to="/dashboard/packages" 
-                className="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer whitespace-nowrap"
+                className="px-5 py-3 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-indigo-500/25 transition-all cursor-pointer whitespace-nowrap active:scale-95"
               >
-                Browse Packages
+                Browse All Packages
+              </Link>
+              <Link 
+                to="/dashboard/licenses" 
+                className="px-4 py-3 glass-panel hover:bg-slate-800/80 text-slate-200 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap border border-white/10"
+              >
+                My License Keys
               </Link>
             </div>
           </div>
         </div>
 
-        {/* 3 Executive Metric Tiles */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>LICENSE STATUS</span>
-              <Key className="w-4 h-4 text-cyan-400" />
+        {/* 3 Modern Colorful Executive Metric Tiles */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {/* Tile 1: License Status - Cyber Cyan */}
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-cyan-500/20 hover:border-cyan-400/50 flex flex-col justify-between relative overflow-hidden group">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="tracking-wider uppercase font-semibold text-cyan-300">LICENSE STATUS</span>
+              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-sm">
+                <Key className="w-4 h-4" />
+              </div>
             </div>
-            <div className="my-2">
-              <div className="text-2xl font-black text-white font-mono">
+            <div className="my-3">
+              <div className="text-3xl font-black text-white font-mono tracking-tight">
                 {checkingLicense ? '...' : hasActiveLicense ? `${activeLicenseCount} Active` : '0 Active'}
               </div>
-              <div className="text-xs font-semibold mt-0.5">
+              <div className="text-xs font-semibold mt-1">
                 {checkingLicense ? (
-                  <span className="text-gray-500">Checking status...</span>
+                  <span className="text-slate-500">Checking credentials...</span>
                 ) : hasActiveLicense ? (
-                  <span className="text-cyan-400 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                    Operational &amp; Armed
+                  <span className="text-cyan-300 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                    Armed &amp; Operational
                   </span>
                 ) : (
-                  <span className="text-sky-400 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" /> 100% Fresh Account
+                  <span className="text-sky-300 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-sky-400" /> Fresh Account (Unbound)
                   </span>
                 )}
               </div>
             </div>
-            <Link to="/dashboard/licenses" className="text-xs text-gray-400 hover:text-cyan-400 flex items-center gap-1 font-medium transition-colors">
+            <Link to="/dashboard/licenses" className="text-xs text-slate-400 hover:text-cyan-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
               <span>View license details</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>HARDWARE NODE LOCK</span>
-              <Laptop className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="my-2">
-              <div className="text-2xl font-black text-white font-mono">1 PC Binding</div>
-              <div className="text-xs text-blue-400 mt-0.5">
-                {hasActiveLicense ? 'Hardware Lock Enabled' : 'Machine Slot Free'}
+          {/* Tile 2: Hardware Node Lock - Mint Emerald */}
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between relative overflow-hidden group">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="tracking-wider uppercase font-semibold text-emerald-300">HARDWARE NODE LOCK</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
+                <Laptop className="w-4 h-4" />
               </div>
             </div>
-            <span className="text-xs text-gray-500">Protected against device spoofing</span>
+            <div className="my-3">
+              <div className="text-3xl font-black text-white font-mono tracking-tight">
+                1 PC Binding
+              </div>
+              <div className="text-xs font-semibold text-emerald-300 mt-1 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                {hasActiveLicense ? 'Hardware Lock Active' : 'Slot Available for Binding'}
+              </div>
+            </div>
+            <span className="text-xs text-slate-400 pt-2 border-t border-white/5">
+              Cryptographically bound to single CPU &amp; Motherboard UUID
+            </span>
           </div>
 
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>EXAM ENVIRONMENT</span>
-              <ShieldCheck className="w-4 h-4 text-purple-400" />
+          {/* Tile 3: Exam Environment - Electric Purple */}
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-purple-500/20 hover:border-purple-400/50 flex flex-col justify-between relative overflow-hidden group">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="tracking-wider uppercase font-semibold text-purple-300">EXAM ENVIRONMENT</span>
+              <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-sm">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
             </div>
-            <div className="my-2">
-              <div className="text-2xl font-black text-white font-mono">SEB 3.10.2</div>
-              <div className="text-xs text-purple-400 mt-0.5">Kiosk Mode In-Session Pasting</div>
+            <div className="my-3">
+              <div className="text-3xl font-black text-white font-mono tracking-tight">
+                SEB 3.10.2
+              </div>
+              <div className="text-xs font-semibold text-purple-300 mt-1 flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-purple-400" />
+                Native Kiosk Clipboard Injection
+              </div>
             </div>
-            <Link to="/dashboard/install" className="text-xs text-gray-400 hover:text-purple-400 flex items-center gap-1 font-medium transition-colors">
-              <span>Read user manual</span>
+            <Link to="/dashboard/install" className="text-xs text-slate-400 hover:text-purple-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
+              <span>Read installation guide</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
 
-        {/* Workstation Command Hub */}
-        <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-6 sm:p-7 shadow-xl">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-gray-800/80">
+        {/* Workstation Operations & Client Installer Deck */}
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-5 border-b border-white/10">
             <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-cyan-400" /> Workstation Operations &amp; Installer
+              <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
+                <Shield className="w-5 h-5 text-cyan-400" /> Workstation Operations &amp; Client Installer
               </h3>
-              <p className="text-xs sm:text-sm text-gray-400 mt-0.5">
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
                 {checkingLicense 
                   ? 'Verifying cryptographic security token...' 
                   : hasActiveLicense 
-                  ? 'Your active license package is configured and ready for download.' 
+                  ? 'Your active license package is configured and ready for execution.' 
                   : 'Your account is completely clean. Choose a package to activate Safe Exam Browser extensions.'}
               </p>
             </div>
             <Link 
               to="/dashboard/licenses" 
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-gray-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 glass-panel hover:bg-slate-800/80 border border-white/15 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
             >
               <Key className="w-3.5 h-3.5 text-cyan-400" />
               <span>Open License Deck</span>
@@ -532,22 +714,22 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             }
 
             return (
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3">
+              <div className="space-y-5">
+                <div className="flex flex-wrap items-center gap-4">
                   <a 
                     href={`https://wgxxitydatuoyjnxuvqw.supabase.co/storage/v1/object/public/installers/${installerName}?v=${new Date().getTime()}`} 
                     download={installerName} 
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-cyan-500/25 transition-all cursor-pointer active:scale-95"
                   >
                     <Download className="w-4 h-4" /> Download {installerName}
-                    <span className="text-xs font-normal text-cyan-100 bg-cyan-700/60 px-2 py-0.5 rounded ml-1">
+                    <span className="text-xs font-medium text-white bg-black/30 px-2 py-0.5 rounded-lg ml-1 border border-white/20">
                       {editionLabel}
                     </span>
                   </a>
 
                   <Link 
                     to="/dashboard/install" 
-                    className="inline-flex items-center gap-2 px-4 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-gray-200 hover:text-white rounded-xl text-sm font-medium border border-zinc-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-3.5 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-sm font-medium border border-white/10 transition-colors"
                   >
                     <BookOpen className="w-4 h-4 text-cyan-400" />
                     <span>Setup Manual &amp; Shortcuts</span>
@@ -555,11 +737,11 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                 </div>
 
                 {(installerName === 'SecureInstaller_T.exe' || installerName === 'SecureInstaller_A.exe') && (
-                  <div className="p-4 border border-red-900/50 bg-red-950/20 rounded-xl max-w-2xl text-xs text-gray-300 space-y-1">
-                    <h4 className="text-red-400 font-bold flex items-center gap-1.5">
-                      <AlertTriangle className="w-4 h-4 text-red-400" /> DRM Security Sentinel Active
+                  <div className="p-4 border border-rose-500/30 bg-rose-950/20 rounded-2xl max-w-2xl text-xs text-slate-300 space-y-1.5">
+                    <h4 className="text-rose-400 font-bold flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-rose-400" /> DRM Security Sentinel Active
                     </h4>
-                    <p className="text-gray-400 leading-relaxed">
+                    <p className="text-slate-400 leading-relaxed">
                       {installerName === 'SecureInstaller_T.exe' 
                         ? 'This software contains an automated Time-Bomb. Upon your license expiry date, or if revoked by an admin, the system automatically wipes all proprietary configuration files and resets your account to Fresh.'
                         : 'This software is actively monitored. If your access is revoked by an administrator, the remote kill-switch automatically wipes all configuration files from your host machine.'}
@@ -569,35 +751,40 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
               </div>
             );
           })() : (
-            <div className="py-8 text-center space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 mx-auto shadow-[0_0_20px_rgba(14,165,233,0.2)]">
-                <Sparkles className="w-7 h-7" />
+            <div className="py-10 text-center space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-transparent border border-white/15 flex items-center justify-center text-cyan-300 mx-auto shadow-lg shadow-cyan-500/10">
+                <Sparkles className="w-8 h-8" />
               </div>
-              <div className="space-y-1">
-                <h4 className="text-lg font-bold text-white">Your Account is Fresh &amp; Ready</h4>
-                <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto">
+              <div className="space-y-1.5">
+                <h4 className="text-xl font-bold text-white">Your Account is Fresh &amp; Ready</h4>
+                <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
                   No licenses are currently active. Browse our available packages to activate Safe Exam Browser extensions immediately.
                 </p>
               </div>
-              <Link 
-                to="/dashboard/packages" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all"
-              >
-                <span>Browse Available Packages</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="pt-2">
+                <Link 
+                  to="/dashboard/packages" 
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl font-bold text-xs font-mono uppercase tracking-wider shadow-lg shadow-indigo-500/25 transition-all cursor-pointer active:scale-95"
+                >
+                  <span>Select a Package Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           )}
         </div>
-
-        <HowItWorksCard />
       </div>
     </DashboardLayout>
   );
 };
 
 const AdminDashboard = () => {
-  const [stats, setStats] = useState({ customers: 0, pending: 0, activeLicenses: 0, revenue: 0 });
+  const [stats, setStats] = useState({
+    customers: 0,
+    pending: 0,
+    activeLicenses: 0,
+    revenue: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -633,38 +820,38 @@ const AdminDashboard = () => {
 
   return (
     <DashboardLayout title="Administrator Fleet Command" isAdmin={true}>
-      <div className="space-y-6 pb-12">
+      <div className="space-y-6 max-w-7xl mx-auto pb-12">
         {/* Executive Banner */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-[#0a0f0c] to-zinc-950 border border-cyan-500/30 p-6 shadow-xl">
-          <div className="absolute top-0 right-0 w-96 h-full bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
-            <div className="space-y-1">
+        <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
+          <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-bl from-purple-500/15 via-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative z-10">
+            <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-widest uppercase bg-purple-500/15 text-purple-300 border border-purple-500/30 flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
                   Fleet Command Engine
                 </span>
-                <span className="text-gray-600">•</span>
-                <span className="text-xs text-gray-400 font-mono">Platform v2.0</span>
+                <span className="text-slate-500">•</span>
+                <span className="text-xs text-slate-400 font-mono">Platform v2.0 Armed</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Welcome back, Fleet Administrator!
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Welcome back, <span className="text-gradient-rainbow">Fleet Administrator</span>!
               </h2>
-              <p className="text-xs sm:text-sm text-gray-400 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
                 Global overview of student licenses, incoming UPI transactions, node locks, and infrastructure health.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               <Link 
                 to="/admin/licenses" 
-                className="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all whitespace-nowrap cursor-pointer"
+                className="px-5 py-3 bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-indigo-500/25 transition-all whitespace-nowrap cursor-pointer active:scale-95"
               >
-                + Issue License
+                + Issue License Key
               </Link>
               <Link 
                 to="/admin/settings" 
-                className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-gray-300 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+                className="px-4 py-3 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap border border-white/10"
               >
                 Settings
               </Link>
@@ -672,189 +859,204 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* 4 Executive KPI Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>REGISTERED CUSTOMERS</span>
-              <Users className="w-4 h-4 text-blue-400" />
+        {/* 4 Executive KPI Metric Cards in 4 Distinct Vibrant Colors */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Card 1: Registered Customers - Royal Blue / Indigo */}
+          <div className="glass-panel-interactive rounded-2xl p-5 border border-blue-500/20 hover:border-blue-400/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="text-blue-300 font-bold uppercase tracking-wider">REGISTERED CUSTOMERS</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <Users className="w-4 h-4" />
+              </div>
             </div>
-            <div className="my-2">
+            <div className="my-3">
               <div className="text-3xl font-black text-white font-mono">{loading ? '...' : stats.customers}</div>
-              <div className="text-xs text-blue-400 mt-0.5">Verified Accounts</div>
+              <div className="text-xs text-blue-300 mt-1">Verified Accounts</div>
             </div>
-            <Link to="/admin/customers" className="text-xs text-gray-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
+            <Link to="/admin/customers" className="text-xs text-slate-400 hover:text-blue-300 flex items-center gap-1.5 transition-colors pt-2 border-t border-white/5">
               <span>Manage customer directory</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-yellow-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>PENDING PAYMENTS</span>
-              <CreditCard className="w-4 h-4 text-yellow-400" />
-            </div>
-            <div className="my-2">
-              <div className="text-3xl font-black text-yellow-400 font-mono">{loading ? '...' : stats.pending}</div>
-              <div className="text-xs text-yellow-300/80 mt-0.5">
-                {stats.pending > 0 ? 'Requires manual review' : 'All transactions reviewed'}
+          {/* Card 2: Pending Payments - Sunset Amber */}
+          <div className="glass-panel-interactive rounded-2xl p-5 border border-amber-500/20 hover:border-amber-400/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="text-amber-300 font-bold uppercase tracking-wider">PENDING PAYMENTS</span>
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <CreditCard className="w-4 h-4" />
               </div>
             </div>
-            <Link to="/admin/payments" className="text-xs text-gray-500 hover:text-yellow-400 flex items-center gap-1 transition-colors">
+            <div className="my-3">
+              <div className="text-3xl font-black text-amber-400 font-mono">{loading ? '...' : stats.pending}</div>
+              <div className="text-xs text-amber-300/80 mt-1">
+                {stats.pending > 0 ? 'Requires manual clearance' : 'All transactions reviewed'}
+              </div>
+            </div>
+            <Link to="/admin/payments" className="text-xs text-slate-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors pt-2 border-t border-white/5">
               <span>Review transaction queue</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-cyan-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>ACTIVE LICENSES</span>
-              <Key className="w-4 h-4 text-cyan-400" />
-            </div>
-            <div className="my-2">
-              <div className="text-3xl font-black text-cyan-400 font-mono">{loading ? '...' : stats.activeLicenses}</div>
-              <div className="text-xs text-cyan-300/80 mt-0.5">Live running deployments</div>
-            </div>
-            <Link to="/admin/licenses" className="text-xs text-gray-500 hover:text-cyan-400 flex items-center gap-1 transition-colors">
-              <span>View global fleet</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-
-          <div className="bg-[#070b14] border border-gray-800/80 rounded-2xl p-5 flex flex-col justify-between hover:border-sky-500/30 transition-all">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-mono">
-              <span>PLATFORM REVENUE</span>
-              <Zap className="w-4 h-4 text-sky-400" />
-            </div>
-            <div className="my-2">
-              <div className="text-3xl font-black text-white font-mono">
-                {loading ? '...' : `₹${stats.revenue.toLocaleString()}`}
+          {/* Card 3: Active Licenses - Cyber Emerald */}
+          <div className="glass-panel-interactive rounded-2xl p-5 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="text-emerald-300 font-bold uppercase tracking-wider">ACTIVE LICENSES</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <Key className="w-4 h-4" />
               </div>
-              <div className="text-xs text-sky-400 mt-0.5">Approved UPI collections</div>
             </div>
-            <span className="text-xs text-gray-500">Direct verified payments</span>
+            <div className="my-3">
+              <div className="text-3xl font-black text-emerald-400 font-mono">{loading ? '...' : stats.activeLicenses}</div>
+              <div className="text-xs text-emerald-300/80 mt-1">Live running deployments</div>
+            </div>
+            <Link to="/admin/licenses" className="text-xs text-slate-400 hover:text-emerald-300 flex items-center gap-1.5 transition-colors pt-2 border-t border-white/5">
+              <span>View global fleet</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Card 4: Platform Revenue - Electric Violet */}
+          <div className="glass-panel-interactive rounded-2xl p-5 border border-purple-500/20 hover:border-purple-400/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span className="text-purple-300 font-bold uppercase tracking-wider">PLATFORM REVENUE</span>
+              <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                <Zap className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="my-3">
+              <div className="text-3xl font-black text-white font-mono">
+                {loading ? '...' : `₹${stats.revenue.toLocaleString('en-IN')}`}
+              </div>
+              <div className="text-xs text-purple-300 mt-1">Cleared UPI Settlements</div>
+            </div>
+            <Link to="/admin/payments" className="text-xs text-slate-400 hover:text-purple-300 flex items-center gap-1.5 transition-colors pt-2 border-t border-white/5">
+              <span>View settlement history</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 
-        {/* 2 Executive Command Decks */}
+        {/* Action Decks & Infrastructure Radar */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Deck 1: Quick Operations Hub */}
-          <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-6 shadow-xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-800">
+          {/* Deck 1: Core Operations */}
+          <div className="glass-panel rounded-3xl p-6 sm:p-7 shadow-2xl border border-white/10 space-y-4">
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <LayoutDashboard className="w-4 h-4 text-cyan-400" /> Operational Hub
+                <Activity className="w-4 h-4 text-cyan-400" /> Operational Hub
               </h3>
-              <span className="text-xs text-gray-500 font-mono">Core Actions</span>
+              <span className="text-xs text-slate-400 font-mono">Core Actions</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link 
                 to="/admin/payments" 
-                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-yellow-500/50 hover:bg-zinc-900/60 transition-all group"
+                className="p-4 glass-panel rounded-2xl border border-amber-500/20 hover:border-amber-400/60 transition-all group"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <CreditCard className="w-5 h-5 text-yellow-400 group-hover:scale-110 transition-transform" />
+                  <CreditCard className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
                   {stats.pending > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 animate-pulse">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
                       {stats.pending} Pending
                     </span>
                   )}
                 </div>
                 <div className="font-bold text-white text-sm mb-0.5">Review Payments</div>
-                <div className="text-[11px] text-gray-400">Approve or reject incoming UPI slips</div>
+                <div className="text-[11px] text-slate-400">Approve or reject incoming UPI slips</div>
               </Link>
 
               <Link 
                 to="/admin/licenses" 
-                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-cyan-500/50 hover:bg-zinc-900/60 transition-all group"
+                className="p-4 glass-panel rounded-2xl border border-emerald-500/20 hover:border-emerald-400/60 transition-all group"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <Key className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform" />
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                  <Key className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                     Live
                   </span>
                 </div>
                 <div className="font-bold text-white text-sm mb-0.5">Fleet Licenses</div>
-                <div className="text-[11px] text-gray-400">Issue keys &amp; execute remote host wipes</div>
+                <div className="text-[11px] text-slate-400">Issue keys &amp; execute remote host wipes</div>
               </Link>
 
               <Link 
                 to="/admin/packages" 
-                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-purple-500/50 hover:bg-zinc-900/60 transition-all group"
+                className="p-4 glass-panel rounded-2xl border border-purple-500/20 hover:border-purple-400/60 transition-all group"
               >
                 <div className="flex items-center justify-between mb-2">
                   <Package className="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="font-bold text-white text-sm mb-0.5">Software Bundles</div>
-                <div className="text-[11px] text-gray-400">Configure pricing &amp; exam extensions</div>
+                <div className="text-[11px] text-slate-400">Configure pricing &amp; exam extensions</div>
               </Link>
 
               <Link 
                 to="/admin/customers" 
-                className="p-4 bg-black/60 border border-gray-800 rounded-xl hover:border-blue-500/50 hover:bg-zinc-900/60 transition-all group"
+                className="p-4 glass-panel rounded-2xl border border-blue-500/20 hover:border-blue-400/60 transition-all group"
               >
                 <div className="flex items-center justify-between mb-2">
                   <Users className="w-5 h-5 text-blue-400 group-hover:scale-110 transition-transform" />
                 </div>
                 <div className="font-bold text-white text-sm mb-0.5">User Directory</div>
-                <div className="text-[11px] text-gray-400">Inspect device fingerprints &amp; customer profiles</div>
+                <div className="text-[11px] text-slate-400">Inspect device fingerprints &amp; customer profiles</div>
               </Link>
             </div>
           </div>
 
           {/* Deck 2: Infrastructure & Sentinel Radar */}
-          <div className="bg-[#070b14] border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+          <div className="glass-panel rounded-3xl p-6 sm:p-7 shadow-2xl border border-white/10 flex flex-col justify-between space-y-4">
             <div>
-              <div className="flex items-center justify-between pb-3 border-b border-gray-800">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-sky-400" /> Platform Infrastructure Radar
+                  <ShieldCheck className="w-4 h-4 text-cyan-400" /> Platform Infrastructure Radar
                 </h3>
-                <span className="text-[10px] font-mono text-sky-400 bg-sky-950/60 px-2 py-0.5 rounded border border-sky-800/40">
+                <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/60 px-2.5 py-0.5 rounded-full border border-cyan-800/40">
                   HEALTH OK
                 </span>
               </div>
 
-              <div className="divide-y divide-gray-800/60 text-xs">
+              <div className="divide-y divide-white/5 text-xs">
                 <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-gray-400">Database Engine (PostgreSQL)</span>
-                  <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded font-mono font-semibold">
+                  <span className="text-slate-400">Database Engine (PostgreSQL)</span>
+                  <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 rounded-lg font-mono font-semibold">
                     Operational (Sub-50ms)
                   </span>
                 </div>
 
                 <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-gray-400">Serverless Edge Functions</span>
-                  <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded font-mono font-semibold">
+                  <span className="text-slate-400">Serverless Edge Functions</span>
+                  <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-lg font-mono font-semibold">
                     5 Deployed &amp; Active
                   </span>
                 </div>
 
                 <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-gray-400">Auto-Wipe &amp; Sentinel Protocol</span>
-                  <span className="px-2 py-0.5 bg-sky-500/10 text-sky-400 border border-sky-500/30 rounded font-mono font-semibold">
+                  <span className="text-slate-400">Auto-Wipe &amp; Sentinel Protocol</span>
+                  <span className="px-2 py-0.5 bg-purple-500/10 text-purple-300 border border-purple-500/30 rounded-lg font-mono font-semibold">
                     Armed (Zero-Day Wipe)
                   </span>
                 </div>
 
                 <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-gray-400">License Cryptographic Vault</span>
-                  <span className="px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded font-mono font-semibold">
+                  <span className="text-slate-400">License Cryptographic Vault</span>
+                  <span className="px-2 py-0.5 bg-blue-500/10 text-blue-300 border border-blue-500/30 rounded-lg font-mono font-semibold">
                     SHA-256 / AES-GCM
                   </span>
                 </div>
 
                 <div className="py-2.5 flex items-center justify-between">
-                  <span className="text-gray-400">Payment Reconciliation (UPI)</span>
-                  <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded font-mono font-semibold">
-                    Instant Screenshot Proof
+                  <span className="text-slate-400">Payment Reconciliation (UPI)</span>
+                  <span className="px-2 py-0.5 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-lg font-mono font-semibold">
+                    Instant UTR Verification
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-[11px] text-gray-500 font-mono">
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-500 font-mono">
               <span>PhantomLead DRM Engine v2.0</span>
-              <span>All Systems Nominal</span>
+              <span className="text-emerald-400">All Systems Nominal</span>
             </div>
           </div>
         </div>
@@ -862,6 +1064,7 @@ const AdminDashboard = () => {
     </DashboardLayout>
   );
 };
+
 function App() {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -931,7 +1134,11 @@ function App() {
     setLoading(false);
   };
 
-  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full"></div></div>;
+  if (loading) return (
+    <div className="min-h-screen bg-[#050814] flex items-center justify-center">
+      <div className="animate-spin w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full shadow-[0_0_20px_rgba(6,182,212,0.4)]" />
+    </div>
+  );
 
   return (
     <Router>
@@ -952,7 +1159,7 @@ function App() {
 
       {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
 
-      <div className="min-h-screen bg-[#030805] text-gray-100 font-sans relative overflow-hidden">
+      <div className="min-h-screen bg-[#050814] text-slate-100 font-sans relative overflow-hidden">
         <AnimatedGlow />
         <MatrixBackground />
 
