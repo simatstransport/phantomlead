@@ -27,6 +27,7 @@ from license_client import validate_license, activate_license, get_package_manif
 from downloader import download_package
 from integrity import verify_sha256
 from installer_engine import run_installation
+from gemini_config import validate_gemini_api_key
 
 def is_admin():
     try:
@@ -1108,26 +1109,42 @@ class InstallerApp(tk.Tk):
 
     def run_install_process(self, license_key, api_key):
         try:
-            print(">>> Step 1/6: Closing running Safe Exam Browser processes...")
+            print(">>> Step 1/7: Validating Gemini API Key with Google...")
+            is_valid_api, api_reason, clean_api_key = validate_gemini_api_key(api_key)
+            if not is_valid_api:
+                print("\n" + "=" * 55)
+                print("[!] GEMINI API KEY VALIDATION FAILED:")
+                print(api_reason)
+                print("=" * 55 + "\n")
+                messagebox.showerror(
+                    "Gemini API Key Rejected",
+                    f"Google Gemini API Key is not valid:\n\n{api_reason}\n\nPlease enter a valid, active Gemini key and try again."
+                )
+                return
+
+            print("    [OK] Gemini API Key verified active with Google.")
+            api_key = clean_api_key
+
+            print(">>> Step 2/7: Closing running Safe Exam Browser processes...")
             kill_seb_processes()
 
-            print(">>> Step 2/6: Generating hardware fingerprint...")
+            print(">>> Step 3/7: Generating hardware fingerprint...")
             fingerprint = get_device_fingerprint()
 
-            print(">>> Step 3/6: Validating license key with server...")
+            print(">>> Step 4/7: Validating license key with server...")
             validation_res = validate_license(license_key, fingerprint)
             if not validation_res.get("valid"):
                 err_detail = validation_res.get("error", "License validation failed.")
                 raise Exception(f"License Rejected: {err_detail}")
 
-            print(">>> Step 4/6: Activating device...")
+            print(">>> Step 5/7: Activating device...")
             device_info = get_device_info()
             activate_res = activate_license(license_key, fingerprint, device_info)
             if not activate_res.get("activated"):
                 err_detail = activate_res.get("error", "Device activation failed.")
                 raise Exception(f"Device Activation Failed: {err_detail}")
 
-            print(">>> Step 5/6: Fetching package manifest...")
+            print(">>> Step 6/7: Fetching package manifest...")
             manifest = get_package_manifest(license_key)
             pkg_code = manifest.get('package_code', 'Standard')
             print(f"    Authorized Package: {pkg_code}")
@@ -1146,7 +1163,7 @@ class InstallerApp(tk.Tk):
                 if not verify_sha256(temp_zip, manifest["sha256"]):
                     raise Exception("Integrity verification failed! SHA-256 mismatch. The download may be corrupted.")
 
-            print(">>> Step 6/6: Extracting & Deploying Safe Exam Browser files...")
+            print(">>> Step 7/7: Extracting & Deploying Safe Exam Browser files...")
             run_installation(temp_zip, manifest, api_key)
 
             # Grant full delete & modify permissions to Users on APPLICATION_ROOT so background monitor can wipe it cleanly
