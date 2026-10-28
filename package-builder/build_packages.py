@@ -4,13 +4,14 @@ import zipfile
 import json
 import hashlib
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE_BASE = r"C:\Users\Admin\Desktop\See"
-OUTPUT_DIR = "dist_packages"
+OUTPUT_DIR = os.path.join(BASE_DIR, "dist_packages")
 
 PACKAGES = {
     "FULL_ACCESS": {
-        "extensions": ["lms_mcq", "viva_paragraph", "java_coding", "python_coding", "c_coding"],
-        "version": "2.0.0"
+        "extensions": ["lms_mcq", "reasoning_mcq", "viva_paragraph", "java_coding", "python_coding", "c_coding"],
+        "version": "2.1.0"
     },
     "PYTHON_C": {
         "extensions": ["python_coding", "c_coding"],
@@ -21,8 +22,8 @@ PACKAGES = {
         "version": "2.0.0"
     },
     "QA_PLACEMENT": {
-        "extensions": ["lms_mcq"],
-        "version": "2.0.0"
+        "extensions": ["lms_mcq", "reasoning_mcq"],
+        "version": "2.1.0"
     }
 }
 
@@ -32,7 +33,7 @@ EXTENSIONS_DIR = os.path.join(APP_FOLDER, "Extensions")
 
 def build_package(package_code, config):
     print(f"Building {package_code}...")
-    staging_dir = os.path.join("staging", package_code)
+    staging_dir = os.path.join(BASE_DIR, "staging", package_code)
     
     if os.path.exists(staging_dir):
         shutil.rmtree(staging_dir)
@@ -118,7 +119,7 @@ def main():
         res = build_package(package_code, config)
         results.append(res)
     
-    with open("package_info.json", "w") as f:
+    with open(os.path.join(BASE_DIR, "package_info.json"), "w") as f:
         json.dump(results, f, indent=2)
     print("Done. See package_info.json for hashes.")
 

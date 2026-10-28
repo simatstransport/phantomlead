@@ -34,10 +34,10 @@ serve(async (req) => {
     }
 
     const packageUrls: Record<string, string> = {
-      'FULL_ACCESS': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/FULL_ACCESS_version-2.0.0.zip',
+      'FULL_ACCESS': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/FULL_ACCESS_version-2.1.0.zip',
       'PYTHON_C': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/PYTHON_C_version-2.0.0.zip',
       'JAVA_VIVA': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/JAVA_VIVA_version-2.0.0.zip',
-      'QA_PLACEMENT': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/QA_PLACEMENT_version-2.0.0.zip'
+      'QA_PLACEMENT': 'https://github.com/simatstransport/phantomlead/releases/download/phantomm/QA_PLACEMENT_version-2.1.0.zip'
     }
 
     const downloadUrl = packageUrls[licenseData.packages.package_code]

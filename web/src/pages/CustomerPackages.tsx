@@ -24,9 +24,9 @@ import {
 
 const packageGuides: Record<string, { purpose: string; badge: string; includes: string[]; theme: 'violet' | 'emerald' | 'amber' | 'sky' }> = {
   FULL_ACCESS: {
-    purpose: 'Complete all-in-one suite with all 5 specialized assistants for LMS, Viva, Java, Python, and C.',
+    purpose: 'Complete all-in-one suite with all 6 specialized assistants for LMS MCQs, Visual Reasoning, Viva, Java, Python, and C.',
     badge: 'COMMAND SUITE • MOST POPULAR',
-    includes: ['LMS MCQ Helper', 'Viva Paragraph Explainer', 'Java Coding Helper', 'Python 3 Coding Helper', 'C Coding Helper'],
+    includes: ['LMS MCQ Helper', 'LMS Reasoning MCQ Helper', 'Viva Paragraph Explainer', 'Java Coding Helper', 'Python 3 Coding Helper', 'C Coding Helper'],
     theme: 'violet'
   },
   PYTHON_C: {
@@ -44,7 +44,7 @@ const packageGuides: Record<string, { purpose: string; badge: string; includes: 
   QA_PLACEMENT: {
     purpose: 'For LMS-based multiple-choice practice and QA or campus placement assessment rounds.',
     badge: 'MCQ & APTITUDE ROUNDS',
-    includes: ['LMS MCQ Helper'],
+    includes: ['LMS MCQ Helper', 'LMS Reasoning MCQ Helper'],
     theme: 'sky'
   }
 };

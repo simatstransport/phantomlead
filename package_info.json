@@ -1,22 +1,22 @@
 [
   {
     "package_code": "FULL_ACCESS",
-    "zip_path": "dist_packages\\FULL_ACCESS_version-2.0.0.zip",
-    "sha256": "90b3abe8e83e88cf345f76e2a35e23ea19091a76fe9026ce0a7949bbdd9f0be1"
+    "zip_path": "c:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\FULL_ACCESS_version-2.1.0.zip",
+    "sha256": "d77eada9b43eb16faba866b0f8cc9c591063736fea457ca45973a493ef33aad1"
   },
   {
     "package_code": "PYTHON_C",
-    "zip_path": "dist_packages\\PYTHON_C_version-2.0.0.zip",
-    "sha256": "246e57c5ec655c86db0aee2d08186a71dc3b7a5ab9cb9f1de14c1ff671c136ad"
+    "zip_path": "c:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\PYTHON_C_version-2.0.0.zip",
+    "sha256": "f0bcc6048ab6e9ba50b21590b69e29ddc358e284a89facbfe9caf4037660dd4f"
   },
   {
     "package_code": "JAVA_VIVA",
-    "zip_path": "dist_packages\\JAVA_VIVA_version-2.0.0.zip",
-    "sha256": "ca49a39de496b52c70c9ee24948f9b39cf2e62e9a0b37e66e4143a8bd440c0e3"
+    "zip_path": "c:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\JAVA_VIVA_version-2.0.0.zip",
+    "sha256": "b6d66d427c9b5071c7c3a80eda443519e67be93577756cd1f5baa2675156c13b"
   },
   {
     "package_code": "QA_PLACEMENT",
-    "zip_path": "dist_packages\\QA_PLACEMENT_version-2.0.0.zip",
-    "sha256": "2e5a1265c34817a6c86444c3113c53cbbcda7fa724be9d4e62f00b8983f321a2"
+    "zip_path": "c:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\QA_PLACEMENT_version-2.1.0.zip",
+    "sha256": "88243e6f25158f58fc931e7c764eefe3351a768ca703fd1c4babd32a3465057c"
   }
 ]

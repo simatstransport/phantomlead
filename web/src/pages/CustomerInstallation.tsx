@@ -643,6 +643,29 @@ export const CustomerInstallation = () => {
               </p>
             </div>
 
+            {/* Reasoning MCQ */}
+            <div className="p-4 rounded-2xl bg-black/60 border border-cyan-500/30 hover:border-cyan-400/60 transition-all space-y-3 group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-base">
+                    🧩
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      LMS Reasoning MCQ Helper
+                    </h4>
+                    <span className="text-[10px] font-mono text-slate-400">module: reasoning_mcq</span>
+                  </div>
+                </div>
+                <kbd className="px-3 py-1 rounded-xl bg-cyan-950/80 border border-cyan-500/60 text-cyan-300 font-mono text-xs font-bold shadow-[0_0_15px_rgba(6,182,212,0.35)]">
+                  Ctrl + I
+                </kbd>
+              </div>
+              <p className="text-xs text-slate-400">
+                Logical, analytical, and visual reasoning questions with diagram extraction and radio option solver.
+              </p>
+            </div>
+
             {/* Viva Paragraph */}
             <div className="p-4 rounded-2xl bg-black/60 border border-pink-500/30 hover:border-pink-400/60 transition-all space-y-3 group md:col-span-2">
               <div className="flex items-center justify-between">
