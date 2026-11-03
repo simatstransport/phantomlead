@@ -392,7 +392,8 @@ export const CustomerPackages = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Balanced 2x2 Grid Layout for 4 Packages */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
               const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
