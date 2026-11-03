@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
 import { 
   CreditCard, 
-  CheckCircle, 
-  Clock, 
+  CheckCircle,
+  Clock,
   Sparkles, 
   Check, 
   AlertCircle, 
@@ -250,49 +250,6 @@ export const CustomerPackages = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handlePhonePeGateway = async () => {
-    setSubmittingPayment(true);
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-
-      if (!token) {
-        alert("Please login again to continue.");
-        setSubmittingPayment(false);
-        return;
-      }
-
-      const res = await fetch('https://wgxxitydatuoyjnxuvqw.supabase.co/functions/v1/create-phonepe-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          package_id: selectedPackage.id,
-          amount: selectedPrice,
-          duration_months: selectedDuration,
-          redirect_url: window.location.origin + '/dashboard/licenses'
-        })
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to initiate PhonePe payment session.');
-      }
-
-      if (data.checkout_url) {
-        // Redirect to PhonePe Instant Auto-Approve Gateway
-        window.location.href = data.checkout_url;
-      } else {
-        throw new Error('PhonePe checkout link missing in response.');
-      }
-    } catch (err: any) {
-      alert("PhonePe Gateway Notice: " + err.message + "\n\nYou can also use the manual UTR submission below for immediate clearance.");
-      setSubmittingPayment(false);
-    }
-  };
-
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.upiId.trim()) {
@@ -323,7 +280,7 @@ export const CustomerPackages = () => {
     if (error) {
       alert("Error submitting payment: " + error.message);
     } else {
-      alert("Payment submitted successfully! Your order has been placed. Once verified, your license key will appear instantly on your My Licenses tab.");
+      alert("Payment details submitted successfully! Your UTR reference has been recorded. Admin will manually verify the payment and approve your license shortly.");
       setStep(1);
       setSelectedPackage(null);
       setFormData(prev => ({ ...prev, upiId: '' }));
@@ -774,32 +731,6 @@ export const CustomerPackages = () => {
               <span className="text-xs font-mono text-slate-400 mt-0.5 block">
                 {selectedPackage?.package_name} ({selectedLabel})
               </span>
-            </div>
-
-            {/* Instant PhonePe Auto-Approval Button */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-950/60 to-indigo-950/60 border border-purple-500/40 space-y-3 text-center">
-              <div className="flex items-center justify-center gap-2 text-xs font-mono font-bold text-purple-300 uppercase tracking-wider">
-                <Zap className="w-4 h-4 text-purple-400 animate-pulse" /> Recommended: Instant Auto-Confirmation
-              </div>
-              <button
-                type="button"
-                onClick={handlePhonePeGateway}
-                disabled={submittingPayment}
-                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm tracking-wide uppercase font-mono shadow-xl shadow-purple-500/30 transition-all flex items-center justify-center gap-2.5 cursor-pointer active:scale-95 disabled:opacity-50"
-              >
-                <Zap className="w-4 h-4 text-white" />
-                <span>{submittingPayment ? 'Redirecting to PhonePe...' : 'Pay via PhonePe PG (Auto-Approve)'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <p className="text-[11px] text-slate-400">
-                ⚡ Instant Key Issuance in 2 seconds via PhonePe / GPay / Paytm webhook.
-              </p>
-            </div>
-
-            <div className="relative flex py-1 items-center">
-              <div className="flex-grow border-t border-white/10"></div>
-              <span className="flex-shrink mx-4 text-[10px] font-mono uppercase text-slate-500 font-bold">OR Direct VPA Transfer</span>
-              <div className="flex-grow border-t border-white/10"></div>
             </div>
 
             <div className="p-4 rounded-2xl glass-panel border border-cyan-500/30 space-y-2">
