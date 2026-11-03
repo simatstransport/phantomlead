@@ -120,6 +120,8 @@ const getTimeRemaining = (expiresAt: string | null | undefined, now: number) => 
 
 export const CustomerLicenses = () => {
   const [activeLicense, setActiveLicense] = useState<CustomerLicense | null>(null);
+  const [revokedLicense, setRevokedLicense] = useState<any | null>(null);
+  const [clearingRevocation, setClearingRevocation] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -128,6 +130,20 @@ export const CustomerLicenses = () => {
   const [currentTime, setCurrentTime] = useState<number>(Date.now());
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
   const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
+
+  const handleAcknowledgeRevocation = async (licenseId: string) => {
+    setClearingRevocation(true);
+    try {
+      await supabase.from('installation_logs').delete().eq('license_id', licenseId);
+      await supabase.from('licenses').delete().eq('id', licenseId);
+      setRevokedLicense(null);
+      fetchLicenses();
+    } catch (e) {
+      console.error('Error clearing revoked license:', e);
+    } finally {
+      setClearingRevocation(false);
+    }
+  };
 
   const handleDownload = async (installerName: string) => {
     setDownloadingFile(installerName);
@@ -224,11 +240,15 @@ export const CustomerLicenses = () => {
       const validLicenses: CustomerLicense[] = [];
       const expiredLicenses: any[] = [];
 
+      let foundRevoked: any = null;
+
       for (const lic of (data || [])) {
         const isExpired = lic.expires_at && new Date(lic.expires_at).getTime() <= now;
         const isRevoked = lic.status === 'REVOKED' || lic.status === 'EXPIRED';
 
-        if (isExpired || isRevoked) {
+        if (isRevoked) {
+          if (!foundRevoked) foundRevoked = lic;
+        } else if (isExpired) {
           expiredLicenses.push(lic);
         } else if (lic.status === 'ACTIVE') {
           validLicenses.push({
@@ -238,7 +258,8 @@ export const CustomerLicenses = () => {
         }
       }
 
-      // Purge expired licenses in background
+      setRevokedLicense(foundRevoked);
+
       if (expiredLicenses.length > 0) {
         for (const expLic of expiredLicenses) {
           supabase.from('installation_logs').delete().eq('license_id', expLic.id).then(() => {
@@ -346,6 +367,49 @@ export const CustomerLicenses = () => {
       )}
 
       {/* ========================================================================= */}
+      {revokedLicense && (
+        <div className="relative overflow-hidden rounded-3xl glass-panel p-6 sm:p-8 border border-rose-500/40 bg-gradient-to-b from-rose-950/40 via-[#180a0d]/90 to-[#0c0507] shadow-[0_0_35px_rgba(244,63,94,0.25)] space-y-5 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-500/20 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shrink-0">
+                <AlertTriangle className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <span className="inline-block text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 mb-1">
+                  SECURITY SENTINEL ALERT
+                </span>
+                <h3 className="text-xl font-black text-white tracking-tight">
+                  License Revoked by Administrator
+                </h3>
+              </div>
+            </div>
+
+            <button
+              onClick={() => handleAcknowledgeRevocation(revokedLicense.id)}
+              disabled={clearingRevocation}
+              className="px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-rose-500/30 flex items-center gap-2 active:scale-95 disabled:opacity-50"
+            >
+              {clearingRevocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+              <span>{clearingRevocation ? 'Clearing Workstation...' : 'Acknowledge & Clear Workstation'}</span>
+            </button>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
+              <span className="text-slate-400">Target Package:</span>
+              <span className="text-white font-bold">{revokedLicense.packages?.package_name || 'Security Package'} ({revokedLicense.packages?.package_code || 'STANDARD'})</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
+              <span className="text-slate-400">Status:</span>
+              <span className="text-rose-400 font-bold uppercase tracking-wider">REVOKED (Kill-switch triggered on host)</span>
+            </div>
+            <p className="text-slate-300 text-xs leading-relaxed pt-2 border-t border-white/5">
+              Your license has been revoked by the administrator. All authorized Safe Exam Browser extension files on your machine have been terminated and wiped. Click <strong>Acknowledge &amp; Clear Workstation</strong> above to reset your account and activate a new license.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* CASE 1: FRESH ACCOUNT (No active license)                                  */}
       {/* ========================================================================= */}
       {!activeLicense ? (
