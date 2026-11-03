@@ -5,7 +5,6 @@ import {
   CheckCircle, 
   Clock, 
   Sparkles, 
-  SlidersHorizontal, 
   Check, 
   AlertCircle, 
   ArrowRight, 
@@ -73,23 +72,25 @@ export const calculateDurationPrice = (_basePrice: number, months: number | null
     return 2000;
   }
   
-  // Longer durations (3, 6, 12, 24 months) scaled smoothly from 2-month rate
-  const twoMonthPrice = packageCode === 'FULL_ACCESS' ? 2500 : 2000;
-  const ratio = Math.pow(months / 2, 0.72);
-  return Math.round((twoMonthPrice * ratio) / 50) * 50;
+  // 3 Months (Maximum term)
+  if (months >= 3) {
+    if (packageCode === 'FULL_ACCESS') return 3000;
+    return 2500;
+  }
+
+  return 2000;
 };
 
 export const getDiscountLabel = (months: number | null, packageCode?: string): string | null => {
-  if (months === null) return 'Permanent Lifetime Access';
+  if (months === null) return '👑 Godmode Forever (Best Deal)';
+  if (months === 1) return '🔥 Starter Sprint';
   if (months === 2) {
-    if (packageCode === 'FULL_ACCESS') return 'Save ₹1,500 vs 2 Single Months';
-    return 'Save ₹1,000 vs 2 Single Months';
+    if (packageCode === 'FULL_ACCESS') return '⚡ Save ₹1,500 (Campus Choice)';
+    return '⚡ Save ₹1,000 (Campus Choice)';
   }
-  if (months === 3) return 'Save 30% (Popular)';
-  if (months === 6) return 'Save 40%';
-  if (months === 12) return 'Save 50% (Best Value)';
-  if (months > 1) {
-    return `Special Multi-Month Rate`;
+  if (months === 3) {
+    if (packageCode === 'FULL_ACCESS') return '🚀 Semester Pass (Save ₹3,000)';
+    return '🚀 Semester Pass (Save ₹2,000)';
   }
   return null;
 };
@@ -127,7 +128,6 @@ export const CustomerPackages = () => {
   const [loading, setLoading] = useState(true);
   
   const [packageDurations, setPackageDurations] = useState<Record<string, number | null>>({});
-  const [customSliderActive, setCustomSliderActive] = useState<Record<string, boolean>>({});
 
   const [step, setStep] = useState(1);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
@@ -379,12 +379,16 @@ export const CustomerPackages = () => {
       {/* STEP 1: Package Grid */}
       {step === 1 && (
         <div className="space-y-6">
-          <div className="text-center max-w-3xl mx-auto space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              Select Your <span className="text-gradient-rainbow">Access Tier &amp; Duration</span>
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-500/40 bg-purple-500/10 text-purple-300 text-xs font-mono font-bold tracking-wide shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+              <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+              <span>Campus Exam Survival Suite • 100% Guaranteed Pass</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              Pick Your <span className="text-gradient-rainbow">Battle Pass Duration</span> ⚡
             </h2>
-            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
-              Tailored specifically for SEB environments. Customize your license from 1 month up to 24 months, or secure Permanent Lifetime Access.
+            <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+              Skip all sleepless nights. Maximum allowed term is <span className="text-emerald-400 font-bold font-mono">3 Months</span> (Semester Exam Sprint) or unlock <span className="text-pink-400 font-bold font-mono">Permanent Lifetime Access</span>.
             </p>
           </div>
           
@@ -394,7 +398,6 @@ export const CustomerPackages = () => {
               const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
               const discount = getDiscountLabel(currentDuration, pkg.package_code);
               const includesList = getPackageIncludes(pkg);
-              const isSliderOpen = customSliderActive[pkg.id] || false;
               const isFeatured = pkg.package_code === 'FULL_ACCESS';
               const guide = packageGuides[pkg.package_code] || {
                 purpose: pkg.description || 'Full features',
@@ -449,7 +452,7 @@ export const CustomerPackages = () => {
               return (
                 <div 
                   key={pkg.id} 
-                  className={`rounded-3xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden group backdrop-blur-2xl hover:-translate-y-1 ${themeStyles.card}`}
+                  className={`rounded-3xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden group backdrop-blur-2xl hover:-translate-y-1.5 ${themeStyles.card}`}
                 >
                   {/* Featured Header Ribbon */}
                   {guide.badge && (
@@ -477,112 +480,43 @@ export const CustomerPackages = () => {
                         {guide.purpose || pkg.description}
                       </p>
 
-                      {/* Adjustable Duration Controller Card */}
-                      <div className="p-3.5 rounded-2xl bg-black/60 border border-white/10 space-y-3">
+                      {/* Clean 4-Button Term Selector (Max 3 Mos + Lifetime) */}
+                      <div className="p-3.5 rounded-2xl bg-black/60 border border-white/10 space-y-2.5">
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] font-mono font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                            <Clock className={`w-3.5 h-3.5 ${themeStyles.accent}`} /> Term Duration
+                            <Clock className={`w-3.5 h-3.5 ${themeStyles.accent}`} /> Select Term
                           </span>
-                          <button
-                            type="button"
-                            onClick={() => setCustomSliderActive(prev => ({ ...prev, [pkg.id]: !isSliderOpen }))}
-                            className={`text-[11px] font-mono flex items-center gap-1 cursor-pointer transition-colors ${themeStyles.accent} hover:underline`}
-                          >
-                            <SlidersHorizontal className="w-3 h-3" />
-                            {isSliderOpen ? 'Quick Pills' : 'Slider'}
-                          </button>
+                          <span className="text-[10px] font-mono text-slate-400">
+                            Max 3 Mo or ∞
+                          </span>
                         </div>
 
-                        {/* Quick Selection Pills */}
-                        {!isSliderOpen ? (
-                          <div className="grid grid-cols-3 gap-1.5">
-                            {[
-                              { value: 1, label: '1 Mo' },
-                              { value: 2, label: '2 Mos' },
-                              { value: 3, label: '3 Mos' },
-                              { value: 6, label: '6 Mos' },
-                              { value: 12, label: '12 Mos' },
-                              { value: null, label: '∞ Life' },
-                            ].map(opt => {
-                              const isSelected = currentDuration === opt.value;
-                              return (
-                                <button
-                                  key={opt.label}
-                                  type="button"
-                                  onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
-                                  className={`py-1.5 px-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                                    isSelected 
-                                      ? `${themeStyles.btn} shadow-md` 
-                                      : 'glass-panel text-slate-400 hover:text-white hover:bg-slate-800'
-                                  }`}
-                                >
-                                  {opt.label}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          /* Custom Slider */
-                          <div className="space-y-3 pt-1">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-slate-400 font-mono">Custom:</span>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const cur = currentDuration === null ? 1 : Math.max(1, currentDuration - 1);
-                                    setPackageDurations({ ...packageDurations, [pkg.id]: cur });
-                                  }}
-                                  className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold"
-                                >
-                                  -
-                                </button>
-                                <span className={`font-mono text-xs font-bold min-w-16 text-center ${themeStyles.accent}`}>
-                                  {currentDuration === null ? 'Lifetime' : `${currentDuration} Mo`}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const cur = currentDuration === null ? 1 : Math.min(24, currentDuration + 1);
-                                    setPackageDurations({ ...packageDurations, [pkg.id]: cur });
-                                  }}
-                                  className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-
-                            <input
-                              type="range"
-                              min="1"
-                              max="24"
-                              step="1"
-                              value={currentDuration === null ? 12 : currentDuration}
-                              onChange={(e) => setPackageDurations({ ...packageDurations, [pkg.id]: parseInt(e.target.value) })}
-                              className="w-full cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none accent-purple-500"
-                            />
-
-                            <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                              <span>1m</span>
-                              <span>6m</span>
-                              <span>12m</span>
-                              <span>24m</span>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: null })}
-                              className={`w-full py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                                currentDuration === null 
-                                  ? `${themeStyles.btn}` 
-                                  : 'glass-panel text-slate-300 hover:bg-slate-800'
-                              }`}
-                            >
-                              Switch to Lifetime Access
-                            </button>
-                          </div>
-                        )}
+                        {/* Direct 4 Option Buttons: 1 Mo, 2 Mos, 3 Mos, ∞ Lifetime */}
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[
+                            { value: 1, label: '1 Mo', desc: 'Sprint' },
+                            { value: 2, label: '2 Mos', desc: 'Mid-Sem' },
+                            { value: 3, label: '3 Mos', desc: 'Semester' },
+                            { value: null, label: '∞ Lifetime', desc: 'Permanent' },
+                          ].map(opt => {
+                            const isSelected = currentDuration === opt.value;
+                            return (
+                              <button
+                                key={opt.label}
+                                type="button"
+                                onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
+                                className={`py-2 px-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-center ${
+                                  isSelected 
+                                    ? `${themeStyles.btn} shadow-md scale-[1.02]` 
+                                    : 'glass-panel text-slate-400 hover:text-white hover:bg-slate-800/80 border border-white/5'
+                                }`}
+                              >
+                                <span className="font-mono text-xs font-bold leading-none">{opt.label}</span>
+                                <span className={`text-[9px] font-mono mt-0.5 ${isSelected ? 'text-white/80' : 'text-slate-500'}`}>{opt.desc}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
 
                         {/* Discount Badge */}
                         {discount && (
