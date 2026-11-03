@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { 
+  Languages,
+  Sparkles,
   Key, 
   Shield, 
   ShieldAlert, 
@@ -24,6 +26,7 @@ import { downloadInstaller } from '../utils/download';
 import { Link } from 'react-router-dom';
 
 export const CustomerInstallation = () => {
+  const [lang, setLang] = useState<'default' | 'tanglish'>('default');
   const [copiedCmd, setCopiedCmd] = useState(false);
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
   const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
@@ -105,6 +108,56 @@ export const CustomerInstallation = () => {
           </div>
         </div>
 
+        {/* Language Mode Toggle Banner (Default English vs Tanglish) */}
+        <div className="mt-6 p-4 rounded-2xl bg-black/70 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-purple-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <Languages className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-white tracking-wide">Manual Language / மொழி:</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">
+                  {lang === 'tanglish' ? '🔥 Tanglish Active' : '✨ English Active'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                {lang === 'tanglish' 
+                  ? 'Tamil + English mix-la step-by-step easy-ah puriyura madhiri manual.' 
+                  : 'Official technical installation and keybinding documentation.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="inline-flex p-1.5 rounded-xl bg-slate-900/90 border border-white/10 shrink-0 gap-1.5 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setLang('default')}
+              className={`px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                lang === 'default'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <span>Default Manual</span>
+              <span className="text-[10px] opacity-75">(English)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang('tanglish')}
+              className={`px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                lang === 'tanglish'
+                  ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 text-white shadow-md shadow-purple-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Tanglish Manual</span>
+              <span className="text-[10px] opacity-80">(தமிழ் Guide)</span>
+            </button>
+          </div>
+        </div>
+
         {/* Quick Jump Bar with Distinct Colors */}
         <div className="mt-8 pt-5 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
           <span className="text-slate-400 font-mono text-[11px] uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1.5 font-bold">
@@ -164,35 +217,43 @@ export const CustomerInstallation = () => {
           <div className="space-y-3 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-mono tracking-widest uppercase px-3 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">
-                ACTIVE DRM DEFENSE
+                {lang === 'tanglish' ? '⚠️ முக்கிய எச்சரிக்கை (DRM)' : 'ACTIVE DRM DEFENSE'}
               </span>
               <span className="text-[10px] font-mono text-slate-400">
-                ZERO REPOSITORY TAMPER TOLERANCE
+                {lang === 'tanglish' ? 'SINGLE LAPTOP LOCK ACTIVE' : 'ZERO REPOSITORY TAMPER TOLERANCE'}
               </span>
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-rose-200">
-              Critical Notice: Automated Time-Bomb &amp; Hardware Sentinel Protocol
+              {lang === 'tanglish'
+                ? 'முக்கிய தகவல்: Automated Time-Bomb & Single PC Hardware Lock'
+                : 'Critical Notice: Automated Time-Bomb & Hardware Sentinel Protocol'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              PhantomLead features hardware-enforced DRM to safeguard test environments. Please observe the following policies before running the executable:
+              {lang === 'tanglish'
+                ? 'PhantomLead software unga laptop hardware-oda bind aagum. Friends kooda share panna koodathu. Keezhe irukura rules-ah kandippa follow pannunga:'
+                : 'PhantomLead features hardware-enforced DRM to safeguard test environments. Please observe the following policies before running the executable:'}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div className="p-4 rounded-2xl bg-black/60 border border-rose-900/50 space-y-2">
                 <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider font-mono">
-                  <Zap className="w-4 h-4 text-rose-400" /> Time-Bomb Expiry Automation
+                  <Zap className="w-4 h-4 text-rose-400" /> {lang === 'tanglish' ? 'Time-Bomb Expiry System' : 'Time-Bomb Expiry Automation'}
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  For temporary packages (1, 2, or 3 months), an automated background sentinel purges all exam files and cryptographic traces on the exact expiration timestamp. Once expired, your account reverts to an unallocated state.
+                  {lang === 'tanglish'
+                    ? 'Neenga edutha validity (1, 2, or 3 months) mudinja odane, system automatic-ah exam files-ah delete pannidum. Account expire aagidum.'
+                    : 'For temporary packages (1, 2, or 3 months), an automated background sentinel purges all exam files and cryptographic traces on the exact expiration timestamp. Once expired, your account reverts to an unallocated state.'}
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-black/60 border border-rose-900/50 space-y-2">
                 <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider font-mono">
-                  <Lock className="w-4 h-4 text-rose-400" /> Admin Kill-Switch Sentinel
+                  <Lock className="w-4 h-4 text-rose-400" /> {lang === 'tanglish' ? 'Device Lock & Anti-Sharing' : 'Admin Kill-Switch Sentinel'}
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Attempting to share license keys across unregistered workstations or tampering with environment hooks triggers an immediate kill-switch on startup, wiping the suite and locking future assignments.
+                  {lang === 'tanglish'
+                    ? 'Same license key-ah vera friends laptop-la podha try pannina, license block aagidum. Single machine-ku mattum dhaan valid.'
+                    : 'Attempting to share license keys across unregistered workstations or tampering with environment hooks triggers an immediate kill-switch on startup, wiping the suite and locking future assignments.'}
                 </p>
               </div>
             </div>
@@ -213,25 +274,36 @@ export const CustomerInstallation = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                   <ShieldAlert className="w-5 h-5 text-amber-400" />
-                  Pre-Flight: Turn Off Windows Security
+                  {lang === 'tanglish' 
+                    ? 'Step 1: Windows Security & Antivirus-ah Turn Off Pannunga' 
+                    : 'Pre-Flight: Turn Off Windows Security'}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Required before downloading or launching SecureInstaller to prevent false-positive blocks.
+                  {lang === 'tanglish'
+                    ? 'SecureInstaller download pannum munnadi Real-time Protection-ah OFF pannanum, illana Windows block pannidum.'
+                    : 'Required before downloading or launching SecureInstaller to prevent false-positive blocks.'}
                 </p>
               </div>
             </div>
             <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-950/60 border border-amber-800/60 text-amber-300">
-              MANDATORY
+              {lang === 'tanglish' ? 'KANDIPPA PANNANUM' : 'MANDATORY'}
             </span>
           </div>
 
           <div className="bg-amber-500/10 border border-amber-500/25 rounded-2xl p-5 text-xs sm:text-sm text-slate-300 leading-relaxed">
             <p className="mb-2">
-              <strong className="text-amber-300">Why this is necessary:</strong> Windows Security (Defender) aggressively blocks custom DLL hooks, memory injections, and automated scripts used by custom Safe Exam Browser helpers.
+              <strong className="text-amber-300">{lang === 'tanglish' ? 'Idhu edhuku pannanum?' : 'Why this is necessary:'}</strong>{' '}
+              {lang === 'tanglish'
+                ? 'Windows Defender custom exam browser helper files-ah false-positive nu ninachu block pannidum. Adhanaala Real-time protection-ah temporary-ah off pannanum.'
+                : 'Windows Security (Defender) aggressively blocks custom DLL hooks, memory injections, and automated scripts used by custom Safe Exam Browser helpers.'}
             </p>
             <div className="flex items-center gap-2 text-emerald-300 text-xs font-mono pt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Good News: SecureInstaller automatically registers persistent exclusions during installation so your background monitor is never interrupted once set up.</span>
+              <span>
+                {lang === 'tanglish'
+                  ? 'Good News: Namma installer automatic-ah exclusion add pannidum, installation mudinjadhum automatic-ah safe aayidum.'
+                  : 'Good News: SecureInstaller automatically registers persistent exclusions during installation so your background monitor is never interrupted once set up.'}
+              </span>
             </div>
           </div>
 
@@ -354,10 +426,14 @@ export const CustomerInstallation = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                   <Key className="w-5 h-5 text-purple-400" />
-                  Obtain Google Gemini API Key
+                  {lang === 'tanglish' 
+                    ? 'Step 2: Free Google Gemini API Key Vanga' 
+                    : 'Obtain Google Gemini API Key'}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Required for real-time coding assistance and intelligent answer generation during exams.
+                  {lang === 'tanglish'
+                    ? 'Exam time-la live coding & answers generate aaga indha Gemini API key compulsory venum.'
+                    : 'Required for real-time coding assistance and intelligent answer generation during exams.'}
                 </p>
               </div>
             </div>
@@ -375,25 +451,31 @@ export const CustomerInstallation = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2">
               <div className="text-xs font-mono font-bold text-purple-400">Step 2.1</div>
-              <p className="text-xs font-bold text-white">Sign in with Google</p>
+              <p className="text-xs font-bold text-white">{lang === 'tanglish' ? 'AI Studio Open Pannunga' : 'Sign in with Google'}</p>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Navigate to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-purple-300 underline">Google AI Studio</a> and log in with your primary Google account.
+                {lang === 'tanglish'
+                  ? 'Unga regular Gmail login panni aistudio.google.com/app/apikey link-ku ponga.'
+                  : 'Navigate to Google AI Studio and log in with your primary Google account.'}
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2">
               <div className="text-xs font-mono font-bold text-purple-400">Step 2.2</div>
-              <p className="text-xs font-bold text-white">Create API Key</p>
+              <p className="text-xs font-bold text-white">{lang === 'tanglish' ? 'Create Key Click Pannunga' : 'Create API Key'}</p>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Click the blue <strong className="text-white">Create API Key</strong> button. Choose an existing project or allow Google to create one.
+                {lang === 'tanglish'
+                  ? 'Blue color Create API Key button click panni Create in new project select pannunga.'
+                  : 'Click the blue Create API Key button. Choose an existing project or allow Google to create one.'}
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2">
               <div className="text-xs font-mono font-bold text-purple-400">Step 2.3</div>
-              <p className="text-xs font-bold text-white">Copy to Clipboard</p>
+              <p className="text-xs font-bold text-white">{lang === 'tanglish' ? 'Key-ah Copy Pannunga' : 'Copy to Clipboard'}</p>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Copy the generated key (starts with <code className="text-amber-300 font-mono">AIzaSy...</code>) and keep it secure. You will paste this into the installer.
+                {lang === 'tanglish'
+                  ? 'Create aana key-ah copy pannikonga. Installer launch pannum podhu paste pannanum.'
+                  : 'Copy the generated key and keep it secure. You will paste this into the installer.'}
               </p>
             </div>
           </div>
@@ -409,10 +491,14 @@ export const CustomerInstallation = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                   <Laptop className="w-5 h-5 text-sky-400" />
-                  Terminate Any Running SEB Instances
+                  {lang === 'tanglish' 
+                    ? 'Step 3: Safe Exam Browser Open-la irundha Close Pannunga' 
+                    : 'Terminate Any Running SEB Instances'}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Ensure Safe Exam Browser is completely closed before running setup.
+                  {lang === 'tanglish'
+                    ? 'Install panrathuku munnadi SEB run aaga koodathu. Task Manager-la irundha End Task pannunga.'
+                    : 'Ensure Safe Exam Browser is completely closed before running setup.'}
                 </p>
               </div>
             </div>
@@ -420,21 +506,27 @@ export const CustomerInstallation = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2">
-              <span className="font-mono text-sky-400 font-bold block">1. Open Task Manager</span>
+              <span className="font-mono text-sky-400 font-bold block">1. Task Manager Open</span>
               <p className="text-slate-400 leading-relaxed">
-                Press <kbd className="bg-slate-900 border border-white/20 px-2 py-0.5 rounded text-white font-mono">Ctrl + Shift + Esc</kbd> on your keyboard.
+                {lang === 'tanglish' ? 'Keyboard-la ' : 'Press '}
+                <kbd className="bg-slate-900 border border-white/20 px-2 py-0.5 rounded text-white font-mono">Ctrl + Shift + Esc</kbd> 
+                {lang === 'tanglish' ? ' press panni Task Manager open pannunga.' : ' on your keyboard.'}
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2">
-              <span className="font-mono text-sky-400 font-bold block">2. Locate SEB Processes</span>
+              <span className="font-mono text-sky-400 font-bold block">2. SEB-ah Kandupidiyunga</span>
               <p className="text-slate-400 leading-relaxed">
-                Look for <strong className="text-white">Safe Exam Browser</strong> or <code className="text-slate-200 font-mono">SafeExamBrowser.exe</code> in Processes.
+                {lang === 'tanglish' 
+                  ? 'Processes list-la Safe Exam Browser iruka nu paarunga.' 
+                  : 'Look for Safe Exam Browser or SafeExamBrowser.exe in Processes.'}
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2">
-              <span className="font-mono text-sky-400 font-bold block">3. Click End Task</span>
+              <span className="font-mono text-sky-400 font-bold block">3. End Task Click</span>
               <p className="text-slate-400 leading-relaxed">
-                Right-click the process and click <strong className="text-rose-400">End Task</strong> to ensure no locked files remain.
+                {lang === 'tanglish' 
+                  ? 'Right-click panni End Task kuduthu completely close pannidunga.' 
+                  : 'Right-click the process and click End Task.'}
               </p>
             </div>
           </div>
@@ -450,10 +542,14 @@ export const CustomerInstallation = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                   <Download className="w-5 h-5 text-emerald-400" />
-                  Deploy SecureInstaller
+                  {lang === 'tanglish' 
+                    ? 'Step 4: SecureInstaller Run Panni Install Pannunga' 
+                    : 'Deploy SecureInstaller'}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Execute the installer with administrative privileges.
+                  {lang === 'tanglish'
+                    ? 'Download panna .exe file-ah open panni, License Key & Gemini API Key pottu Install kudunga.'
+                    : 'Execute the installer with administrative privileges.'}
                 </p>
               </div>
             </div>
@@ -527,10 +623,14 @@ export const CustomerInstallation = () => {
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                   <Cpu className="w-5 h-5 text-indigo-400" />
-                  Safe Exam Browser Execution &amp; Hotkey Command Deck
+                  {lang === 'tanglish' 
+                    ? 'Step 5: Exam Hall Shortcuts (Hotkey Matrix)' 
+                    : 'Safe Exam Browser Execution & Hotkey Command Deck'}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Once SEB launches in full-screen kiosk lock, trigger your specific assistant overlay via these shortcuts.
+                  {lang === 'tanglish'
+                    ? 'Safe Exam Browser open aana apram, unga question type-ku etha madhiri indha short-keys press panna overlay open aagum.'
+                    : 'Once SEB launches in full-screen kiosk lock, trigger your specific assistant overlay via these shortcuts.'}
                 </p>
               </div>
             </div>
