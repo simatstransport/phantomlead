@@ -18,6 +18,7 @@ export const AdminLicenses = () => {
   const [customerEmail, setCustomerEmail] = useState('');
   const [packageCode, setPackageCode] = useState('FULL_ACCESS');
   const [duration, setDuration] = useState<number | null>(null);
+  const [lifetimeExe, setLifetimeExe] = useState<'L' | 'A'>('L');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalMessage, setModalMessage] = useState({ type: '', text: '' });
   const [availablePackages, setAvailablePackages] = useState<any[]>([]);
@@ -126,6 +127,7 @@ export const AdminLicenses = () => {
     setCustomerEmail('');
     setPackageCode('FULL_ACCESS');
     setDuration(null);
+    setLifetimeExe('L');
     setModalMessage({ type: '', text: '' });
     setIsModalOpen(true);
   };
@@ -153,7 +155,7 @@ export const AdminLicenses = () => {
       body: JSON.stringify({
         customer_email: customerEmail.trim(),
         package_code: packageCode,
-        duration_months: duration
+        duration_months: duration === null ? (lifetimeExe === 'A' ? 0 : null) : duration
       })
     });
 
@@ -165,13 +167,17 @@ export const AdminLicenses = () => {
       return;
     }
 
-    if (data.raw_license_key) {
+    const issuedKey = data.license_key || data.raw_license_key;
+    if (issuedKey) {
+      const exeAssigned = duration === null 
+        ? (lifetimeExe === 'A' ? 'SecureInstaller_A.exe (Admin-Controlled)' : 'SecureInstaller_L.exe (Lifetime Vault)')
+        : 'SecureInstaller_T.exe (Timed Edition)';
       setModalMessage({ 
         type: 'success', 
-        text: `Success! License Key: ${data.raw_license_key}` 
+        text: `Success! License Key: ${issuedKey} • Target: ${exeAssigned}` 
       });
       fetchLicenses();
-      setTimeout(() => setIsModalOpen(false), 3000);
+      setTimeout(() => setIsModalOpen(false), 3500);
     } else {
       setModalMessage({ type: 'error', text: 'License created, but key was missing in response.' });
     }
@@ -407,8 +413,17 @@ export const AdminLicenses = () => {
                       }`}>
                         {lic.payment_type || 'PAID'}
                       </span>
-                      <div className="text-[11px] font-mono text-slate-400">
-                        {isDemo ? '10-Min Trial' : lic.duration_months ? `${lic.duration_months} Mo` : '∞ Lifetime'}
+                      <div className="text-[11px] font-mono text-slate-300 flex items-center gap-1.5 mt-0.5">
+                        <span>{isDemo ? '10-Min Trial' : lic.duration_months && lic.duration_months > 0 ? `${lic.duration_months} Mo` : '∞ Lifetime'}</span>
+                        <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold border ${
+                          lic.duration_months === 0 
+                            ? 'bg-purple-500/15 border-purple-500/30 text-purple-300' 
+                            : lic.duration_months === -10 || (lic.duration_months && lic.duration_months > 0)
+                            ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                            : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                        }`}>
+                          {lic.duration_months === 0 ? 'A.exe' : (lic.duration_months === -10 || (lic.duration_months && lic.duration_months > 0)) ? 'T.exe' : 'L.exe'}
+                        </span>
                       </div>
                     </td>
 
@@ -539,15 +554,70 @@ export const AdminLicenses = () => {
                 <select
                   value={duration === null ? 'null' : duration}
                   onChange={e => setDuration(e.target.value === 'null' ? null : parseInt(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black border border-white/10 text-white text-xs focus:border-purple-500 focus:outline-none"
+                  className="w-full px-4 py-2.5 rounded-xl bg-black border border-white/10 text-white text-xs focus:border-purple-500 focus:outline-none font-mono"
                 >
-                  <option value="1">1 Month (Sprint)</option>
-                  <option value="2">2 Months (Mid-Sem)</option>
-                  <option value="3">3 Months (Semester Pass)</option>
-                  <option value="null">∞ Lifetime Access</option>
-                  <option value="-10">⚡ 10-Minute Demo Trial</option>
+                  <option value="null">∞ Lifetime Access (Select A or L EXE below)</option>
+                  <option value="1">1 Month (Sprint) → T.exe</option>
+                  <option value="2">2 Months (Mid-Sem) → T.exe</option>
+                  <option value="3">3 Months (Semester Pass) → T.exe</option>
+                  <option value="-10">⚡ 10-Minute Demo Trial → T.exe</option>
                 </select>
               </div>
+
+              {/* Selection of EXE for Lifetime: A exe vs L exe */}
+              {duration === null && (
+                <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-emerald-500/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-mono font-bold text-emerald-300 uppercase">
+                      Select Lifetime Installer Edition (.EXE)
+                    </label>
+                    <span className="text-[10px] font-mono text-slate-400">Required</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setLifetimeExe('L')}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        lifetimeExe === 'L'
+                          ? 'bg-emerald-500/20 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                          : 'bg-black/60 border-white/10 text-slate-400 hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-xs font-bold text-emerald-300">L.exe (Lifetime)</span>
+                        {lifetimeExe === 'L' && <span className="w-2 h-2 rounded-full bg-emerald-400" />}
+                      </div>
+                      <span className="text-[10px] text-slate-300 font-mono leading-tight">
+                        SecureInstaller_L.exe
+                      </span>
+                      <span className="text-[9px] text-slate-500 mt-1">
+                        Permanent offline vault. Local execution only.
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setLifetimeExe('A')}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        lifetimeExe === 'A'
+                          ? 'bg-purple-500/20 border-purple-400 text-white shadow-[0_0_15px_rgba(168,85,247,0.2)]'
+                          : 'bg-black/60 border-white/10 text-slate-400 hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-xs font-bold text-purple-300">A.exe (Admin-Ctrl)</span>
+                        {lifetimeExe === 'A' && <span className="w-2 h-2 rounded-full bg-purple-400" />}
+                      </div>
+                      <span className="text-[10px] text-slate-300 font-mono leading-tight">
+                        SecureInstaller_A.exe
+                      </span>
+                      <span className="text-[9px] text-slate-500 mt-1">
+                        Admin-controlled. Allows remote revoke &amp; auto-purge.
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="pt-2">
                 <button
