@@ -380,15 +380,15 @@ export const CustomerPackages = () => {
       {step === 1 && (
         <div className="space-y-6">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-500/40 bg-purple-500/10 text-purple-300 text-xs font-mono font-bold tracking-wide shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-              <Sparkles className="w-3.5 h-3.5 text-pink-400" />
-              <span>Campus Exam Survival Suite • 100% Guaranteed Pass</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-mono font-semibold tracking-wide">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Authorized Security Suite • Safe Exam Browser 3.10.2</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Pick Your <span className="text-gradient-rainbow">Battle Pass Duration</span> ⚡
+              Select Authorized <span className="text-gradient-emerald">Package Tier</span>
             </h2>
             <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-              Skip all sleepless nights. Maximum allowed term is <span className="text-emerald-400 font-bold font-mono">3 Months</span> (Semester Exam Sprint) or unlock <span className="text-pink-400 font-bold font-mono">Permanent Lifetime Access</span>.
+              Hardware node-locked software packages for campus labs. Choose duration up to <span className="text-emerald-400 font-bold font-mono">3 Months</span> or select <span className="text-emerald-400 font-bold font-mono">Permanent Lifetime License</span>.
             </p>
           </div>
           
@@ -410,43 +410,43 @@ export const CustomerPackages = () => {
               // Determine styling based on package theme
               const themeStyles = {
                 violet: {
-                  card: 'border-2 border-purple-500/70 hover:border-pink-400 bg-gradient-to-b from-purple-950/40 via-[#0d1029]/90 to-[#070918] shadow-[0_0_35px_rgba(168,85,247,0.25)]',
-                  badge: 'bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 text-white',
-                  btn: 'bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-500/30',
-                  accent: 'text-purple-400',
-                  tagBg: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-                  check: 'text-pink-400',
+                  card: 'border border-emerald-500/30 hover:border-emerald-400/60 bg-[#0d1117]/80 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
+                  badge: 'bg-emerald-500/20 text-emerald-300 border-b border-emerald-500/30',
+                  btn: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20',
+                  accent: 'text-emerald-400',
+                  tagBg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
+                  check: 'text-emerald-400',
                 },
                 emerald: {
-                  card: 'border border-emerald-500/40 hover:border-emerald-400 bg-gradient-to-b from-emerald-950/30 via-[#091514]/90 to-[#050b0a] shadow-[0_0_25px_rgba(16,185,129,0.15)]',
-                  badge: 'bg-gradient-to-r from-emerald-500 to-teal-400 text-black',
-                  btn: 'bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-lg shadow-emerald-500/25',
+                  card: 'border border-white/10 hover:border-emerald-500/40 bg-[#0d1117]/70 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
+                  badge: 'bg-slate-800/80 text-emerald-300 border-b border-white/10',
+                  btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold shadow-md',
                   accent: 'text-emerald-400',
-                  tagBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+                  tagBg: 'bg-slate-800 text-slate-300 border-white/10',
                   check: 'text-emerald-400',
                 },
                 amber: {
-                  card: 'border border-amber-500/40 hover:border-amber-400 bg-gradient-to-b from-amber-950/30 via-[#181109]/90 to-[#0c0804] shadow-[0_0_25px_rgba(245,158,11,0.15)]',
-                  badge: 'bg-gradient-to-r from-amber-500 to-orange-400 text-black',
-                  btn: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold shadow-lg shadow-amber-500/25',
+                  card: 'border border-white/10 hover:border-amber-500/40 bg-[#0d1117]/70 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
+                  badge: 'bg-slate-800/80 text-amber-300 border-b border-white/10',
+                  btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold shadow-md',
                   accent: 'text-amber-400',
-                  tagBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+                  tagBg: 'bg-slate-800 text-slate-300 border-white/10',
                   check: 'text-amber-400',
                 },
                 sky: {
-                  card: 'border border-sky-500/40 hover:border-sky-400 bg-gradient-to-b from-sky-950/30 via-[#0a1224]/90 to-[#050a14] shadow-[0_0_25px_rgba(56,189,248,0.15)]',
-                  badge: 'bg-gradient-to-r from-sky-400 to-blue-500 text-black',
-                  btn: 'bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-black font-extrabold shadow-lg shadow-sky-500/25',
-                  accent: 'text-sky-400',
-                  tagBg: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
-                  check: 'text-sky-400',
+                  card: 'border border-white/10 hover:border-cyan-500/40 bg-[#0d1117]/70 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
+                  badge: 'bg-slate-800/80 text-cyan-300 border-b border-white/10',
+                  btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold shadow-md',
+                  accent: 'text-cyan-400',
+                  tagBg: 'bg-slate-800 text-slate-300 border-white/10',
+                  check: 'text-cyan-400',
                 }
               }[guide.theme] || {
                 card: 'glass-panel border-white/10 hover:border-emerald-500/30',
-                badge: 'bg-emerald-500 text-black',
-                btn: 'bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold shadow-lg shadow-emerald-500/25',
+                badge: 'bg-slate-800 text-slate-300',
+                btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold',
                 accent: 'text-emerald-400',
-                tagBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+                tagBg: 'bg-slate-800 text-slate-300 border-white/10',
                 check: 'text-emerald-400',
               };
 
@@ -694,7 +694,7 @@ export const CustomerPackages = () => {
               </button>
               <button 
                 type="submit" 
-                className="flex-1 py-3.5 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-white rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
               >
                 <span>Continue to Payment</span>
                 <ArrowRight className="w-4 h-4" />

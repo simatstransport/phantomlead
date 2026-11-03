@@ -91,7 +91,7 @@ export const AdminPayments = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-zinc-400 space-y-3">
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-400 space-y-3">
         <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <p className="font-mono text-xs tracking-wider uppercase">Loading payment records...</p>
       </div>
@@ -101,7 +101,7 @@ export const AdminPayments = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Deck */}
-      <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-[#0c0d12]/90 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117]/90 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
@@ -114,13 +114,13 @@ export const AdminPayments = () => {
               <CreditCard className="w-7 h-7 text-cyan-400" />
               Payment Verification &amp; Approvals
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400">
+            <p className="text-xs sm:text-sm text-slate-400">
               Audit incoming UPI references, clear student transactions, and trigger automated license issuance.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-zinc-400 border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 rounded-xl">
+            <span className="text-xs font-mono text-slate-400 border border-white/10 bg-slate-900/60 px-3 py-1.5 rounded-xl">
               Total Audited: <strong className="text-white mr-2">{totalCount}</strong>
               Pending: <strong className="text-amber-400 font-bold">{pendingCount}</strong>
             </span>
@@ -128,7 +128,7 @@ export const AdminPayments = () => {
         </div>
 
         {/* Financial KPI Mini-Deck */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-6 pt-6 border-t border-zinc-800/80">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-6 pt-6 border-t border-white/10/80">
           <div className="p-3.5 rounded-xl bg-black/60 border border-amber-500/30">
             <span className="text-[10px] font-mono uppercase text-amber-400/90 block mb-1">Pending Approval</span>
             <div className="text-2xl font-black text-amber-400 font-mono flex items-center gap-1.5">
@@ -140,8 +140,8 @@ export const AdminPayments = () => {
             <span className="text-[10px] font-mono uppercase text-cyan-400/80 block mb-1">Cleared Revenue</span>
             <div className="text-2xl font-black text-cyan-400 font-mono">₹{approvedRevenue.toLocaleString('en-IN')}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800/80">
-            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Approved Orders</span>
+          <div className="p-3.5 rounded-xl bg-black/60 border border-white/10/80">
+            <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1">Approved Orders</span>
             <div className="text-2xl font-black text-white font-mono">{approvedCount}</div>
           </div>
           <div className="p-3.5 rounded-xl bg-black/60 border border-red-500/20">
@@ -154,17 +154,17 @@ export const AdminPayments = () => {
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search by student, email, package, or UPI UTR reference..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0d12] border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0d1117] border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0c0d12] border border-zinc-800 shrink-0">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0d1117] border border-white/10 shrink-0">
           {(['PENDING', 'ALL', 'APPROVED', 'REJECTED'] as const).map(tab => (
             <button
               key={tab}
@@ -172,7 +172,7 @@ export const AdminPayments = () => {
               className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                 statusFilter === tab
                   ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/20'
-                  : 'text-zinc-400 hover:text-white'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               <span>{tab === 'PENDING' ? 'Pending' : tab === 'ALL' ? 'All' : tab === 'APPROVED' ? 'Approved' : 'Rejected'}</span>
@@ -190,16 +190,16 @@ export const AdminPayments = () => {
 
       {/* Payments Table */}
       {filteredPayments.length === 0 ? (
-        <div className="rounded-2xl border border-zinc-800 bg-[#0c0d12]/60 p-12 text-center space-y-3">
+        <div className="rounded-2xl border border-white/10 bg-[#0d1117]/60 p-12 text-center space-y-3">
           <CreditCard className="w-10 h-10 text-zinc-600 mx-auto" />
-          <p className="text-zinc-400 text-sm font-medium">No payments found in this view.</p>
+          <p className="text-slate-400 text-sm font-medium">No payments found in this view.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-zinc-800 bg-[#0c0d12]/90 backdrop-blur-xl overflow-hidden shadow-xl">
+        <div className="rounded-2xl border border-white/10 bg-[#0d1117]/90 backdrop-blur-xl overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-zinc-800/80 bg-black/40 text-zinc-400 font-mono uppercase tracking-wider text-[11px]">
+                <tr className="border-b border-white/10/80 bg-black/40 text-slate-400 font-mono uppercase tracking-wider text-[11px]">
                   <th className="py-3.5 px-4 font-semibold">Student Account</th>
                   <th className="py-3.5 px-4 font-semibold">Tier &amp; Duration</th>
                   <th className="py-3.5 px-4 font-semibold">Settlement Amount</th>
@@ -208,7 +208,7 @@ export const AdminPayments = () => {
                   <th className="py-3.5 px-4 font-semibold text-right">Approval Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-white/5">
                 {filteredPayments.map(p => {
                   const isPending = p.status === 'PENDING';
                   const isApproved = p.status === 'APPROVED';
@@ -216,15 +216,15 @@ export const AdminPayments = () => {
                   const durationLabel = p.duration_months === null ? 'Lifetime Access' : `${p.duration_months} Month(s)`;
 
                   return (
-                    <tr key={p.id} className="hover:bg-zinc-900/40 transition-colors">
+                    <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
                       {/* Customer */}
                       <td className="py-4 px-4">
                         <div className="space-y-0.5">
                           <span className="font-bold text-white block text-sm">
                             {p.customers?.full_name || 'Enrolled Student'}
                           </span>
-                          <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1">
-                            <Mail className="w-3 h-3 text-zinc-500" />
+                          <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+                            <Mail className="w-3 h-3 text-slate-500" />
                             {p.customers?.email || 'No email registered'}
                           </span>
                         </div>
@@ -235,7 +235,7 @@ export const AdminPayments = () => {
                         <span className="font-bold text-zinc-200 block text-xs">
                           {p.packages?.package_name || 'Security Package'}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-cyan-400">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 border border-white/10 text-cyan-400">
                           <Clock className="w-3 h-3" />
                           {durationLabel}
                         </span>
@@ -246,21 +246,21 @@ export const AdminPayments = () => {
                         <span className="text-base font-black text-white font-mono block">
                           ₹{Number(p.amount || 0).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-[10px] font-mono text-zinc-500">
+                        <span className="text-[10px] font-mono text-slate-500">
                           {p.submitted_at ? new Date(p.submitted_at).toLocaleDateString() : 'Recent'}
                         </span>
                       </td>
 
                       {/* UPI Txn ID */}
                       <td className="py-4 px-4">
-                        <div className="inline-flex items-center gap-2 p-1.5 rounded-lg bg-black/60 border border-zinc-800">
+                        <div className="inline-flex items-center gap-2 p-1.5 rounded-lg bg-black/60 border border-white/10">
                           <span className="font-mono text-xs font-bold text-amber-300 tracking-wider">
                             {p.upi_transaction_id || 'N/A'}
                           </span>
                           {p.upi_transaction_id && (
                             <button
                               onClick={() => copyToClipboard(p.upi_transaction_id, p.id)}
-                              className="text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                              className="text-slate-500 hover:text-white transition-colors cursor-pointer"
                               title="Copy UTR ID"
                             >
                               {copiedTxnId === p.id ? (

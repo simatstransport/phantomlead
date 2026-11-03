@@ -352,12 +352,10 @@ export const CustomerLicenses = () => {
         <div className="relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-12 shadow-2xl border border-white/15 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.15),transparent_70%)] pointer-events-none" />
 
-          {/* Central Hologram Shield with Rotating Orbital Rings */}
-          <div className="relative mx-auto mb-6 w-24 h-24 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border border-emerald-400/30 animate-[spin_6s_linear_infinite]" />
-            <div className="absolute inset-[-8px] rounded-full border border-dashed border-purple-400/25 animate-[spin_10s_linear_reverse_infinite]" />
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-indigo-500/20 to-purple-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 shadow-[0_0_25px_rgba(16,185,129,0.35)]">
-              <Sparkles className="w-8 h-8 text-emerald-400" />
+          {/* Tactical Status Icon */}
+          <div className="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+              <ShieldCheck className="w-8 h-8 text-emerald-400" />
             </div>
           </div>
 
@@ -368,7 +366,7 @@ export const CustomerLicenses = () => {
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight max-w-xl mx-auto mb-3">
-            Your Account is Completely <span className="text-gradient-rainbow">Fresh &amp; Ready</span>
+            Your Workstation is <span className="text-gradient-emerald">Fresh &amp; Ready</span>
           </h2>
 
           <p className="text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
@@ -409,7 +407,7 @@ export const CustomerLicenses = () => {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/dashboard/packages"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-emerald-500 via-indigo-600 to-purple-600 hover:from-emerald-400 hover:to-purple-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/30 transition-all hover:scale-[1.02] cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 rounded-xl transition-all hover:scale-[1.02] cursor-pointer active:scale-95"
             >
               <span>Browse Packages &amp; Activate Now</span>
               <ArrowRight className="w-4 h-4" />

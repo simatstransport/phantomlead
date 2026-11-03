@@ -4,17 +4,17 @@
 
 @layer base {
   body {
-    @apply bg-[#060807] text-slate-100 font-sans antialiased;
+    @apply bg-[#07090b] text-slate-100 font-sans antialiased;
     background-image: 
-      radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 65%),
-      radial-gradient(circle at 100% 50%, rgba(5, 150, 105, 0.06) 0px, transparent 55%),
-      radial-gradient(circle at 0% 100%, rgba(52, 211, 153, 0.05) 0px, transparent 55%);
+      radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.08) 0px, transparent 65%),
+      radial-gradient(circle at 100% 40%, rgba(6, 182, 212, 0.04) 0px, transparent 55%),
+      radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.03) 0px, transparent 55%);
     background-attachment: fixed;
   }
 
   ::selection {
-    background: rgba(16, 185, 129, 0.35);
-    color: #d1fae5;
+    background: rgba(16, 185, 129, 0.3);
+    color: #f8fafc;
   }
 }
 
@@ -24,91 +24,89 @@
   100% { transform: translateX(0%); }
 }
 
-/* Precision Slim Scrollbar */
+/* Precision Tactical Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #060807;
+  background: #07090b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.6) 0%, rgba(5, 150, 105, 0.6) 100%);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #10b981 0%, #34d399 100%);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+  background: rgba(16, 185, 129, 0.6);
 }
 
-/* Glassmorphism & Cyber Accents */
+/* Engineering-Grade Glass Panels */
 .glass-panel {
-  background: rgba(10, 15, 12, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
     0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-    0 20px 40px -15px rgba(0, 0, 0, 0.7);
+    0 20px 40px -15px rgba(0, 0, 0, 0.85);
 }
 
 .glass-panel-interactive {
-  background: rgba(10, 15, 12, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel-interactive:hover {
-  background: rgba(15, 23, 18, 0.9);
-  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(18, 24, 32, 0.85);
+  border-color: rgba(16, 185, 129, 0.35);
   transform: translateY(-2px);
   box-shadow: 
-    0 0 0 1px rgba(16, 185, 129, 0.2) inset,
-    0 16px 36px -10px rgba(16, 185, 129, 0.25);
+    0 0 0 1px rgba(16, 185, 129, 0.15) inset,
+    0 16px 36px -10px rgba(0, 0, 0, 0.9);
 }
 
-/* Gradient Text Utilities */
+/* Subtle, Legible Dual-Tone Display Text (Anti-Cliché) */
 .text-gradient-emerald {
-  background: linear-gradient(135deg, #ecfdf5 0%, #34d399 50%, #059669 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #34d399 70%, #059669 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-cyan {
-  background: linear-gradient(135deg, #ecfdf5 0%, #34d399 50%, #059669 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 70%, #0284c7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-violet {
-  background: linear-gradient(135deg, #faf5ff 0%, #c084fc 50%, #9333ea 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #c084fc 70%, #7e22ce 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-amber {
-  background: linear-gradient(135deg, #fffbeb 0%, #fbbf24 50%, #ea580c 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 70%, #d97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-rainbow {
-  background: linear-gradient(135deg, #6ee7b7 0%, #10b981 40%, #34d399 75%, #a855f7 100%);
+  background: linear-gradient(135deg, #ffffff 20%, #34d399 60%, #10b981 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Cyber subtle grid background overlay */
+/* Tactical Grid Background */
 .cyber-grid {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
