@@ -9,7 +9,10 @@ import {
   Phone, 
   School, 
   GraduationCap, 
-  Mail
+  Mail,
+  ShieldAlert,
+  UserCheck,
+  Building2
 } from 'lucide-react';
 
 type Customer = {
@@ -101,83 +104,101 @@ export const AdminCustomers = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-zinc-400 space-y-3">
-        <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-        <p className="font-mono text-xs tracking-wider uppercase">Loading customer fleet...</p>
+        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <p className="font-mono text-xs tracking-wider uppercase text-purple-400">Loading student directory...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Header Deck */}
-      <div className="relative overflow-hidden rounded-2xl border border-zinc-800 bg-[#0c0d12]/90 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
+    <div className="space-y-6 pb-16 max-w-7xl mx-auto">
+      {/* Modern Cyber Glass Header Deck */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0e0720]/80 via-[#0a0c18]/90 to-[#04060d] backdrop-blur-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-purple-500/15 via-pink-500/10 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-60 h-60 bg-cyan-500/10 blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
-                IDENTITY &amp; ENROLLMENT REGISTRY
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] font-mono uppercase tracking-widest text-purple-300 font-bold bg-purple-950/60 border border-purple-500/30 px-3 py-0.5 rounded-full">
+                COMMAND IDENTITY SUITE
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <Users className="w-7 h-7 text-cyan-400" />
-              Customer Fleet Directory
+            <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+              <Users className="w-8 h-8 text-pink-400" />
+              Student Fleet &amp; <span className="text-gradient-rainbow">User Directory</span>
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400">
-              Manage student accounts, phone verification records, institutional tags, and access clearance.
+            <p className="text-xs sm:text-sm text-slate-400 max-w-xl leading-relaxed">
+              Real-time monitoring of campus enrollments, device bindings, verified phone numbers, and account integrity.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-zinc-400 border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 rounded-xl">
-              Total Records: <strong className="text-white">{totalCount}</strong>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-xs font-mono text-slate-300 border border-white/10 bg-black/60 px-4 py-2 rounded-2xl shadow-inner">
+              Enrolled: <strong className="text-emerald-400 text-sm ml-1 font-bold">{totalCount}</strong>
             </span>
           </div>
         </div>
 
-        {/* KPI Mini-Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-6 pt-6 border-t border-zinc-800/80">
-          <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800/80">
-            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Total Enrolled</span>
+        {/* Cyber Neon KPI Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/10">
+          <div className="p-4 rounded-2xl bg-black/60 border border-white/10 shadow-lg hover:border-purple-500/40 transition-all">
+            <div className="flex items-center justify-between text-slate-400 mb-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Total Fleet</span>
+              <Users className="w-4 h-4 text-purple-400" />
+            </div>
             <div className="text-2xl font-black text-white font-mono">{totalCount}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-cyan-500/20">
-            <span className="text-[10px] font-mono uppercase text-cyan-400/80 block mb-1">Active Accounts</span>
-            <div className="text-2xl font-black text-cyan-400 font-mono">{activeCount}</div>
+
+          <div className="p-4 rounded-2xl bg-black/60 border border-emerald-500/30 shadow-lg shadow-emerald-500/5 hover:border-emerald-400 transition-all">
+            <div className="flex items-center justify-between text-emerald-400/80 mb-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Active</span>
+              <UserCheck className="w-4 h-4 text-emerald-400" />
+            </div>
+            <div className="text-2xl font-black text-emerald-400 font-mono">{activeCount}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-red-500/20">
-            <span className="text-[10px] font-mono uppercase text-red-400/80 block mb-1">Blocked / Suspended</span>
-            <div className="text-2xl font-black text-red-400 font-mono">{blockedCount}</div>
+
+          <div className="p-4 rounded-2xl bg-black/60 border border-rose-500/30 shadow-lg shadow-rose-500/5 hover:border-rose-400 transition-all">
+            <div className="flex items-center justify-between text-rose-400/80 mb-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Suspended</span>
+              <ShieldAlert className="w-4 h-4 text-rose-400" />
+            </div>
+            <div className="text-2xl font-black text-rose-400 font-mono">{blockedCount}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-zinc-800/80">
-            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">Institutions</span>
-            <div className="text-2xl font-black text-white font-mono">{collegesCount}</div>
+
+          <div className="p-4 rounded-2xl bg-black/60 border border-cyan-500/30 shadow-lg shadow-cyan-500/5 hover:border-cyan-400 transition-all">
+            <div className="flex items-center justify-between text-cyan-400/80 mb-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider">Campuses</span>
+              <Building2 className="w-4 h-4 text-cyan-400" />
+            </div>
+            <div className="text-2xl font-black text-cyan-300 font-mono">{collegesCount}</div>
           </div>
         </div>
       </div>
 
-      {/* Search & Filter Bar */}
+      {/* Modern Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search by student name, email, phone, or college..."
+            placeholder="Search student name, email, phone, college..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0d12] border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-black/60 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/60 shadow-lg transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0c0d12] border border-zinc-800 shrink-0">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/60 border border-white/10 shrink-0">
           {(['ALL', 'ACTIVE', 'BLOCKED'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                 statusFilter === tab
-                  ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/20'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 text-white shadow-md shadow-purple-500/30 scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
               {tab === 'ALL' ? 'All' : tab === 'ACTIVE' ? 'Active' : 'Blocked'}
@@ -186,30 +207,30 @@ export const AdminCustomers = () => {
         </div>
       </div>
 
-      {/* Error or Table */}
+      {/* Table Container */}
       {error ? (
-        <div className="p-4 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs font-mono">
+        <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs font-mono">
           Could not load customers: {error}
         </div>
       ) : filteredCustomers.length === 0 ? (
-        <div className="rounded-2xl border border-zinc-800 bg-[#0c0d12]/60 p-12 text-center space-y-3">
-          <Users className="w-10 h-10 text-zinc-600 mx-auto" />
-          <p className="text-zinc-400 text-sm font-medium">No customers found matching your criteria.</p>
+        <div className="rounded-3xl border border-white/10 bg-black/40 p-12 text-center space-y-3">
+          <Users className="w-10 h-10 text-slate-600 mx-auto" />
+          <p className="text-slate-400 text-sm font-medium">No students found matching your search query.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-zinc-800 bg-[#0c0d12]/90 backdrop-blur-xl overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-white/10 bg-black/60 backdrop-blur-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-zinc-800/80 bg-black/40 text-zinc-400 font-mono uppercase tracking-wider text-[11px]">
-                  <th className="py-3.5 px-4 font-semibold">Student Profile</th>
-                  <th className="py-3.5 px-4 font-semibold">Contact Info</th>
-                  <th className="py-3.5 px-4 font-semibold">Institution / Batch</th>
-                  <th className="py-3.5 px-4 font-semibold">Account State</th>
-                  <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                <tr className="border-b border-white/10 bg-slate-900/40 text-slate-400 font-mono uppercase tracking-wider text-[11px]">
+                  <th className="py-4 px-5 font-bold">Student Profile</th>
+                  <th className="py-4 px-5 font-bold">Contact Details</th>
+                  <th className="py-4 px-5 font-bold">Institution / Batch</th>
+                  <th className="py-4 px-5 font-bold">Status</th>
+                  <th className="py-4 px-5 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-white/5">
                 {filteredCustomers.map(customer => {
                   const isBlocked = customer.status === 'BLOCKED';
                   const initials = (customer.full_name || customer.email || 'U')
@@ -220,14 +241,14 @@ export const AdminCustomers = () => {
                     .toUpperCase();
 
                   return (
-                    <tr key={customer.id} className="hover:bg-zinc-900/40 transition-colors">
+                    <tr key={customer.id} className="hover:bg-purple-950/20 transition-colors">
                       {/* Name & Avatar */}
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold font-mono text-xs shrink-0 ${
+                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black font-mono text-xs shrink-0 shadow-md ${
                             isBlocked 
-                              ? 'bg-red-500/10 border border-red-500/30 text-red-400' 
-                              : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400'
+                              ? 'bg-rose-500/20 border border-rose-500/40 text-rose-400' 
+                              : 'bg-gradient-to-tr from-purple-500/20 to-pink-500/20 border border-purple-500/40 text-purple-300'
                           }`}>
                             {initials}
                           </div>
@@ -235,80 +256,80 @@ export const AdminCustomers = () => {
                             <span className="font-bold text-white block text-sm">
                               {customer.full_name || 'Anonymous Student'}
                             </span>
-                            <span className="text-[11px] font-mono text-zinc-500 flex items-center gap-1">
-                              ID: {customer.id.slice(0, 8)}...
+                            <span className="text-[10px] font-mono text-slate-500">
+                              UID: {customer.id.slice(0, 8)}...
                             </span>
                           </div>
                         </div>
                       </td>
 
                       {/* Contact */}
-                      <td className="py-4 px-4 space-y-1">
-                        <div className="flex items-center gap-1.5 text-zinc-300">
-                          <Mail className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                      <td className="py-4 px-5 space-y-1">
+                        <div className="flex items-center gap-1.5 text-slate-300">
+                          <Mail className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                           <span className="font-mono text-xs">{customer.email}</span>
                         </div>
                         {customer.phone && (
-                          <div className="flex items-center gap-1.5 text-zinc-400">
-                            <Phone className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                            <span className="font-mono text-[11px]">+91 {customer.phone}</span>
+                          <div className="flex items-center gap-1.5 text-emerald-400">
+                            <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span className="font-mono text-[11px] font-bold">+91 {customer.phone}</span>
                           </div>
                         )}
                       </td>
 
                       {/* College & Academic Year */}
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-5">
                         {customer.college_name ? (
                           <div className="space-y-1">
-                            <div className="flex items-center gap-1 text-zinc-300 font-medium">
-                              <School className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                            <div className="flex items-center gap-1.5 text-slate-200 font-semibold">
+                              <School className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                               <span>{customer.college_name}</span>
                             </div>
                             {customer.academic_year && (
-                              <div className="flex items-center gap-1 text-[11px] text-zinc-400 font-mono">
-                                <GraduationCap className="w-3 h-3 text-zinc-500 shrink-0" />
+                              <div className="flex items-center gap-1 text-[11px] text-slate-400 font-mono">
+                                <GraduationCap className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                                 <span>{customer.academic_year}</span>
                               </div>
                             )}
                           </div>
                         ) : (
-                          <span className="text-zinc-600 font-mono text-[11px]">Unspecified</span>
+                          <span className="text-slate-600 font-mono text-[11px]">Direct Online User</span>
                         )}
                       </td>
 
                       {/* Status */}
-                      <td className="py-4 px-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-semibold ${
+                      <td className="py-4 px-5">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold ${
                           isBlocked 
-                            ? 'bg-red-500/10 border border-red-500/30 text-red-400' 
-                            : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-400'
+                            ? 'bg-rose-500/15 border border-rose-500/40 text-rose-300' 
+                            : 'bg-emerald-500/15 border border-emerald-500/40 text-emerald-300'
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${isBlocked ? 'bg-red-400' : 'bg-cyan-400 animate-pulse'}`} />
-                          {isBlocked ? 'BLOCKED' : 'ACTIVE'}
+                          <span className={`w-1.5 h-1.5 rounded-full ${isBlocked ? 'bg-rose-400' : 'bg-emerald-400 animate-pulse'}`} />
+                          {isBlocked ? 'SUSPENDED' : 'AUTHORIZED'}
                         </span>
                       </td>
 
                       {/* Actions */}
-                      <td className="py-4 px-4 text-right">
+                      <td className="py-4 px-5 text-right">
                         <div className="inline-flex items-center gap-2">
                           <button 
                             onClick={() => handleToggleBlock(customer.id, customer.status)} 
-                            className={`p-2 rounded-lg border text-xs font-mono transition-all cursor-pointer ${
+                            className={`p-2.5 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
                               isBlocked 
-                                ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20' 
-                                : 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20'
+                                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25' 
+                                : 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25'
                             }`}
                             title={isBlocked ? 'Unblock user' : 'Block user'}
                           >
-                            {isBlocked ? <CheckCircle className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                            {isBlocked ? <CheckCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
                           </button>
 
                           <button 
                             onClick={() => handleDelete(customer.id)} 
-                            className="p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer"
+                            className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 hover:bg-rose-500/25 transition-all cursor-pointer"
                             title="Delete user records"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
