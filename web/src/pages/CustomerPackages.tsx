@@ -55,39 +55,41 @@ const installationSteps = [
   'Enter your Gemini API key when prompted, then let the installer validate and install the authorized tools.'
 ];
 
-export const calculateDurationPrice = (basePrice: number, months: number | null, packageCode?: string): number => {
-  const p = Number(basePrice) || 3000;
+export const calculateDurationPrice = (_basePrice: number, months: number | null, packageCode?: string): number => {
+  // Lifetime Access (all packages: 5000 RS)
   if (months === null) {
-    if (packageCode === 'FULL_ACCESS' || p >= 5500) {
-      return 7000;
-    }
-    if (packageCode === 'JAVA_VIVA') {
-      return 5500;
-    }
-    if (packageCode === 'PYTHON_C') {
-      return 5000;
-    }
-    if (packageCode === 'QA_PLACEMENT') {
-      return 4500;
-    }
-    return Math.round((p * 1.4) / 50) * 50;
+    return 5000;
   }
-  if (months <= 1) return Math.round(p);
-  const multiplier = Math.pow(months, 0.76);
-  return Math.round((p * multiplier) / 50) * 50;
+  
+  // 1 Month
+  if (months <= 1) {
+    if (packageCode === 'FULL_ACCESS') return 2000;
+    return 1500;
+  }
+  
+  // 2 Months
+  if (months === 2) {
+    if (packageCode === 'FULL_ACCESS') return 2500;
+    return 2000;
+  }
+  
+  // Longer durations (3, 6, 12, 24 months) scaled smoothly from 2-month rate
+  const twoMonthPrice = packageCode === 'FULL_ACCESS' ? 2500 : 2000;
+  const ratio = Math.pow(months / 2, 0.72);
+  return Math.round((twoMonthPrice * ratio) / 50) * 50;
 };
 
-export const getDiscountLabel = (months: number | null): string | null => {
+export const getDiscountLabel = (months: number | null, packageCode?: string): string | null => {
   if (months === null) return 'Permanent Lifetime Access';
-  if (months === 2) return 'Save 15%';
-  if (months === 3) return 'Save 23% (Popular)';
-  if (months === 6) return 'Save 35%';
-  if (months === 12) return 'Save 45% (Best Value)';
+  if (months === 2) {
+    if (packageCode === 'FULL_ACCESS') return 'Save ₹1,500 vs 2 Single Months';
+    return 'Save ₹1,000 vs 2 Single Months';
+  }
+  if (months === 3) return 'Save 30% (Popular)';
+  if (months === 6) return 'Save 40%';
+  if (months === 12) return 'Save 50% (Best Value)';
   if (months > 1) {
-    const undiscounted = months;
-    const multi = Math.pow(months, 0.76);
-    const pct = Math.round((1 - (multi / undiscounted)) * 100);
-    return `Save ${pct}%`;
+    return `Special Multi-Month Rate`;
   }
   return null;
 };
@@ -390,7 +392,7 @@ export const CustomerPackages = () => {
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
               const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
-              const discount = getDiscountLabel(currentDuration);
+              const discount = getDiscountLabel(currentDuration, pkg.package_code);
               const includesList = getPackageIncludes(pkg);
               const isSliderOpen = customSliderActive[pkg.id] || false;
               const isFeatured = pkg.package_code === 'FULL_ACCESS';
