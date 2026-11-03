@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/entry_admin_ctrl.py'],
+    ['c:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/entry_admin_ctrl.py'],
     pathex=[],
     binaries=[],
     datas=[],

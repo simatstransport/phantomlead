@@ -21,7 +21,6 @@ import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
 import { AnimatedGlow } from './components/AnimatedGlow';
-import { MaintenancePage } from './pages/MaintenancePage';
 
 const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -611,10 +610,16 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                 Native Kiosk Clipboard Injection
               </div>
             </div>
-            <Link to="/dashboard/install" className="text-xs text-slate-400 hover:text-purple-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
-              <span>Read installation guide</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            {hasActiveLicense ? (
+              <Link to="/dashboard/install" className="text-xs text-slate-400 hover:text-purple-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
+                <span>Read installation guide</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <span className="text-xs text-slate-500 pt-2 border-t border-white/5 flex items-center gap-1.5">
+                <span>Requires active license to access guide</span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -1042,44 +1047,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [onboarded, setOnboarded] = useState(false);
-  const [maintenance, setMaintenance] = useState<{ active: boolean; endTime: string | null; message: string | null }>({
-    active: false,
-    endTime: null,
-    message: null,
-  });
-
-  const checkMaintenance = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('admin_settings')
-        .select('key, value')
-        .in('key', ['maintenance_mode', 'maintenance_end_time', 'maintenance_message']);
-
-      if (!error && data) {
-        let active = false;
-        let endTime: string | null = null;
-        let message: string | null = null;
-
-        data.forEach((row) => {
-          if (row.key === 'maintenance_mode') {
-            active = row.value === true || row.value === 'true' || row.value === 1 || row.value === '1';
-          }
-          if (row.key === 'maintenance_end_time') endTime = (row.value as string) || null;
-          if (row.key === 'maintenance_message') message = (row.value as string) || null;
-        });
-
-        setMaintenance({ active, endTime, message });
-      }
-    } catch (err) {
-      console.error('Failed to fetch maintenance mode state:', err);
-    }
-  };
-
-  useEffect(() => {
-    checkMaintenance();
-    const interval = setInterval(checkMaintenance, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -1116,51 +1083,30 @@ function App() {
     <Router>
       <PageTransitionLoader />
 
-      {/* Admin Maintenance Alert Banner */}
-      {isAdmin && maintenance.active && (
-        <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-2 text-center text-xs sm:text-sm text-amber-300 flex items-center justify-center gap-2 relative z-50 backdrop-blur-md">
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
-          <span>
-            <strong>PLATFORM MAINTENANCE MODE IS ACTIVE:</strong> All non-admin users and visitors are locked out. You are viewing in Administrator Bypass mode.
-          </span>
-          <Link to="/admin/settings" className="ml-2 underline font-semibold text-amber-200 hover:text-white">
-            Manage Settings
-          </Link>
-        </div>
-      )}
-
       {session && !isAdmin && !onboarded && <OnboardingModal session={session} onComplete={() => setOnboarded(true)} />}
 
       <div className="min-h-screen bg-[#060807] text-slate-100 font-sans relative overflow-hidden">
         <AnimatedGlow />
         <MatrixBackground />
 
-        {/* If Maintenance is ACTIVE and user is NOT Admin: lock out all routes and render MaintenancePage */}
-        {maintenance.active && !isAdmin ? (
-          <Routes>
-            <Route path="/admin/login" element={session && isAdmin ? <Navigate to="/admin" /> : <Login />} />
-            <Route path="*" element={<MaintenancePage endTime={maintenance.endTime} message={maintenance.message} onCheckStatus={checkMaintenance} />} />
-          </Routes>
-        ) : (
-          <Routes>
-            <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
-            <Route path="/admin/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
-            <Route path="/signup" element={<Navigate to="/login" replace />} />
-            <Route path="/dashboard" element={session ? <CustomerDashboard isActualAdmin={isAdmin} /> : <Navigate to="/login" />} />
-            <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false} isActualAdmin={isAdmin}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
-            <Route path="/dashboard/packages" element={session ? <DashboardLayout title="Buy Packages" isAdmin={false} isActualAdmin={isAdmin}><CustomerPackages /></DashboardLayout> : <Navigate to="/login" />} />
-            <Route path="/dashboard/install" element={session ? <DashboardLayout title="Installation Guide" isAdmin={false} isActualAdmin={isAdmin}><CustomerInstallation /></DashboardLayout> : <Navigate to="/login" />} />
+        <Routes>
+          <Route path="/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
+          <Route path="/admin/login" element={session ? (isAdmin ? <Navigate to="/admin" /> : <Navigate to="/dashboard" />) : <Login />} />
+          <Route path="/signup" element={<Navigate to="/login" replace />} />
+          <Route path="/dashboard" element={session ? <CustomerDashboard isActualAdmin={isAdmin} /> : <Navigate to="/login" />} />
+          <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false} isActualAdmin={isAdmin}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
+          <Route path="/dashboard/packages" element={session ? <DashboardLayout title="Buy Packages" isAdmin={false} isActualAdmin={isAdmin}><CustomerPackages /></DashboardLayout> : <Navigate to="/login" />} />
+          <Route path="/dashboard/install" element={session ? <DashboardLayout title="Installation Guide" isAdmin={false} isActualAdmin={isAdmin}><CustomerInstallation /></DashboardLayout> : <Navigate to="/login" />} />
 
-            <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/admin/licenses" element={session ? (isAdmin ? <DashboardLayout title="All Licenses" isAdmin={true}><AdminLicenses /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/admin/packages" element={session ? (isAdmin ? <DashboardLayout title="All Packages" isAdmin={true}><AdminPackages /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/admin/payments" element={session ? (isAdmin ? <DashboardLayout title="Payments" isAdmin={true}><AdminPayments /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/admin/wipe-folders" element={session ? (isAdmin ? <DashboardLayout title="Delete User Folders" isAdmin={true}><AdminWipeFolders /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/admin/settings" element={session ? (isAdmin ? <DashboardLayout title="Settings" isAdmin={true}><AdminSettings /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
-            <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
-          </Routes>
-        )}
+          <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/licenses" element={session ? (isAdmin ? <DashboardLayout title="All Licenses" isAdmin={true}><AdminLicenses /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/packages" element={session ? (isAdmin ? <DashboardLayout title="All Packages" isAdmin={true}><AdminPackages /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/payments" element={session ? (isAdmin ? <DashboardLayout title="Payments" isAdmin={true}><AdminPayments /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/wipe-folders" element={session ? (isAdmin ? <DashboardLayout title="Delete User Folders" isAdmin={true}><AdminWipeFolders /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/admin/settings" element={session ? (isAdmin ? <DashboardLayout title="Settings" isAdmin={true}><AdminSettings /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+          <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
+        </Routes>
       </div>
     </Router>
   );
