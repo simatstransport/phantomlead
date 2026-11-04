@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
 import { 
   Trash2, AlertTriangle, Clock, Search, Plus, 
-  Laptop, Shield, RefreshCw, X, Download, Loader2, Key, CheckCircle2, ShieldAlert
+  Laptop, Shield, RefreshCw, X, Download, Loader2, Key, CheckCircle2, ShieldAlert,
+  CalendarPlus, Check
 } from 'lucide-react';
 import { downloadInstaller } from '../../utils/download';
 
@@ -16,6 +17,11 @@ export const AdminLicenses = () => {
   // Notification toast message state
   const [actionAlert, setActionAlert] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+
+  // Extend Expiry Modal state
+  const [extendModalLicense, setExtendModalLicense] = useState<any | null>(null);
+  const [selectedExtendDays, setSelectedExtendDays] = useState<number>(1);
+  const [isExtending, setIsExtending] = useState(false);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -143,6 +149,70 @@ export const AdminLicenses = () => {
       setActionAlert({ type: 'error', message: `❌ Error: ${err.message}` });
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleOpenExtendModal = (license: any) => {
+    setExtendModalLicense(license);
+    setSelectedExtendDays(1);
+  };
+
+  const handleConfirmExtension = async () => {
+    if (!extendModalLicense) return;
+
+    // Safety constraint: maximum 5 days
+    const daysToAdd = Math.min(Math.max(selectedExtendDays, 1), 5);
+    setIsExtending(true);
+
+    try {
+      const now = Date.now();
+      const currentExpiry = extendModalLicense.expires_at 
+        ? new Date(extendModalLicense.expires_at).getTime() 
+        : now;
+
+      // If current expiry is in the past or within 10 minutes, calculate from now; otherwise add to current expiry
+      const baseTime = currentExpiry > now ? currentExpiry : now;
+      const newExpiryTime = new Date(baseTime + daysToAdd * 24 * 60 * 60 * 1000);
+      const newExpiryIso = newExpiryTime.toISOString();
+
+      const { error } = await supabase
+        .from('licenses')
+        .update({ 
+          expires_at: newExpiryIso,
+          status: 'ACTIVE' // restore to ACTIVE if it was expired
+        })
+        .eq('id', extendModalLicense.id);
+
+      if (error) {
+        setActionAlert({ type: 'error', message: `❌ Failed to extend license: ${error.message}` });
+      } else {
+        // Record in audit log
+        await supabase.from('audit_logs').insert({
+          action: 'LICENSE_EXTENSION_GRANTED',
+          target_id: extendModalLicense.id,
+          details: {
+            days_added: daysToAdd,
+            previous_expiry: extendModalLicense.expires_at,
+            new_expiry: newExpiryIso,
+            customer_email: extendModalLicense.customers?.email,
+            customer_name: extendModalLicense.customers?.full_name,
+            timestamp: new Date().toISOString()
+          }
+        });
+
+        const customerName = extendModalLicense.customers?.full_name || extendModalLicense.customers?.email || 'Candidate';
+        setActionAlert({
+          type: 'success',
+          message: `⏳ Granted +${daysToAdd} day(s) extension for ${customerName}! New expiry: ${newExpiryTime.toLocaleDateString()} ${newExpiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+        });
+        setExtendModalLicense(null);
+        fetchLicenses();
+        setTimeout(() => setActionAlert(null), 6000);
+      }
+    } catch (err: any) {
+      setActionAlert({ type: 'error', message: `❌ Error: ${err.message}` });
+    } finally {
+      setIsExtending(false);
     }
   };
 
@@ -507,6 +577,18 @@ export const AdminLicenses = () => {
                     {/* Actions */}
                     <td className="py-4 px-4 text-right">
                       <div className="inline-flex items-center gap-2">
+                        {/* Extend Days Button (for timed licenses with an expiration date) */}
+                        {!isRevoked && (lic.expires_at || lic.duration_months) && (
+                          <button
+                            onClick={() => handleOpenExtendModal(lic)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/25 transition-all cursor-pointer font-mono text-xs font-semibold"
+                            title="Add extension days (up to 5 days max)"
+                          >
+                            <CalendarPlus className="w-3.5 h-3.5 text-cyan-400" />
+                            <span>+ Extend</span>
+                          </button>
+                        )}
+
                         {!isRevoked ? (
                           <button
                             onClick={() => handleRevokeLicense(lic.id, lic.customers?.full_name || lic.customers?.email)}
@@ -692,6 +774,142 @@ export const AdminLicenses = () => {
           </div>
         </div>
       )}
+
+      {/* Extend License Days Modal (Max 5 Days) */}
+      {extendModalLicense && (() => {
+        const now = Date.now();
+        const currentExp = extendModalLicense.expires_at ? new Date(extendModalLicense.expires_at).getTime() : now;
+        const base = currentExp > now ? currentExp : now;
+        const projectedExp = new Date(base + selectedExtendDays * 24 * 60 * 60 * 1000);
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="bg-[#09090b] border border-white/10 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative cinema-corner-mark">
+              <button 
+                onClick={() => setExtendModalLicense(null)}
+                className="absolute right-5 top-5 text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  <span className="text-[10px] font-cinematic uppercase tracking-[0.2em] text-cyan-400 font-bold bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 rounded-full">
+                    ARMAMENT EXTENSION
+                  </span>
+                </div>
+                <h3 className="text-xl font-display uppercase tracking-wider text-white flex items-center gap-2">
+                  <CalendarPlus className="w-5 h-5 text-cyan-400" /> Extend Expiry Window
+                </h3>
+                <p className="text-xs text-[#8a8a8a]">
+                  Grant additional operating days (maximum 5 days) for candidate workstation runtime.
+                </p>
+              </div>
+
+              {/* Target Candidate Summary */}
+              <div className="p-3.5 rounded-xl bg-black/70 border border-white/10 space-y-1.5 text-xs font-mono">
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8a8a8a]">Candidate:</span>
+                  <span className="text-white font-bold">{extendModalLicense.customers?.full_name || 'Candidate'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8a8a8a]">Email:</span>
+                  <span className="text-slate-300">{extendModalLicense.customers?.email}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8a8a8a]">Package:</span>
+                  <span className="text-cyan-300 font-bold">{extendModalLicense.packages?.package_code || 'STANDARD'}</span>
+                </div>
+                <div className="flex items-center justify-between pt-1 border-t border-white/5">
+                  <span className="text-[#8a8a8a]">Current Expiry:</span>
+                  <span className="text-amber-400 font-semibold">
+                    {extendModalLicense.expires_at ? new Date(extendModalLicense.expires_at).toLocaleDateString() : 'Expired'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Days Selection Buttons (1 to 5 Days) */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-cinematic uppercase tracking-wider">
+                  <span className="text-slate-300 font-bold flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-cyan-400" /> Select Days to Add
+                  </span>
+                  <span className="text-[10px] text-cyan-400 font-mono">
+                    MAX 5 DAYS
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-5 gap-1.5">
+                  {[1, 2, 3, 4, 5].map(d => {
+                    const isSelected = selectedExtendDays === d;
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setSelectedExtendDays(d)}
+                        className={`py-3 rounded-xl font-cinematic uppercase tracking-wider font-bold text-xs transition-all cursor-pointer flex flex-col items-center justify-center ${
+                          isSelected
+                            ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-105'
+                            : 'bg-black/60 text-slate-400 hover:text-white hover:bg-white/[0.05] border border-white/10'
+                        }`}
+                      >
+                        <span className="text-base leading-none">+{d}</span>
+                        <span className={`text-[9px] mt-0.5 ${isSelected ? 'text-slate-950' : 'text-slate-500'}`}>
+                          {d === 1 ? 'Day' : 'Days'}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Projected Expiry Preview */}
+              <div className="p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-500/40 text-xs flex items-center justify-between font-mono">
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase">New Expiry Timestamp:</span>
+                  <span className="text-cyan-300 font-bold text-sm">
+                    {projectedExp.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}{' • '}
+                    {projectedExp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300">
+                  <Check className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setExtendModalLicense(null)}
+                  className="flex-1 py-3 rounded-xl bg-black/60 hover:bg-white/[0.05] border border-white/10 text-slate-300 font-cinematic uppercase tracking-wider text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmExtension}
+                  disabled={isExtending}
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-cinematic uppercase tracking-wider text-xs font-bold shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+                >
+                  {isExtending ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Extending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CalendarPlus className="w-3.5 h-3.5" />
+                      <span>Confirm +{selectedExtendDays} Day{selectedExtendDays > 1 ? 's' : ''}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
