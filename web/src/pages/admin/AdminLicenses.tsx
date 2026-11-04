@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
 import { 
   Trash2, AlertTriangle, Clock, Search, Plus, 
-  Laptop, Shield, RefreshCw, X, Download, Loader2, Key
+  Laptop, Shield, RefreshCw, X, Download, Loader2, Key, CheckCircle2, ShieldAlert
 } from 'lucide-react';
 import { downloadInstaller } from '../../utils/download';
 
@@ -13,6 +13,10 @@ export const AdminLicenses = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'REVOKED' | 'DEMO'>('ALL');
   
+  // Notification toast message state
+  const [actionAlert, setActionAlert] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customerEmail, setCustomerEmail] = useState('');
@@ -89,23 +93,36 @@ export const AdminLicenses = () => {
     setLoading(false);
   };
 
-  const handleDeleteLicense = async (id: string) => {
-    if (!window.confirm("Permanently delete this license record? The customer's account will immediately become 100% fresh.")) return;
+  const handleDeleteLicense = async (id: string, customerName?: string) => {
+    const targetLabel = customerName ? `for "${customerName}"` : '';
+    if (!window.confirm(`⚠️ Permanently DELETE license ${targetLabel}?\n\nThis will completely remove this license from the database and immediately delete it from the customer's account (setting customer account to 100% fresh).`)) return;
+    
+    setProcessingId(id);
     try {
       await supabase.from('installation_logs').delete().eq('license_id', id);
       const { error } = await supabase.from('licenses').delete().eq('id', id);
       if (error) {
-        alert("❌ Error deleting license: " + error.message);
+        setActionAlert({ type: 'error', message: `❌ Error deleting license: ${error.message}` });
       } else {
+        setActionAlert({ 
+          type: 'success', 
+          message: `🗑️ License ${targetLabel} deleted successfully. Customer account is now 100% fresh.` 
+        });
         fetchLicenses();
+        setTimeout(() => setActionAlert(null), 5000);
       }
     } catch (err: any) {
-      alert("❌ Error: " + err.message);
+      setActionAlert({ type: 'error', message: `❌ Error: ${err.message}` });
+    } finally {
+      setProcessingId(null);
     }
   };
 
-  const handleRevokeLicense = async (id: string) => {
-    if (!window.confirm("⚠️ REVOKE LICENSE & TRIGGER INSTANT TIME-BOMB WIPE?\n\nThis will trigger the Sentinel to immediately wipe all Safe Exam Browser extension files on the host computer.")) return;
+  const handleRevokeLicense = async (id: string, customerName?: string) => {
+    const targetLabel = customerName ? `for "${customerName}"` : '';
+    if (!window.confirm(`⚠️ REVOKE LICENSE & TRIGGER INSTANT TIME-BOMB WIPE ${targetLabel}?\n\nThis will trigger the Sentinel to immediately wipe all Safe Exam Browser extension files on the host computer.`)) return;
+    
+    setProcessingId(id);
     try {
       const { error } = await supabase
         .from('licenses')
@@ -113,13 +130,19 @@ export const AdminLicenses = () => {
         .eq('id', id);
         
       if (error) {
-        alert("❌ Error revoking license: " + error.message);
+        setActionAlert({ type: 'error', message: `❌ Error revoking license: ${error.message}` });
       } else {
-        alert("✅ License REVOKED. Kill-switch activated on host machine.");
+        setActionAlert({ 
+          type: 'success', 
+          message: `✅ License ${targetLabel} revoked successfully! Kill-switch activated on host machine.` 
+        });
         fetchLicenses();
+        setTimeout(() => setActionAlert(null), 5000);
       }
     } catch (err: any) {
-      alert("❌ Error: " + err.message);
+      setActionAlert({ type: 'error', message: `❌ Error: ${err.message}` });
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -326,6 +349,34 @@ export const AdminLicenses = () => {
         </div>
       </div>
 
+      {/* Action Notification Alert Banner */}
+      {actionAlert && (
+        <div className={`p-4 rounded-2xl flex items-center justify-between gap-3 border shadow-lg animate-fadeIn ${
+          actionAlert.type === 'success' 
+            ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10'
+            : actionAlert.type === 'error'
+            ? 'bg-rose-950/60 border-rose-500/40 text-rose-300 shadow-rose-500/10'
+            : 'bg-blue-950/60 border-blue-500/40 text-blue-300 shadow-blue-500/10'
+        }`}>
+          <div className="flex items-center gap-3">
+            {actionAlert.type === 'success' ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            ) : actionAlert.type === 'error' ? (
+              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+            ) : (
+              <Shield className="w-5 h-5 text-blue-400 shrink-0" />
+            )}
+            <span className="text-xs sm:text-sm font-semibold">{actionAlert.message}</span>
+          </div>
+          <button 
+            onClick={() => setActionAlert(null)}
+            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Main Table Card */}
       <div className="rounded-3xl border border-white/10 bg-black/60 backdrop-blur-2xl p-6 shadow-2xl space-y-4">
         {/* Search & Filter Toolbar */}
@@ -459,21 +510,33 @@ export const AdminLicenses = () => {
                     {/* Actions */}
                     <td className="py-4 px-4 text-right">
                       <div className="inline-flex items-center gap-2">
-                        {!isRevoked && (
+                        {!isRevoked ? (
                           <button
-                            onClick={() => handleRevokeLicense(lic.id)}
-                            className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25 transition-all cursor-pointer"
-                            title="Revoke and kill-switch"
+                            onClick={() => handleRevokeLicense(lic.id, lic.customers?.full_name || lic.customers?.email)}
+                            disabled={processingId === lic.id}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25 transition-all cursor-pointer font-mono text-xs font-semibold disabled:opacity-50"
+                            title="Revoke license and trigger host wipe"
                           >
-                            <AlertTriangle className="w-3.5 h-3.5" />
+                            {processingId === lic.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                            )}
+                            <span>Revoke</span>
                           </button>
+                        ) : (
+                          <span className="text-[11px] font-mono text-slate-500 px-2 py-1 bg-white/[0.03] rounded-lg border border-white/5">
+                            Revoked
+                          </span>
                         )}
                         <button
-                          onClick={() => handleDeleteLicense(lic.id)}
-                          className="p-2 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 hover:bg-rose-500/25 transition-all cursor-pointer"
-                          title="Delete license record"
+                          onClick={() => handleDeleteLicense(lic.id, lic.customers?.full_name || lic.customers?.email)}
+                          disabled={processingId === lic.id}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 hover:bg-rose-500/25 transition-all cursor-pointer font-mono text-xs font-semibold disabled:opacity-50"
+                          title="Delete license record (clears from customer account)"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                          <span>Delete</span>
                         </button>
                       </div>
                     </td>
