@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../services/supabase';
-import { Save, ShieldCheck } from 'lucide-react';
+import { Save, ShieldCheck, QrCode } from 'lucide-react';
 
 export const AdminSettings = () => {
   const [settings, setSettings] = useState<Record<string, any>>({
     allow_signups: true,
     support_email: 'support@phantomlead.com',
     contact_number: '+91 9000000000',
-    company_name: 'Phantom Lead'
+    company_name: 'Phantom Lead',
+    merchant_upi_id: 'phantomlead@upi',
+    merchant_upi_name: 'Phantom Lead'
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -126,6 +128,57 @@ export const AdminSettings = () => {
               onChange={e => setSettings({ ...settings, support_email: e.target.value })} 
               className="w-full px-3.5 py-2.5 bg-black/80 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 text-white text-sm font-mono" 
             />
+          </div>
+        </div>
+
+        {/* UPI PAYMENT SETTINGS */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-mono font-bold text-slate-300 border-b border-white/10 pb-2 uppercase tracking-wider flex items-center gap-2">
+            <QrCode className="w-4 h-4 text-emerald-400" /> Merchant UPI Payment Gateway
+          </h3>
+          <p className="text-xs text-slate-400">
+            Configure the UPI ID (VPA) and payee name displayed to students and customers during their package checkout process.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">
+                Merchant UPI ID (VPA) <span className="text-rose-400">*</span>
+              </label>
+              <input 
+                type="text" 
+                required
+                placeholder="e.g. yourname@okaxis or company@upi"
+                value={settings.merchant_upi_id || ''} 
+                onChange={e => setSettings({ ...settings, merchant_upi_id: e.target.value })} 
+                className="w-full px-3.5 py-2.5 bg-black/80 border border-emerald-500/30 rounded-xl focus:outline-none focus:border-emerald-500 text-white text-sm font-mono font-bold" 
+              />
+              <span className="text-[11px] text-slate-400 mt-1 block">
+                This exact UPI ID will be shown to customers to transfer payments.
+              </span>
+            </div>
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-400 mb-1">
+                Merchant / Business Name
+              </label>
+              <input 
+                type="text" 
+                placeholder="e.g. Phantom Lead"
+                value={settings.merchant_upi_name || ''} 
+                onChange={e => setSettings({ ...settings, merchant_upi_name: e.target.value })} 
+                className="w-full px-3.5 py-2.5 bg-black/80 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 text-white text-sm font-mono" 
+              />
+              <span className="text-[11px] text-slate-400 mt-1 block">
+                Optional business display name shown next to the UPI handle.
+              </span>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs flex items-center justify-between">
+            <span className="text-slate-300 font-mono">Live Customer Preview:</span>
+            <span className="font-mono font-bold text-emerald-300 bg-black/60 px-3 py-1 rounded-lg border border-emerald-500/30">
+              {settings.merchant_upi_id || 'phantomlead@upi'}
+            </span>
           </div>
         </div>
 

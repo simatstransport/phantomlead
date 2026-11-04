@@ -146,13 +146,38 @@ export const CustomerPackages = () => {
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [submittingPayment, setSubmittingPayment] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [merchantUpiId, setMerchantUpiId] = useState('phantomlead@upi');
+  const [merchantUpiName, setMerchantUpiName] = useState('Phantom Lead');
 
   const phoneStatus = isValidIndianPhoneNumber(formData.phone);
 
   useEffect(() => {
     fetchPackages();
     fetchCustomerProfile();
+    fetchMerchantSettings();
   }, []);
+
+  const fetchMerchantSettings = async () => {
+    try {
+      const { data } = await supabase
+        .from('admin_settings')
+        .select('key, value')
+        .in('key', ['merchant_upi_id', 'merchant_upi_name']);
+      
+      if (data) {
+        data.forEach(item => {
+          if (item.key === 'merchant_upi_id' && item.value) {
+            setMerchantUpiId(String(item.value).trim());
+          }
+          if (item.key === 'merchant_upi_name' && item.value) {
+            setMerchantUpiName(String(item.value).trim());
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Could not load merchant settings:', e);
+    }
+  };
 
   const fetchPackages = async () => {
     const { data } = await supabase.from('packages').select('*').order('price', { ascending: true });
@@ -289,7 +314,7 @@ export const CustomerPackages = () => {
   };
 
   const copyUpiId = () => {
-    navigator.clipboard.writeText('phantomlead@upi');
+    navigator.clipboard.writeText(merchantUpiId || 'phantomlead@upi');
     setCopiedUpi(true);
     setTimeout(() => setCopiedUpi(false), 2000);
   };
@@ -736,7 +761,7 @@ export const CustomerPackages = () => {
             <div className="p-4 rounded-2xl glass-panel border border-cyan-500/30 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400 font-mono flex items-center gap-1.5">
-                  <QrCode className="w-4 h-4 text-cyan-400" /> Direct Merchant VPA:
+                  <QrCode className="w-4 h-4 text-cyan-400" /> Direct Merchant VPA {merchantUpiName ? `(${merchantUpiName})` : ''}:
                 </span>
                 <button
                   type="button"
@@ -748,7 +773,7 @@ export const CustomerPackages = () => {
                 </button>
               </div>
               <div className="font-mono text-lg font-bold text-white tracking-wider select-all text-center py-1">
-                phantomlead@upi
+                {merchantUpiId || 'phantomlead@upi'}
               </div>
             </div>
           </div>
