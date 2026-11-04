@@ -8,7 +8,9 @@ import {
   Search, 
   Copy, 
   Check, 
-  Mail
+  Mail,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 
 export const AdminPayments = () => {
@@ -18,6 +20,7 @@ export const AdminPayments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
   const [copiedTxnId, setCopiedTxnId] = useState<string | null>(null);
+  const [actionAlert, setActionAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     fetchPayments();
@@ -48,9 +51,45 @@ export const AdminPayments = () => {
     
     setProcessingId(null);
     if (error) {
-      alert(error.message || `Failed to ${actionStr.toLowerCase()} payment`);
+      setActionAlert({ type: 'error', message: error.message || `Failed to ${actionStr.toLowerCase()} payment` });
     } else {
+      setActionAlert({ 
+        type: 'success', 
+        message: status === 'APPROVED' ? '✅ Payment approved and license generated!' : '🚫 Payment rejected.' 
+      });
       fetchPayments();
+      setTimeout(() => setActionAlert(null), 4000);
+    }
+  };
+
+  const handleDeletePayment = async (id: string, utrId?: string, amount?: number) => {
+    const label = utrId ? `UTR: "${utrId}" (₹${amount || 0})` : `Payment #${id}`;
+    if (!window.confirm(`⚠️ Permanently DELETE payment entry ${label}?\n\nThis will remove this record completely. It will immediately update your Cleared Revenue and metrics to reflect the exact correct calculated total.`)) {
+      return;
+    }
+
+    setProcessingId(id);
+    try {
+      // 1. If any licenses reference this payment_id, detach payment_id so foreign key constraint doesn't fail
+      await supabase.from('licenses').update({ payment_id: null }).eq('payment_id', id);
+
+      // 2. Delete the payment record
+      const { error } = await supabase.from('payments').delete().eq('id', id);
+
+      if (error) {
+        setActionAlert({ type: 'error', message: `❌ Error deleting payment: ${error.message}` });
+      } else {
+        setActionAlert({ 
+          type: 'success', 
+          message: `🗑️ Payment record deleted successfully. Revenue recalculation complete.` 
+        });
+        fetchPayments();
+        setTimeout(() => setActionAlert(null), 4000);
+      }
+    } catch (err: any) {
+      setActionAlert({ type: 'error', message: `❌ Error: ${err.message}` });
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -100,6 +139,20 @@ export const AdminPayments = () => {
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Toast Alert Banner */}
+      {actionAlert && (
+        <div className={`p-4 rounded-2xl text-xs font-mono flex items-center justify-between border ${
+          actionAlert.type === 'success' 
+            ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' 
+            : 'bg-rose-500/15 border-rose-500/40 text-rose-300'
+        }`}>
+          <span>{actionAlert.message}</span>
+          <button onClick={() => setActionAlert(null)} className="text-slate-400 hover:text-white">
+            <XCircle className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Header Deck */}
       <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#0d1117] dark:bg-[#0d1117] light:bg-white backdrop-blur-xl p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -291,35 +344,56 @@ export const AdminPayments = () => {
 
                       {/* Actions */}
                       <td className="py-4 px-4 text-right">
-                        {isPending ? (
-                          <div className="inline-flex items-center gap-2">
-                            <button 
-                              onClick={() => handleApproval(p.id, 'APPROVED')} 
-                              disabled={isProcessing}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-md shadow-cyan-500/20 active:scale-95 cursor-pointer"
-                            >
-                              {isProcessing ? (
-                                <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <CheckCircle className="w-3.5 h-3.5" />
-                              )}
-                              <span>Approve</span>
-                            </button>
+                        <div className="inline-flex items-center gap-2 justify-end">
+                          {isPending && (
+                            <>
+                              <button 
+                                onClick={() => handleApproval(p.id, 'APPROVED')} 
+                                disabled={isProcessing}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-md shadow-emerald-500/20 active:scale-95 cursor-pointer"
+                                title="Approve payment and issue license"
+                              >
+                                {isProcessing ? (
+                                  <div className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <CheckCircle className="w-3.5 h-3.5" />
+                                )}
+                                <span>Approve</span>
+                              </button>
 
-                            <button 
-                              onClick={() => handleApproval(p.id, 'REJECTED')} 
-                              disabled={isProcessing}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 disabled:opacity-50 text-red-400 text-xs font-mono font-bold tracking-wider uppercase transition-all cursor-pointer"
-                            >
-                              <XCircle className="w-3.5 h-3.5" />
-                              <span>Reject</span>
-                            </button>
-                          </div>
-                        ) : (
-                          <span className="text-zinc-600 font-mono text-[11px]">
-                            {isApproved ? 'License Granted' : 'Transaction Closed'}
-                          </span>
-                        )}
+                              <button 
+                                onClick={() => handleApproval(p.id, 'REJECTED')} 
+                                disabled={isProcessing}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 disabled:opacity-50 text-amber-400 text-xs font-mono font-bold tracking-wider uppercase transition-all cursor-pointer"
+                                title="Reject payment"
+                              >
+                                <XCircle className="w-3.5 h-3.5" />
+                                <span>Reject</span>
+                              </button>
+                            </>
+                          )}
+
+                          {!isPending && (
+                            <span className="text-zinc-500 font-mono text-[11px] px-2 py-0.5 rounded bg-white/[0.04] border border-white/5 mr-1">
+                              {isApproved ? 'Approved' : 'Rejected'}
+                            </span>
+                          )}
+
+                          {/* Delete Payment Button (Works for Approved, Rejected, and Pending to recalibrate total revenue) */}
+                          <button
+                            onClick={() => handleDeletePayment(p.id, p.upi_transaction_id, p.amount)}
+                            disabled={isProcessing}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/15 border border-rose-500/40 text-rose-300 hover:bg-rose-500/30 hover:text-white transition-all cursor-pointer font-mono text-xs font-semibold disabled:opacity-50"
+                            title="Delete this payment record to calculate exact amount"
+                          >
+                            {isProcessing ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                            )}
+                            <span>Del</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
