@@ -330,14 +330,14 @@ export const CustomerLicenses = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
-              CRYPTOGRAPHIC KEY VAULT • DRM ARMAMENT
+            <span className="w-2.5 h-2.5 rounded-full bg-[#de1b1c] animate-ping" />
+            <span className="text-[11px] font-cinematic uppercase tracking-[0.2em] text-[#ededed] font-bold">
+              SCENE 01 // CRYPTOGRAPHIC KEY VAULT • DRM ARMAMENT
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-            <Key className="w-6 h-6 text-emerald-400" />
-            Software Licenses &amp; <span className="text-gradient-rainbow">Machine Locks</span>
+          <h1 className="text-2xl sm:text-3xl font-display uppercase tracking-wide text-white flex items-center gap-2.5">
+            <Key className="w-6 h-6 text-[#de1b1c]" />
+            SECURITY LICENSES &amp; <span className="text-[#de1b1c]">NODE LOCKS</span>
           </h1>
         </div>
 
@@ -346,40 +346,40 @@ export const CustomerLicenses = () => {
             type="button"
             onClick={() => fetchLicenses(true)}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 px-4 py-2.5 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-xs font-semibold border border-white/10 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-black/80 hover:bg-white/[0.06] text-[#ededed] hover:text-white rounded-xl text-xs font-cinematic uppercase tracking-wider font-semibold border border-white/15 transition-all cursor-pointer disabled:opacity-50"
             title="Refresh license state"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-emerald-400 ${refreshing ? 'animate-spin' : ''}`} />
-            <span>{refreshing ? 'Syncing...' : 'Sync Status'}</span>
+            <RefreshCw className={`w-3.5 h-3.5 text-[#de1b1c] ${refreshing ? 'animate-spin' : ''}`} />
+            <span>{refreshing ? 'SYNCING...' : 'SYNC STATUS'}</span>
           </button>
         </div>
       </div>
 
       {keyError && (
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
           {keyError}
         </div>
       )}
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+        <div className="p-4 rounded-xl bg-[#de1b1c]/15 border border-[#de1b1c]/30 text-[#ff2a2b] text-xs font-mono">
           {error}
         </div>
       )}
 
       {/* ========================================================================= */}
       {revokedLicense && (
-        <div className="relative overflow-hidden rounded-3xl glass-panel p-6 sm:p-8 border border-rose-500/40 bg-gradient-to-b from-rose-950/40 via-[#180a0d]/90 to-[#0c0507] shadow-[0_0_35px_rgba(244,63,94,0.25)] space-y-5 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-500/20 pb-4">
+        <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 border-2 border-[#de1b1c] bg-[#09090b] shadow-[0_0_40px_rgba(222,27,28,0.35)] space-y-5 mb-6 cinema-corner-mark">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#de1b1c]/30 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-[#de1b1c]/20 border border-[#de1b1c]/50 flex items-center justify-center text-[#ff2a2b] shrink-0">
                 <AlertTriangle className="w-6 h-6 animate-pulse" />
               </div>
               <div>
-                <span className="inline-block text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 mb-1">
+                <span className="inline-block text-[10px] font-cinematic font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full bg-[#de1b1c]/25 text-[#ff2a2b] border border-[#de1b1c]/40 mb-1">
                   SECURITY SENTINEL ALERT
                 </span>
-                <h3 className="text-xl font-black text-white tracking-tight">
-                  License Revoked by Administrator
+                <h3 className="text-xl font-display uppercase tracking-wide text-white">
+                  LICENSE REVOKED BY ADMINISTRATOR
                 </h3>
               </div>
             </div>
@@ -387,24 +387,24 @@ export const CustomerLicenses = () => {
             <button
               onClick={() => handleAcknowledgeRevocation(revokedLicense.id)}
               disabled={clearingRevocation}
-              className="px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-rose-500/30 flex items-center gap-2 active:scale-95 disabled:opacity-50"
+              className="px-6 py-3 rounded-xl bg-[#de1b1c] hover:bg-[#ff2a2b] text-white font-cinematic text-xs font-bold uppercase tracking-widest transition-all cursor-pointer shadow-[0_0_25px_rgba(222,27,28,0.4)] flex items-center gap-2 active:scale-95 disabled:opacity-50"
             >
               {clearingRevocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-              <span>{clearingRevocation ? 'Clearing Workstation...' : 'Acknowledge & Clear Workstation'}</span>
+              <span>{clearingRevocation ? 'CLEARING ENCLAVE...' : 'ACKNOWLEDGE & RESET ENCLAVE'}</span>
             </button>
           </div>
 
-          <div className="p-4 rounded-2xl bg-black/60 border border-white/10 space-y-2 text-xs">
+          <div className="p-4 rounded-xl bg-black/80 border border-white/10 space-y-2 text-xs">
             <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
-              <span className="text-slate-400">Target Package:</span>
+              <span className="text-[#8a8a8a]">Target Package:</span>
               <span className="text-white font-bold">{revokedLicense.packages?.package_name || 'Security Package'} ({revokedLicense.packages?.package_code || 'STANDARD'})</span>
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
-              <span className="text-slate-400">Status:</span>
-              <span className="text-rose-400 font-bold uppercase tracking-wider">REVOKED (Kill-switch triggered on host)</span>
+              <span className="text-[#8a8a8a]">Status:</span>
+              <span className="text-[#ff2a2b] font-bold uppercase tracking-wider">REVOKED (Host purge completed)</span>
             </div>
-            <p className="text-slate-300 text-xs leading-relaxed pt-2 border-t border-white/5">
-              Your license has been revoked by the administrator. All authorized Safe Exam Browser extension files on your machine have been terminated and wiped. Click <strong>Acknowledge &amp; Clear Workstation</strong> above to reset your account and activate a new license.
+            <p className="text-[#8a8a8a] text-xs leading-relaxed pt-2 border-t border-white/10">
+              Your license has been revoked by the administrator. All authorized Safe Exam Browser extension files on your machine have been terminated and wiped. Click <strong>Acknowledge &amp; Reset Enclave</strong> above to reset your account and activate a new license.
             </p>
           </div>
         </div>

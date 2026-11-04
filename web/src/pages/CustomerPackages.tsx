@@ -361,41 +361,41 @@ export const CustomerPackages = () => {
             {/* Step 1 */}
             <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
               step === 1 
-                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
-                : 'glass-panel text-slate-400 border-white/5'
+                ? 'bg-[#de1b1c]/15 border-[#de1b1c]/50 text-white font-bold shadow-[0_0_15px_rgba(222,27,28,0.25)]' 
+                : 'bg-black/60 text-[#8a8a8a] border-white/5'
             }`}>
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 1 ? 'bg-emerald-400 text-black' : 'bg-slate-800 text-slate-400'
+                step === 1 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
               }`}>1</span>
-              <span className="font-semibold">Packages</span>
+              <span className="font-cinematic uppercase tracking-wider text-xs">ACT 01 // PASS</span>
             </div>
 
-            <ChevronRight className="w-4 h-4 text-slate-600" />
+            <ChevronRight className="w-4 h-4 text-[#4e4e4e]" />
 
             {/* Step 2 */}
             <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
               step === 2 
-                ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-400/50 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)]' 
-                : 'glass-panel text-slate-400 border-white/5'
+                ? 'bg-[#de1b1c]/15 border-[#de1b1c]/50 text-white font-bold shadow-[0_0_15px_rgba(222,27,28,0.25)]' 
+                : 'bg-black/60 text-[#8a8a8a] border-white/5'
             }`}>
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 2 ? 'bg-purple-400 text-black' : 'bg-slate-800 text-slate-400'
+                step === 2 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
               }`}>2</span>
-              <span className="font-semibold">Profile</span>
+              <span className="font-cinematic uppercase tracking-wider text-xs">ACT 02 // DOSSIER</span>
             </div>
 
-            <ChevronRight className="w-4 h-4 text-slate-600" />
+            <ChevronRight className="w-4 h-4 text-[#4e4e4e]" />
 
             {/* Step 3 */}
             <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
               step === 3 
-                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
-                : 'glass-panel text-slate-400 border-white/5'
+                ? 'bg-[#de1b1c]/15 border-[#de1b1c]/50 text-white font-bold shadow-[0_0_15px_rgba(222,27,28,0.25)]' 
+                : 'bg-black/60 text-[#8a8a8a] border-white/5'
             }`}>
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 3 ? 'bg-emerald-400 text-black' : 'bg-slate-800 text-slate-400'
+                step === 3 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
               }`}>3</span>
-              <span className="font-semibold">UPI Payment</span>
+              <span className="font-cinematic uppercase tracking-wider text-xs">ACT 03 // SETTLEMENT</span>
             </div>
           </div>
         </div>
@@ -405,15 +405,15 @@ export const CustomerPackages = () => {
       {step === 1 && (
         <div className="space-y-6">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-mono font-semibold tracking-wide">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Authorized Security Suite • Safe Exam Browser 3.10.2</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#de1b1c]/40 bg-[#de1b1c]/15 text-[#ededed] text-[11px] font-cinematic font-bold tracking-[0.2em] uppercase shadow-[0_0_15px_rgba(222,27,28,0.3)]">
+              <span className="w-2 h-2 rounded-full bg-[#de1b1c] animate-ping" />
+              <span>SCENE 01 // SAFE EXAM RUNTIME TIERING</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              Select Authorized <span className="text-gradient-emerald">Package Tier</span>
+            <h2 className="text-3xl sm:text-5xl font-display uppercase tracking-wider text-white">
+              SELECT AUTHORIZED <span className="text-[#de1b1c]">EXAM PASS</span>
             </h2>
-            <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-              Hardware node-locked software packages for campus labs. Choose duration up to <span className="text-emerald-400 font-bold font-mono">3 Months</span> or select <span className="text-emerald-400 font-bold font-mono">Permanent Lifetime License</span>.
+            <p className="text-[#8a8a8a] text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+              Cryptographically locked workstation licenses. Choose sprint duration up to <span className="text-white font-bold font-mono">3 Months</span> or secure a <span className="text-[#de1b1c] font-bold font-mono">Permanent Lifetime Key</span>.
             </p>
           </div>
           
@@ -432,59 +432,20 @@ export const CustomerPackages = () => {
                 theme: 'sky'
               };
 
-              // Determine styling based on package theme
-              const themeStyles = {
-                violet: {
-                  card: 'border border-emerald-500/30 hover:border-emerald-400/60 bg-[#0d1117]/80 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
-                  badge: 'bg-emerald-500/20 text-emerald-300 border-b border-emerald-500/30',
-                  btn: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20',
-                  accent: 'text-emerald-400',
-                  tagBg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
-                  check: 'text-emerald-400',
-                },
-                emerald: {
-                  card: 'border border-white/10 hover:border-emerald-500/40 bg-[#0d1117]/70 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
-                  badge: 'bg-slate-800/80 text-emerald-300 border-b border-white/10',
-                  btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold shadow-md',
-                  accent: 'text-emerald-400',
-                  tagBg: 'bg-slate-800 text-slate-300 border-white/10',
-                  check: 'text-emerald-400',
-                },
-                amber: {
-                  card: 'border border-white/10 hover:border-amber-500/40 bg-[#0d1117]/70 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
-                  badge: 'bg-slate-800/80 text-amber-300 border-b border-white/10',
-                  btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold shadow-md',
-                  accent: 'text-amber-400',
-                  tagBg: 'bg-slate-800 text-slate-300 border-white/10',
-                  check: 'text-amber-400',
-                },
-                sky: {
-                  card: 'border border-white/10 hover:border-cyan-500/40 bg-[#0d1117]/70 hover:bg-[#0f151d] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.8)]',
-                  badge: 'bg-slate-800/80 text-cyan-300 border-b border-white/10',
-                  btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold shadow-md',
-                  accent: 'text-cyan-400',
-                  tagBg: 'bg-slate-800 text-slate-300 border-white/10',
-                  check: 'text-cyan-400',
-                }
-              }[guide.theme] || {
-                card: 'glass-panel border-white/10 hover:border-emerald-500/30',
-                badge: 'bg-slate-800 text-slate-300',
-                btn: 'bg-slate-100 hover:bg-white text-slate-950 font-bold',
-                accent: 'text-emerald-400',
-                tagBg: 'bg-slate-800 text-slate-300 border-white/10',
-                check: 'text-emerald-400',
-              };
+              const cardClasses = isFeatured
+                ? 'border-2 border-[#de1b1c] bg-[#09090b] shadow-[0_0_35px_rgba(222,27,28,0.25)]'
+                : 'border border-white/10 hover:border-[#de1b1c]/50 bg-[#09090b]/80 shadow-[0_20px_40px_rgba(0,0,0,0.8)]';
 
               return (
                 <div 
                   key={pkg.id} 
-                  className={`rounded-3xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden group backdrop-blur-2xl hover:-translate-y-1.5 ${themeStyles.card}`}
+                  className={`rounded-2xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden group backdrop-blur-2xl hover:-translate-y-1.5 cinema-corner-mark ${cardClasses}`}
                 >
                   {/* Featured Header Ribbon */}
                   {guide.badge && (
-                    <div className={`py-1.5 px-3 text-center ${themeStyles.badge}`}>
-                      <span className="text-[10px] font-mono font-black tracking-widest uppercase flex items-center justify-center gap-1.5">
-                        {isFeatured ? <Sparkles className="w-3.5 h-3.5" /> : <Zap className="w-3 h-3" />}
+                    <div className={`py-1.5 px-3 text-center ${isFeatured ? 'bg-[#de1b1c] text-white font-bold' : 'bg-black/80 text-[#8a8a8a] border-b border-white/10'}`}>
+                      <span className="text-[10px] font-cinematic font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-1.5">
+                        {isFeatured ? <Sparkles className="w-3.5 h-3.5 text-white" /> : <Zap className="w-3 h-3 text-[#de1b1c]" />}
                         {guide.badge}
                       </span>
                     </div>
@@ -494,25 +455,25 @@ export const CustomerPackages = () => {
                     <div>
                       {/* Package Name & Code */}
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl font-black text-white tracking-tight">
+                        <h3 className="text-2xl font-display uppercase tracking-wide text-white">
                           {pkg.package_name}
                         </h3>
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-lg border font-semibold ${themeStyles.tagBg}`}>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-lg border border-white/15 bg-black/60 text-[#ededed] font-semibold">
                           {pkg.package_code}
                         </span>
                       </div>
 
-                      <p className="text-xs text-slate-300 mb-5 leading-relaxed min-h-[38px]">
+                      <p className="text-xs text-[#8a8a8a] mb-5 leading-relaxed min-h-[38px]">
                         {guide.purpose || pkg.description}
                       </p>
 
                       {/* Clean 4-Button Term Selector (Max 3 Mos + Lifetime) */}
-                      <div className="p-3.5 rounded-2xl bg-black/60 border border-white/10 space-y-2.5">
+                      <div className="p-3.5 rounded-xl bg-black/70 border border-white/10 space-y-2.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-mono font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                            <Clock className={`w-3.5 h-3.5 ${themeStyles.accent}`} /> Select Term
+                          <span className="text-[11px] font-cinematic uppercase tracking-wider font-bold text-[#ededed] flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-[#de1b1c]" /> SELECT TERM
                           </span>
-                          <span className="text-[10px] font-mono text-slate-400">
+                          <span className="text-[10px] font-mono text-[#8a8a8a]">
                             Max 3 Mo or ∞
                           </span>
                         </div>
@@ -520,10 +481,10 @@ export const CustomerPackages = () => {
                         {/* Direct 4 Option Buttons: 1 Mo, 2 Mos, 3 Mos, ∞ Lifetime */}
                         <div className="grid grid-cols-2 gap-1.5">
                           {[
-                            { value: 1, label: '1 Mo', desc: 'Sprint' },
-                            { value: 2, label: '2 Mos', desc: 'Mid-Sem' },
-                            { value: 3, label: '3 Mos', desc: 'Semester' },
-                            { value: null, label: '∞ Lifetime', desc: 'Permanent' },
+                            { value: 1, label: '1 MO', desc: 'Sprint' },
+                            { value: 2, label: '2 MOS', desc: 'Mid-Sem' },
+                            { value: 3, label: '3 MOS', desc: 'Semester' },
+                            { value: null, label: '∞ LIFETIME', desc: 'Permanent' },
                           ].map(opt => {
                             const isSelected = currentDuration === opt.value;
                             return (
@@ -531,14 +492,14 @@ export const CustomerPackages = () => {
                                 key={opt.label}
                                 type="button"
                                 onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
-                                className={`py-2 px-2.5 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-center ${
+                                className={`py-2 px-2.5 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-center ${
                                   isSelected 
-                                    ? `${themeStyles.btn} shadow-md scale-[1.02]` 
-                                    : 'glass-panel text-slate-400 hover:text-white hover:bg-slate-800/80 border border-white/5'
+                                    ? 'bg-[#de1b1c] text-white shadow-[0_0_15px_rgba(222,27,28,0.4)] scale-[1.02]' 
+                                    : 'bg-black/60 text-[#8a8a8a] hover:text-white hover:bg-white/[0.06] border border-white/5'
                                 }`}
                               >
-                                <span className="font-mono text-xs font-bold leading-none">{opt.label}</span>
-                                <span className={`text-[9px] font-mono mt-0.5 ${isSelected ? 'text-white/80' : 'text-slate-500'}`}>{opt.desc}</span>
+                                <span className="font-cinematic text-xs font-bold leading-none">{opt.label}</span>
+                                <span className={`text-[9px] font-mono mt-0.5 ${isSelected ? 'text-white/80' : 'text-[#8a8a8a]'}`}>{opt.desc}</span>
                               </button>
                             );
                           })}
@@ -547,7 +508,7 @@ export const CustomerPackages = () => {
                         {/* Discount Badge */}
                         {discount && (
                           <div className="pt-1 text-center">
-                            <span className={`inline-flex items-center gap-1 text-[11px] font-mono font-bold px-3 py-0.5 rounded-full border ${themeStyles.tagBg}`}>
+                            <span className="inline-flex items-center gap-1 text-[11px] font-cinematic uppercase tracking-wider font-bold px-3 py-0.5 rounded-full border border-[#de1b1c]/40 bg-[#de1b1c]/15 text-[#ff2a2b]">
                               <Sparkles className="w-3 h-3" /> {discount}
                             </span>
                           </div>
@@ -555,29 +516,29 @@ export const CustomerPackages = () => {
                       </div>
 
                       {/* Pricing Tag */}
-                      <div className="my-5 p-4 rounded-2xl bg-black/60 border border-white/10 flex items-baseline justify-between">
+                      <div className="my-5 p-4 rounded-xl bg-black/70 border border-white/10 flex items-baseline justify-between">
                         <div>
-                          <div className="text-3xl font-black text-white tracking-tight">
+                          <div className="text-3xl font-display uppercase tracking-wider text-white">
                             ₹{calculatedPrice}
                           </div>
-                          <span className="text-[11px] font-mono text-slate-400">
+                          <span className="text-[11px] font-mono text-[#8a8a8a]">
                             {getDurationLabel(currentDuration)}
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-slate-300">
-                          NODE LOCK: 1 PC
+                        <span className="text-[10px] font-cinematic uppercase tracking-wider px-2.5 py-1 rounded-lg bg-black border border-[#de1b1c]/40 text-[#de1b1c] font-bold">
+                          1 NODE LOCK
                         </span>
                       </div>
 
                       {/* Included Tools */}
                       <div className="space-y-2.5 mb-4">
-                        <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block font-semibold">
-                          Authorized Extension Modules
+                        <span className="text-[10px] font-cinematic uppercase tracking-[0.2em] text-[#8a8a8a] block font-bold">
+                          AUTHORIZED INJECTION MODULES
                         </span>
                         <div className="space-y-2">
                           {includesList.map((item: string) => (
-                            <div key={item} className="flex items-center text-xs text-slate-200">
-                              <CheckCircle className={`w-4 h-4 mr-2 shrink-0 ${themeStyles.check}`} />
+                            <div key={item} className="flex items-center text-xs text-[#ededed]">
+                              <CheckCircle className="w-4 h-4 mr-2 shrink-0 text-[#de1b1c]" />
                               <span>{item}</span>
                             </div>
                           ))}
@@ -587,9 +548,9 @@ export const CustomerPackages = () => {
 
                     <button 
                       onClick={() => handleBuyClick(pkg)} 
-                      className={`w-full py-3.5 rounded-xl font-bold text-xs tracking-wider uppercase font-mono transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${themeStyles.btn}`}
+                      className="w-full py-3.5 rounded-xl font-cinematic uppercase tracking-widest font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 bg-[#de1b1c] hover:bg-[#ff2a2b] text-white shadow-[0_0_20px_rgba(222,27,28,0.4)]"
                     >
-                      <span>Proceed to Purchase</span>
+                      <span>ACQUIRE PASS</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>

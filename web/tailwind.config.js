@@ -10,8 +10,23 @@ export default {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
+        display: ['"Anton"', 'Impact', 'sans-serif'],
+        cinematic: ['"Oswald"', 'sans-serif'],
+        serifDisplay: ['"Cinzel"', 'serif'],
       },
       colors: {
+        cinema: {
+          black: '#000000',
+          dark: '#050505',
+          panel: '#09090b',
+          paper: '#ededed',
+          dim: '#8a8a8a',
+          dimmer: '#4e4e4e',
+          red: '#de1b1c',
+          'red-hot': '#ff2a2b',
+          amber: '#e5a93b',
+          gold: '#d4af37',
+        },
         fincher: {
           obsidian: '#07090e',
           gunmetal: '#0d1117',

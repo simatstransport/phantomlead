@@ -1,25 +1,25 @@
 export const MatrixBackground = () => {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
-      {/* High-Tech Precision Grid with Vignette Mask */}
+      {/* Precision Film Grid / Coordinate Matrix */}
       <div 
-        className="absolute inset-0 opacity-[0.035] dark:opacity-[0.035] light:opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: `
-            linear-gradient(to right, currentColor 1px, transparent 1px),
-            linear-gradient(to bottom, currentColor 1px, transparent 1px)
+            linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px)
           `,
-          backgroundSize: '36px 36px',
-          maskImage: 'radial-gradient(ellipse 80% 70% at 50% 30%, black 20%, transparent 85%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 30%, black 20%, transparent 85%)'
+          backgroundSize: '48px 48px',
+          maskImage: 'radial-gradient(ellipse 85% 75% at 50% 30%, black 20%, transparent 90%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 85% 75% at 50% 30%, black 20%, transparent 90%)'
         }}
       />
-      {/* Subtle Dot Array Accent */}
+      {/* Cinematic Film-Strip Dot Matrix Accent */}
       <div 
-        className="absolute inset-0 opacity-[0.02] dark:opacity-[0.02] light:opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.035]"
         style={{
-          backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
-          backgroundSize: '18px 18px',
+          backgroundImage: 'radial-gradient(circle, rgba(222, 27, 28, 0.6) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
         }}
       />
     </div>

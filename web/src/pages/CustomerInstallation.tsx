@@ -39,41 +39,40 @@ export const CustomerInstallation = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16 px-2 sm:px-4">
-      {/* Page Header Deck with Ambient Gradient Aurora */}
-      <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/15 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-emerald-500/10 blur-2xl pointer-events-none" />
+      {/* Page Header Deck with Cinematic Noir Glow */}
+      <div className="relative overflow-hidden rounded-2xl bg-[#09090b]/90 border border-white/10 p-6 sm:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.9)] cinema-corner-mark">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#de1b1c]/15 via-transparent to-transparent blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                DEPLOYMENT PROTOCOL
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-cinematic font-bold tracking-[0.2em] uppercase bg-[#de1b1c]/15 border border-[#de1b1c]/40 text-[#ededed] shadow-[0_0_15px_rgba(222,27,28,0.3)]">
+                <span className="w-2 h-2 rounded-full bg-[#de1b1c] animate-ping" />
+                SCENE 01 // DEPLOYMENT PROTOCOL
               </span>
-              <span className="text-xs font-mono text-slate-300 border border-white/10 bg-slate-900/60 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-mono text-[#8a8a8a] border border-white/10 bg-black/60 px-2.5 py-0.5 rounded-full">
                 SEB v3.10.2 VERIFIED
               </span>
-              <span className="text-xs font-mono text-emerald-300 border border-emerald-500/30 bg-emerald-950/40 px-2.5 py-0.5 rounded-full">
+              <span className="text-xs font-mono text-[#de1b1c] border border-[#de1b1c]/30 bg-[#de1b1c]/10 px-2.5 py-0.5 rounded-full font-bold">
                 AUTO-WHITELIST ACTIVE
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-              <BookOpen className="w-7 h-7 text-emerald-400 shrink-0" />
-              Workstation Setup &amp; <span className="text-gradient-rainbow">Field Manual</span>
+            <h1 className="text-3xl sm:text-4xl font-display uppercase tracking-wide text-white flex items-center gap-3">
+              <BookOpen className="w-7 h-7 text-[#de1b1c] shrink-0" />
+              ARMAMENT MANUAL &amp; <span className="text-[#de1b1c]">DOSSIER</span>
             </h1>
-            <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Step-by-step hardened installation protocol for Safe Exam Browser integration, hardware activation, and AI assistant keymaps.
+            <p className="text-xs sm:text-sm text-[#8a8a8a] max-w-2xl leading-relaxed">
+              Tactical step-by-step hardened installation protocol for Safe Exam Browser integration, hardware activation, and AI assistant keymaps.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <Link
               to="/dashboard/licenses"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-indigo-600 to-purple-600 hover:from-emerald-400 hover:to-purple-500 text-white font-bold text-xs font-mono uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all active:scale-95"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#de1b1c] hover:bg-[#ff2a2b] text-white font-cinematic uppercase tracking-widest font-bold text-xs shadow-[0_0_25px_rgba(222,27,28,0.4)] transition-all active:scale-95"
             >
               <Key className="w-4 h-4" />
-              View License Keys
+              SECURITY KEYS
             </Link>
           </div>
         </div>
