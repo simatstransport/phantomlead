@@ -101,52 +101,52 @@ export const AdminPayments = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Deck */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117]/90 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#0d1117] dark:bg-[#0d1117] light:bg-white backdrop-blur-xl p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 dark:text-cyan-400 light:text-cyan-700 font-bold">
                 TREASURY &amp; CLEARANCE DESK
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white dark:text-white light:text-slate-900 tracking-tight flex items-center gap-3">
               <CreditCard className="w-7 h-7 text-cyan-400" />
               Payment Verification &amp; Approvals
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-400 light:text-slate-600">
               Audit incoming UPI references, clear student transactions, and trigger automated license issuance.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-slate-400 border border-white/10 bg-slate-900/60 px-3 py-1.5 rounded-xl">
-              Total Audited: <strong className="text-white mr-2">{totalCount}</strong>
+            <span className="text-xs font-mono text-slate-400 dark:text-slate-400 light:text-slate-600 border border-slate-800 dark:border-white/10 light:border-slate-200 bg-black/40 dark:bg-black/40 light:bg-slate-50 px-3 py-1.5 rounded-xl">
+              Total Audited: <strong className="text-white dark:text-white light:text-slate-900 mr-2">{totalCount}</strong>
               Pending: <strong className="text-amber-400 font-bold">{pendingCount}</strong>
             </span>
           </div>
         </div>
 
         {/* Financial KPI Mini-Deck */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-6 pt-6 border-t border-white/10/80">
-          <div className="p-3.5 rounded-xl bg-black/60 border border-amber-500/30">
-            <span className="text-[10px] font-mono uppercase text-amber-400/90 block mb-1">Pending Approval</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-6 pt-6 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200">
+          <div className="p-3.5 rounded-xl bg-black/40 dark:bg-black/40 light:bg-slate-50 border border-amber-500/30">
+            <span className="text-[10px] font-mono uppercase text-amber-400/90 dark:text-amber-400 light:text-amber-700 block mb-1 font-semibold">Pending Approval</span>
             <div className="text-2xl font-black text-amber-400 font-mono flex items-center gap-1.5">
               <span>{pendingCount}</span>
               {pendingCount > 0 && <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />}
             </div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-cyan-500/20">
-            <span className="text-[10px] font-mono uppercase text-cyan-400/80 block mb-1">Cleared Revenue</span>
+          <div className="p-3.5 rounded-xl bg-black/40 dark:bg-black/40 light:bg-slate-50 border border-cyan-500/20">
+            <span className="text-[10px] font-mono uppercase text-cyan-400/80 dark:text-cyan-400 light:text-cyan-700 block mb-1 font-semibold">Cleared Revenue</span>
             <div className="text-2xl font-black text-cyan-400 font-mono">₹{approvedRevenue.toLocaleString('en-IN')}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-white/10/80">
-            <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1">Approved Orders</span>
-            <div className="text-2xl font-black text-white font-mono">{approvedCount}</div>
+          <div className="p-3.5 rounded-xl bg-black/40 dark:bg-black/40 light:bg-slate-50 border border-slate-800 dark:border-white/10 light:border-slate-200">
+            <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1 font-semibold">Approved Orders</span>
+            <div className="text-2xl font-black text-white dark:text-white light:text-slate-900 font-mono">{approvedCount}</div>
           </div>
-          <div className="p-3.5 rounded-xl bg-black/60 border border-red-500/20">
-            <span className="text-[10px] font-mono uppercase text-red-400/80 block mb-1">Rejected / Flagged</span>
-            <div className="text-2xl font-black text-red-400 font-mono">{rejectedCount}</div>
+          <div className="p-3.5 rounded-xl bg-black/40 dark:bg-black/40 light:bg-slate-50 border border-rose-500/20">
+            <span className="text-[10px] font-mono uppercase text-rose-400/80 dark:text-rose-400 light:text-rose-700 block mb-1 font-semibold">Rejected / Flagged</span>
+            <div className="text-2xl font-black text-rose-400 font-mono">{rejectedCount}</div>
           </div>
         </div>
       </div>
@@ -160,19 +160,19 @@ export const AdminPayments = () => {
             placeholder="Search by student, email, package, or UPI UTR reference..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0d1117] border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0d1117] dark:bg-[#0d1117] light:bg-white border border-slate-800/80 dark:border-white/10 light:border-slate-300 text-xs text-white dark:text-white light:text-slate-900 placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 font-mono transition-colors"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0d1117] border border-white/10 shrink-0">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0d1117] dark:bg-[#0d1117] light:bg-slate-100 border border-slate-800/80 dark:border-white/10 light:border-slate-200 shrink-0">
           {(['PENDING', 'ALL', 'APPROVED', 'REJECTED'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                 statusFilter === tab
-                  ? 'bg-cyan-500 text-black shadow-md shadow-cyan-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-white light:hover:text-slate-900'
               }`}
             >
               <span>{tab === 'PENDING' ? 'Pending' : tab === 'ALL' ? 'All' : tab === 'APPROVED' ? 'Approved' : 'Rejected'}</span>
@@ -190,16 +190,16 @@ export const AdminPayments = () => {
 
       {/* Payments Table */}
       {filteredPayments.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-[#0d1117]/60 p-12 text-center space-y-3">
-          <CreditCard className="w-10 h-10 text-zinc-600 mx-auto" />
-          <p className="text-slate-400 text-sm font-medium">No payments found in this view.</p>
+        <div className="rounded-2xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#0d1117]/80 dark:bg-[#0d1117]/80 light:bg-white p-12 text-center space-y-3">
+          <CreditCard className="w-10 h-10 text-slate-600 dark:text-slate-600 light:text-slate-400 mx-auto" />
+          <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 text-sm font-medium">No payments found in this view.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/10 bg-[#0d1117]/90 backdrop-blur-xl overflow-hidden shadow-xl">
+        <div className="rounded-2xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#0d1117] dark:bg-[#0d1117] light:bg-white backdrop-blur-xl overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-white/10/80 bg-black/40 text-slate-400 font-mono uppercase tracking-wider text-[11px]">
+                <tr className="border-b border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-black/40 dark:bg-black/40 light:bg-slate-50 text-slate-400 dark:text-slate-400 light:text-slate-600 font-mono uppercase tracking-wider text-[11px]">
                   <th className="py-3.5 px-4 font-semibold">Student Account</th>
                   <th className="py-3.5 px-4 font-semibold">Tier &amp; Duration</th>
                   <th className="py-3.5 px-4 font-semibold">Settlement Amount</th>
@@ -208,7 +208,7 @@ export const AdminPayments = () => {
                   <th className="py-3.5 px-4 font-semibold text-right">Approval Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-slate-800/60 dark:divide-white/5 light:divide-slate-200">
                 {filteredPayments.map(p => {
                   const isPending = p.status === 'PENDING';
                   const isApproved = p.status === 'APPROVED';
@@ -216,14 +216,14 @@ export const AdminPayments = () => {
                   const durationLabel = p.duration_months === null ? 'Lifetime Access' : `${p.duration_months} Month(s)`;
 
                   return (
-                    <tr key={p.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={p.id} className="hover:bg-slate-800/30 dark:hover:bg-slate-800/30 light:hover:bg-slate-50 transition-colors">
                       {/* Customer */}
                       <td className="py-4 px-4">
                         <div className="space-y-0.5">
-                          <span className="font-bold text-white block text-sm">
+                          <span className="font-bold text-white dark:text-white light:text-slate-900 block text-sm">
                             {p.customers?.full_name || 'Enrolled Student'}
                           </span>
-                          <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+                          <span className="text-[11px] font-mono text-slate-400 dark:text-slate-400 light:text-slate-500 flex items-center gap-1">
                             <Mail className="w-3 h-3 text-slate-500" />
                             {p.customers?.email || 'No email registered'}
                           </span>
@@ -232,10 +232,10 @@ export const AdminPayments = () => {
 
                       {/* Package */}
                       <td className="py-4 px-4 space-y-1">
-                        <span className="font-bold text-zinc-200 block text-xs">
+                        <span className="font-bold text-slate-200 dark:text-slate-200 light:text-slate-800 block text-xs">
                           {p.packages?.package_name || 'Security Package'}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 border border-white/10 text-cyan-400">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-black/40 dark:bg-black/40 light:bg-slate-100 border border-slate-800 dark:border-white/10 light:border-slate-200 text-cyan-400 dark:text-cyan-400 light:text-cyan-700 font-semibold">
                           <Clock className="w-3 h-3" />
                           {durationLabel}
                         </span>
@@ -243,7 +243,7 @@ export const AdminPayments = () => {
 
                       {/* Amount */}
                       <td className="py-4 px-4">
-                        <span className="text-base font-black text-white font-mono block">
+                        <span className="text-base font-black text-white dark:text-white light:text-slate-900 font-mono block">
                           ₹{Number(p.amount || 0).toLocaleString('en-IN')}
                         </span>
                         <span className="text-[10px] font-mono text-slate-500">

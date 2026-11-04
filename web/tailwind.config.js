@@ -12,6 +12,15 @@ export default {
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       colors: {
+        fincher: {
+          obsidian: '#07090e',
+          gunmetal: '#0d1117',
+          steel: '#161b22',
+          border: 'rgba(255, 255, 255, 0.08)',
+          'light-bg': '#f8fafc',
+          'light-panel': '#ffffff',
+          'light-border': '#e2e8f0',
+        },
         cyber: {
           50: '#ecfeff',
           100: '#cffafe',

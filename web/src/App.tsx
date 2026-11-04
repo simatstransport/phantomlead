@@ -48,39 +48,39 @@ const Login = () => {
       <div className="absolute top-6 right-6 z-20">
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-10 shadow-2xl border border-white/10 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-emerald-400 before:to-transparent">
-        {/* Subtle Decorative Ambient Lights */}
-        <div className="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-teal-500/15 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="w-full max-w-md relative overflow-hidden rounded-2xl glass-panel p-8 sm:p-10 shadow-2xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-emerald-400 before:to-transparent">
         <div className="relative z-10">
           <div className="flex justify-center mb-6">
-            <div className="relative w-20 h-20">
+            <div className="relative w-16 h-16">
               <img 
                 src="/logo.jpg" 
                 alt="Logo" 
-                className="w-full h-full rounded-full border-2 border-emerald-400/80 shadow-[0_0_28px_rgba(16,185,129,0.5)] object-cover relative z-10" 
+                className="w-full h-full rounded-2xl border border-emerald-500/50 shadow-md object-cover relative z-10" 
               />
-              <div className="absolute inset-[-4px] rounded-full border border-transparent border-t-emerald-400 border-l-teal-500 animate-spin z-0" />
-              <div className="absolute inset-[-8px] rounded-full border border-emerald-500/20 animate-[spin_5s_linear_reverse_infinite] z-0" />
+              <div className="absolute inset-[-3px] rounded-2xl border border-emerald-500/20 z-0" />
             </div>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-center text-white mb-2 tracking-tight">
-            PhantomLead <span className="text-gradient-rainbow">Console</span>
-          </h2>
-          <p className="text-slate-400 text-center mb-8 text-xs sm:text-sm leading-relaxed">
-            Single-click authenticated entry to your Safe Exam Browser workstation, packages, and license key vault.
-          </p>
+          <div className="text-center mb-6">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-0.5 rounded-full inline-block mb-2">
+              CRYPTOGRAPHIC AIR-GAP PORTAL
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900 tracking-tight">
+              PhantomLead <span className="text-gradient-rainbow">Console</span>
+            </h2>
+            <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 mt-1 text-xs leading-relaxed">
+              Authenticated entry to your Safe Exam Browser workstation, license keys, and hardware bindings.
+            </p>
+          </div>
 
           {/* Google 1-Click Sign-In Button */}
           <button
             type="button"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
-            className="w-full py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-900 rounded-2xl font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-95 shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(16,185,129,0.35)] disabled:opacity-60 group border border-white/40"
+            className="w-full py-3.5 px-5 bg-white hover:bg-slate-50 text-slate-900 rounded-xl font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-[0.99] shadow-sm hover:shadow-md disabled:opacity-60 group border border-slate-200/80"
           >
-            <svg className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 shrink-0 group-hover:scale-105 transition-transform" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -233,17 +233,21 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       )}
 
       {/* Modern Frosted Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 glass-panel border-r border-white/10 flex flex-col transition-transform duration-200 ease-out`}>
+      <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 glass-panel border-r border-slate-800/80 dark:border-white/10 light:border-slate-200 flex flex-col transition-transform duration-200 ease-out`}>
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#060807]/70">
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#07090e]/80 dark:bg-[#07090e]/80 light:bg-slate-50">
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8">
-              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-full border border-emerald-400 object-cover relative z-10" />
-              <div className="absolute inset-[-3px] rounded-full border border-transparent border-t-emerald-400 border-l-teal-500 animate-spin z-0" />
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-lg border border-emerald-500/50 object-cover relative z-10" />
             </div>
-            <span className="font-extrabold text-lg tracking-tight text-gradient-rainbow">
-              PhantomLead
-            </span>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-base tracking-tight text-white dark:text-white light:text-slate-900 leading-none">
+                PhantomLead
+              </span>
+              <span className="text-[9px] font-mono tracking-widest uppercase text-emerald-400 font-bold mt-0.5">
+                EXAM SENTINEL
+              </span>
+            </div>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="md:hidden text-slate-400 hover:text-white">
             <X className="w-5 h-5" />
@@ -251,10 +255,10 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 p-3.5 space-y-1 overflow-y-auto">
           {isAdmin ? (
             <>
-              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 light:text-slate-500 font-bold">
                 Fleet Command
               </div>
               <Link 
@@ -262,11 +266,11 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/admin') 
-                    ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.15)]' 
-                    : 'text-slate-400 hover:text-cyan-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin') ? 'text-cyan-400' : 'text-slate-500 group-hover:text-cyan-400'}`} />
+                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
                 Admin Overview
               </Link>
               <Link 
@@ -274,11 +278,11 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/admin/licenses') 
-                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
-                    : 'text-slate-400 hover:text-emerald-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <Key className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/licenses') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                <Key className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/licenses') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
                 All Licenses
               </Link>
               <Link 
@@ -286,11 +290,11 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/admin/packages') 
-                    ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
-                    : 'text-slate-400 hover:text-purple-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/packages') ? 'text-purple-400' : 'text-slate-500 group-hover:text-purple-400'}`} />
+                <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/packages') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
                 All Packages
               </Link>
               <Link 
@@ -298,50 +302,50 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/admin/payments') 
-                    ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]' 
-                    : 'text-slate-400 hover:text-amber-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <CreditCard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/payments') ? 'text-amber-400' : 'text-slate-500 group-hover:text-amber-400'}`} />
-                Payments
+                <CreditCard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/payments') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                Payments &amp; UPI Audit
               </Link>
               <Link 
                 to="/admin/customers" 
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/admin/customers') 
-                    ? 'bg-blue-500/15 text-blue-300 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]' 
-                    : 'text-slate-400 hover:text-blue-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <Users className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/customers') ? 'text-blue-400' : 'text-slate-500 group-hover:text-blue-400'}`} />
-                Customers
+                <Users className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/customers') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                Candidates &amp; Nodes
               </Link>
               <Link 
                 to="/admin/settings" 
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/admin/settings') 
-                    ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.15)]' 
-                    : 'text-slate-400 hover:text-rose-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <Settings className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/admin/settings') ? 'text-rose-400' : 'text-slate-500 group-hover:text-rose-400'}`} />
-                Settings
+                <Settings className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/settings') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                Platform Settings
               </Link>
-              <div className="pt-4 mt-4 border-t border-white/10">
+              <div className="pt-3 mt-3 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200">
                 <Link 
                   to="/dashboard" 
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center px-3.5 py-2.5 text-emerald-300 hover:bg-emerald-500/20 rounded-xl transition-all border border-emerald-500/30 font-medium text-xs sm:text-sm"
+                  className="flex items-center px-3.5 py-2.5 text-slate-300 dark:text-slate-300 light:text-slate-700 hover:bg-slate-800/60 light:hover:bg-slate-100 rounded-xl transition-all border border-slate-800/80 dark:border-white/10 light:border-slate-200 font-medium text-xs sm:text-sm"
                 >
-                  <User className="w-4 h-4 mr-3" /> View as Customer
+                  <User className="w-4 h-4 mr-3 text-cyan-400" /> Switch to Candidate View
                 </Link>
               </div>
             </>
           ) : (
             <>
-              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 light:text-slate-500 font-bold">
                 Workstation Navigation
               </div>
               <Link 
@@ -349,36 +353,36 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/dashboard') 
-                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
-                    : 'text-slate-400 hover:text-emerald-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
-                Dashboard
+                <LayoutDashboard className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/dashboard') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                Workstation Console
               </Link>
               <Link 
                 to="/dashboard/licenses" 
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/dashboard/licenses') 
-                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
-                    : 'text-slate-400 hover:text-emerald-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <Key className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard/licenses') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
-                My Licenses
+                <Key className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/dashboard/licenses') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                My Cryptographic Keys
               </Link>
               <Link 
                 to="/dashboard/packages" 
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                   isCurrent('/dashboard/packages') 
-                    ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
-                    : 'text-slate-400 hover:text-purple-300 hover:bg-white/[0.04]'
+                    ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                 }`}
               >
-                <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard/packages') ? 'text-purple-400' : 'text-slate-500 group-hover:text-purple-400'}`} />
-                Buy Packages
+                <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/dashboard/packages') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                Acquire Exam Packages
               </Link>
               {hasActiveLicense && (
                 <Link 
@@ -386,20 +390,20 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-medium text-xs sm:text-sm ${
                     isCurrent('/dashboard/install') 
-                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]' 
-                      : 'text-slate-400 hover:text-amber-300 hover:bg-white/[0.04]'
+                      ? 'bg-emerald-500/15 text-emerald-300 dark:text-emerald-300 light:text-emerald-800 border border-emerald-500/30 font-semibold' 
+                      : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 light:hover:text-emerald-700 hover:bg-white/[0.04] light:hover:bg-slate-100'
                   }`}
                 >
-                  <BookOpen className={`w-4 h-4 mr-3 transition-transform group-hover:scale-110 ${isCurrent('/dashboard/install') ? 'text-amber-400' : 'text-slate-500 group-hover:text-amber-400'}`} />
-                  Installation Guide
+                  <BookOpen className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/dashboard/install') ? 'text-emerald-400' : 'text-slate-500 group-hover:text-emerald-400'}`} />
+                  Armament Manual
                 </Link>
               )}
               {isActualAdmin && (
-                <div className="pt-4 mt-4 border-t border-white/10">
+                <div className="pt-3 mt-3 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200">
                   <Link 
                     to="/admin" 
                     onClick={() => setSidebarOpen(false)}
-                    className="flex items-center px-3.5 py-2.5 text-purple-300 hover:bg-purple-500/20 rounded-xl transition-all border border-purple-500/30 font-medium text-xs sm:text-sm"
+                    className="flex items-center px-3.5 py-2.5 text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-all border border-emerald-500/30 font-medium text-xs sm:text-sm"
                   >
                     <Shield className="w-4 h-4 mr-3" /> Return to Fleet Admin
                   </Link>
@@ -410,13 +414,13 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
         </nav>
 
         {/* User Footer / Logout */}
-        <div className="p-4 border-t border-white/10 bg-[#060807]/70">
+        <div className="p-3.5 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#07090e]/80 dark:bg-[#07090e]/80 light:bg-slate-50">
           <button 
             onClick={() => supabase.auth.signOut()}
-            className="flex items-center w-full px-3.5 py-2.5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl text-xs font-mono transition-all group cursor-pointer"
+            className="flex items-center w-full px-3.5 py-2 text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl text-xs font-mono transition-all group cursor-pointer"
           >
             <LogOut className="w-4 h-4 mr-3 text-rose-400 group-hover:-translate-x-0.5 transition-transform" /> 
-            Sign Out
+            Terminate Session
           </button>
         </div>
       </aside>
@@ -424,32 +428,30 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
         {/* Top Navbar */}
-        <header className="h-16 glass-panel border-b border-white/10 flex items-center justify-between px-4 sm:px-6 relative z-10">
+        <header className="h-16 glass-panel border-b border-slate-800/80 dark:border-white/10 light:border-slate-200 flex items-center justify-between px-4 sm:px-6 relative z-10">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(true)} className="md:hidden text-slate-400 hover:text-white p-1">
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight truncate flex items-center gap-2">
+            <h1 className="text-base sm:text-lg font-bold text-white dark:text-white light:text-slate-900 tracking-tight truncate flex items-center gap-2">
               <span>{title}</span>
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-emerald-500/30 text-xs font-mono">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 dark:bg-slate-900/90 light:bg-white border border-emerald-500/40 text-xs font-mono shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-300">SEB 3.10.2 Armed</span>
+              <span className="text-emerald-400 dark:text-emerald-300 light:text-emerald-700 font-semibold">SEB 3.10.2 ARMED</span>
             </div>
 
             <ThemeToggle />
 
-            <div className="flex items-center gap-2.5 pl-2 border-l border-white/10">
-              <span className="text-xs font-medium text-slate-300 hidden sm:block max-w-[140px] truncate">
+            <div className="flex items-center gap-2.5 pl-2 border-l border-slate-800 dark:border-white/10 light:border-slate-200">
+              <span className="text-xs font-medium text-slate-300 dark:text-slate-300 light:text-slate-700 hidden sm:block max-w-[140px] truncate">
                 {userName}
               </span>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 p-[1.5px] shadow-sm">
-                <div className="w-full h-full bg-[#060807] rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-emerald-300" />
-                </div>
+              <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+                <User className="w-4 h-4 text-emerald-400 dark:text-emerald-300 light:text-emerald-700" />
               </div>
             </div>
           </div>
@@ -497,31 +499,27 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
     <DashboardLayout title="Workstation Command Center" isAdmin={false} isActualAdmin={isActualAdmin}>
       <div className="space-y-6 max-w-7xl mx-auto">
         {/* Modern Multi-Color Hero Banner */}
-        <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
-          {/* Glowing Atmospheric Mesh */}
-          <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-bl from-emerald-500/15 via-teal-500/10 to-transparent blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/4 w-64 h-32 bg-purple-500/10 blur-2xl pointer-events-none" />
-
+        <div className="relative overflow-hidden rounded-2xl glass-panel border border-slate-800/80 dark:border-white/10 light:border-slate-200 p-6 sm:p-8 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+                <span className="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 dark:text-emerald-300 light:text-emerald-700 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                   SAFE EXAM WORKSTATION
                 </span>
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-mono text-emerald-400 dark:text-emerald-400 light:text-emerald-700 bg-emerald-950/40 dark:bg-emerald-950/40 light:bg-emerald-50 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-semibold">
                   SEB v3.10.2 VERIFIED
                 </span>
-                <span className="text-xs font-mono text-purple-400 bg-purple-950/40 border border-purple-500/30 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-mono text-cyan-400 dark:text-cyan-400 light:text-cyan-700 bg-cyan-950/40 dark:bg-cyan-950/40 light:bg-cyan-50 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-semibold">
                   GEMINI 1.5 PRO READY
                 </span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900 tracking-tight">
                 Welcome to Your <span className="text-gradient-rainbow">PhantomLead Console</span>
               </h2>
 
-              <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-600 max-w-2xl leading-relaxed">
                 Seamless AI Java and code injection for Safe Exam Browser. Download hardened client installers, monitor machine bindings, and access live exam helpers.
               </p>
             </div>
@@ -529,13 +527,13 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Link 
                 to="/dashboard/packages" 
-                className="px-5 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-emerald-500/25 transition-all cursor-pointer whitespace-nowrap active:scale-95"
+                className="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-emerald-500/20 transition-all cursor-pointer whitespace-nowrap active:scale-95"
               >
                 Browse All Packages
               </Link>
               <Link 
                 to="/dashboard/licenses" 
-                className="px-4 py-3 glass-panel hover:bg-emerald-950/30 text-slate-200 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap border border-white/10"
+                className="px-4 py-3 glass-panel hover:bg-slate-800/50 light:hover:bg-slate-100 text-slate-200 dark:text-slate-200 light:text-slate-800 hover:text-white rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap border border-slate-800/80 dark:border-white/10 light:border-slate-200"
               >
                 My License Keys
               </Link>
@@ -546,84 +544,84 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         {/* 3 Modern Colorful Executive Metric Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {/* Tile 1: License Status - Cyber Emerald */}
-          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between relative overflow-hidden group">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span className="tracking-wider uppercase font-semibold text-emerald-300">LICENSE STATUS</span>
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-slate-800/80 dark:border-white/10 light:border-slate-200 flex flex-col justify-between relative overflow-hidden group">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="tracking-wider uppercase font-semibold text-emerald-400 dark:text-emerald-300 light:text-emerald-700">LICENSE STATUS</span>
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
                 <Key className="w-4 h-4" />
               </div>
             </div>
             <div className="my-3">
-              <div className="text-3xl font-black text-white font-mono tracking-tight">
+              <div className="text-3xl font-black text-white dark:text-white light:text-slate-900 font-mono tracking-tight">
                 {checkingLicense ? '...' : hasActiveLicense ? `${activeLicenseCount} Active` : '0 Active'}
               </div>
               <div className="text-xs font-semibold mt-1">
                 {checkingLicense ? (
                   <span className="text-slate-500">Checking credentials...</span>
                 ) : hasActiveLicense ? (
-                  <span className="text-emerald-300 flex items-center gap-1.5">
+                  <span className="text-emerald-400 dark:text-emerald-300 light:text-emerald-700 flex items-center gap-1.5 font-semibold">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                     Armed &amp; Operational
                   </span>
                 ) : (
-                  <span className="text-teal-300 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-teal-400" /> Fresh Account (Unbound)
+                  <span className="text-cyan-400 dark:text-cyan-400 light:text-cyan-700 flex items-center gap-1.5 font-semibold">
+                    <Sparkles className="w-3.5 h-3.5" /> Fresh Account (Unbound)
                   </span>
                 )}
               </div>
             </div>
-            <Link to="/dashboard/licenses" className="text-xs text-slate-400 hover:text-emerald-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
+            <Link to="/dashboard/licenses" className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-emerald-400 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200">
               <span>View license details</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {/* Tile 2: Hardware Node Lock - Mint Emerald */}
-          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between relative overflow-hidden group">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span className="tracking-wider uppercase font-semibold text-emerald-300">HARDWARE NODE LOCK</span>
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-slate-800/80 dark:border-white/10 light:border-slate-200 flex flex-col justify-between relative overflow-hidden group">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="tracking-wider uppercase font-semibold text-emerald-400 dark:text-emerald-300 light:text-emerald-700">HARDWARE NODE LOCK</span>
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
                 <Laptop className="w-4 h-4" />
               </div>
             </div>
             <div className="my-3">
-              <div className="text-3xl font-black text-white font-mono tracking-tight">
+              <div className="text-3xl font-black text-white dark:text-white light:text-slate-900 font-mono tracking-tight">
                 1 PC Binding
               </div>
-              <div className="text-xs font-semibold text-emerald-300 mt-1 flex items-center gap-1.5">
+              <div className="text-xs font-semibold text-emerald-400 dark:text-emerald-300 light:text-emerald-700 mt-1 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 {hasActiveLicense ? 'Hardware Lock Active' : 'Slot Available for Binding'}
               </div>
             </div>
-            <span className="text-xs text-slate-400 pt-2 border-t border-white/5">
+            <span className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 pt-2 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200">
               Cryptographically bound to single CPU &amp; Motherboard UUID
             </span>
           </div>
 
-          {/* Tile 3: Exam Environment - Electric Purple */}
-          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-purple-500/20 hover:border-purple-400/50 flex flex-col justify-between relative overflow-hidden group">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
-              <span className="tracking-wider uppercase font-semibold text-purple-300">EXAM ENVIRONMENT</span>
-              <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-sm">
+          {/* Tile 3: Exam Environment - Electric Cyan */}
+          <div className="glass-panel-interactive rounded-2xl p-5 sm:p-6 border border-slate-800/80 dark:border-white/10 light:border-slate-200 flex flex-col justify-between relative overflow-hidden group">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="tracking-wider uppercase font-semibold text-cyan-400 dark:text-cyan-300 light:text-cyan-700">EXAM ENVIRONMENT</span>
+              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-sm">
                 <ShieldCheck className="w-4 h-4" />
               </div>
             </div>
             <div className="my-3">
-              <div className="text-3xl font-black text-white font-mono tracking-tight">
+              <div className="text-3xl font-black text-white dark:text-white light:text-slate-900 font-mono tracking-tight">
                 SEB 3.10.2
               </div>
-              <div className="text-xs font-semibold text-purple-300 mt-1 flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-purple-400" />
+              <div className="text-xs font-semibold text-cyan-400 dark:text-cyan-300 light:text-cyan-700 mt-1 flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-cyan-400" />
                 Native Kiosk Clipboard Injection
               </div>
             </div>
             {hasActiveLicense ? (
-              <Link to="/dashboard/install" className="text-xs text-slate-400 hover:text-purple-300 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-white/5">
+              <Link to="/dashboard/install" className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-cyan-400 flex items-center gap-1.5 font-medium transition-colors pt-2 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200">
                 <span>Read installation guide</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             ) : (
-              <span className="text-xs text-slate-500 pt-2 border-t border-white/5 flex items-center gap-1.5">
+              <span className="text-xs text-slate-500 pt-2 border-t border-slate-800/80 dark:border-white/10 light:border-slate-200 flex items-center gap-1.5">
                 <span>Requires active license to access guide</span>
               </span>
             )}
@@ -631,13 +629,13 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         </div>
 
         {/* Workstation Operations & Client Installer Deck */}
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-white/10">
+        <div className="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-slate-800/80 dark:border-white/10 light:border-slate-200">
             <div>
-              <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
+              <h3 className="text-lg sm:text-xl font-bold text-white dark:text-white light:text-slate-900 flex items-center gap-2.5">
                 <Shield className="w-5 h-5 text-emerald-400" /> Workstation Operations &amp; Client Installer
               </h3>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-400 light:text-slate-600 mt-1">
                 {checkingLicense 
                   ? 'Verifying cryptographic security token...' 
                   : hasActiveLicense 
@@ -647,7 +645,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             </div>
             <Link 
               to="/dashboard/licenses" 
-              className="inline-flex items-center gap-2 px-4 py-2 glass-panel hover:bg-emerald-950/30 border border-white/15 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 glass-panel hover:bg-slate-800/50 light:hover:bg-slate-100 border border-slate-800/80 dark:border-white/10 light:border-slate-200 text-slate-200 dark:text-slate-200 light:text-slate-800 hover:text-white rounded-xl text-xs font-semibold transition-all"
             >
               <Key className="w-3.5 h-3.5 text-emerald-400" />
               <span>Open License Deck</span>
@@ -656,7 +654,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
 
           {/* Download Notification Banner */}
           {downloadNotice && (
-            <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center gap-2 animate-in fade-in duration-200">
+            <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 dark:text-emerald-300 light:text-emerald-800 text-xs font-mono flex items-center gap-2 animate-in fade-in duration-200">
               {downloadingFile ? (
                 <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
               ) : (
@@ -696,7 +694,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                     type="button"
                     onClick={() => handleDownload(installerName)}
                     disabled={downloadingFile === installerName}
-                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-green-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl font-black text-sm shadow-lg shadow-emerald-500/25 transition-all cursor-pointer active:scale-95 disabled:opacity-75 disabled:cursor-wait"
+                    className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-black text-sm shadow-lg shadow-emerald-500/20 transition-all cursor-pointer active:scale-95 disabled:opacity-75 disabled:cursor-wait"
                   >
                     {downloadingFile === installerName ? (
                       <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
@@ -711,7 +709,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
 
                   <Link 
                     to="/dashboard/install" 
-                    className="inline-flex items-center gap-2 px-5 py-3.5 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-sm font-medium border border-white/10 transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-3.5 glass-panel hover:bg-slate-800/50 light:hover:bg-slate-100 text-slate-200 dark:text-slate-200 light:text-slate-800 hover:text-white rounded-xl text-sm font-medium border border-slate-800/80 dark:border-white/10 light:border-slate-200 transition-colors"
                   >
                     <BookOpen className="w-4 h-4 text-emerald-400" />
                     <span>Setup Manual &amp; Shortcuts</span>
@@ -719,11 +717,11 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
                 </div>
 
                 {(installerName === 'SecureInstaller_T.exe' || installerName === 'SecureInstaller_A.exe') && (
-                  <div className="p-4 border border-rose-500/30 bg-rose-950/20 rounded-2xl max-w-2xl text-xs text-slate-300 space-y-1.5">
-                    <h4 className="text-rose-400 font-bold flex items-center gap-2">
+                  <div className="p-4 border border-rose-500/30 bg-rose-950/20 dark:bg-rose-950/20 light:bg-rose-50 rounded-xl max-w-2xl text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 space-y-1.5">
+                    <h4 className="text-rose-400 dark:text-rose-400 light:text-rose-700 font-bold flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-rose-400" /> DRM Security Sentinel Active
                     </h4>
-                    <p className="text-slate-400 leading-relaxed">
+                    <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 leading-relaxed">
                       {installerName === 'SecureInstaller_T.exe' 
                         ? 'This software contains an automated Time-Bomb. Upon your license expiry date, or if revoked by an admin, the system automatically wipes all proprietary configuration files and resets your account to Fresh.'
                         : 'This software is actively monitored. If your access is revoked by an administrator, the remote kill-switch automatically wipes all configuration files from your host machine.'}
@@ -734,12 +732,12 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             );
           })() : (
             <div className="py-8 text-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-transparent border border-emerald-500/30 flex items-center justify-center text-emerald-300 mx-auto shadow-lg shadow-emerald-500/10">
-                <Sparkles className="w-8 h-8" />
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+                <Sparkles className="w-7 h-7" />
               </div>
               <div className="space-y-1.5">
-                <h4 className="text-xl font-bold text-white">Your Account is Fresh &amp; Ready</h4>
-                <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                <h4 className="text-xl font-bold text-white dark:text-white light:text-slate-900">Your Account is Fresh &amp; Ready</h4>
+                <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-400 light:text-slate-600 max-w-md mx-auto leading-relaxed">
                   No licenses are currently active. Browse our available packages or grab a direct installer below.
                 </p>
               </div>
