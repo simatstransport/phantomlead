@@ -170,12 +170,8 @@ const useHasActiveLicense = (isAdmin: boolean) => {
         const validLicenses: any[] = [];
         if (!error && licenses) {
           for (const lic of licenses) {
-            if (lic.expires_at && new Date(lic.expires_at).getTime() <= now) {
-              // Expired: auto delete logs and license to keep user account 100% fresh
-              supabase.from('installation_logs').delete().eq('license_id', lic.id).then(() => {
-                supabase.from('licenses').delete().eq('id', lic.id);
-              });
-            } else {
+            // Only count non-expired licenses as active
+            if (!(lic.expires_at && new Date(lic.expires_at).getTime() <= now)) {
               validLicenses.push(lic);
             }
           }

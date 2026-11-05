@@ -66,18 +66,9 @@ export const AdminLicenses = () => {
     if (error) {
       console.error(error);
     } else {
-      const now = Date.now();
-      const valid = [];
-      for (const lic of (data || [])) {
-        if (lic.expires_at && new Date(lic.expires_at).getTime() <= now) {
-          supabase.from('installation_logs').delete().eq('license_id', lic.id).then(() => {
-            supabase.from('licenses').delete().eq('id', lic.id);
-          });
-        } else {
-          valid.push(lic);
-        }
-      }
-      setLicenses(valid);
+      // Keep licenses exactly as recorded in database (no automatic silent deletion)
+      // Admins will delete manually when needed via the Delete button
+      setLicenses(data || []);
     }
 
     const { data: logsData } = await supabase
@@ -126,21 +117,33 @@ export const AdminLicenses = () => {
 
   const handleRevokeLicense = async (id: string, customerName?: string) => {
     const targetLabel = customerName ? `for "${customerName}"` : '';
-    if (!window.confirm(`⚠️ REVOKE LICENSE & TRIGGER INSTANT TIME-BOMB WIPE ${targetLabel}?\n\nThis will trigger the Sentinel to immediately wipe all Safe Exam Browser extension files on the host computer.`)) return;
+    if (!window.confirm(`⚠️ REVOKE LICENSE & UNBIND DEVICE ${targetLabel}?\n\nThis will revoke the license and immediately unbind the hardware lock so the user's bound key/device is cleared. You can delete this license record manually whenever you want.`)) return;
     
     setProcessingId(id);
     try {
+      // Find the license to get device_id
+      const targetLic = licenses.find(l => l.id === id);
+
+      // Unbind device and revoke license (device_id: null clears the hardware lock)
       const { error } = await supabase
         .from('licenses')
-        .update({ status: 'REVOKED' })
+        .update({ 
+          status: 'REVOKED',
+          device_id: null 
+        })
         .eq('id', id);
         
       if (error) {
         setActionAlert({ type: 'error', message: `❌ Error revoking license: ${error.message}` });
       } else {
+        // If there was a bound device, delete device record or clear it
+        if (targetLic?.device_id) {
+          await supabase.from('devices').delete().eq('id', targetLic.device_id);
+        }
+
         setActionAlert({ 
           type: 'success', 
-          message: `✅ License ${targetLabel} revoked successfully! Kill-switch activated on host machine.` 
+          message: `✅ License ${targetLabel} revoked successfully! Hardware node lock cleared. License remains listed until you manually delete it.` 
         });
         fetchLicenses();
         setTimeout(() => setActionAlert(null), 5000);

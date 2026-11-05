@@ -31,20 +31,27 @@ serve(async (req) => {
     const license_key_hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 
     if (action === 'REPORT_DELETED') {
-      const { data: updateData } = await supabaseClient.from('licenses').select('id').eq('license_key_hash', license_key_hash);
+      const { data: updateData } = await supabaseClient.from('licenses').select('id, device_id').eq('license_key_hash', license_key_hash);
       if (updateData && updateData.length > 0) {
-        const licId = updateData[0].id;
+        const lic = updateData[0];
+        const licId = lic.id;
         await supabaseClient.from('audit_logs').insert({
           action: 'HOST_WIPE_SUCCESS',
           target_id: licId,
-          details: { message: 'All application folders and extensions wiped successfully. License automatically purged for fresh account.', device_id: fingerprint, timestamp: new Date().toISOString() }
+          details: { message: 'All application folders and extensions wiped successfully. Hardware binding cleared.', device_id: fingerprint, timestamp: new Date().toISOString() }
         });
-        // Delete installation logs referencing this license
-        await supabaseClient.from('installation_logs').delete().eq('license_id', licId);
-        // Delete the license so customer and admin accounts are completely fresh
-        await supabaseClient.from('licenses').delete().eq('id', licId);
+        
+        // Clear the hardware binding and mark uninstalled_at so user can bind new key
+        if (lic.device_id) {
+          await supabaseClient.from('devices').delete().eq('id', lic.device_id);
+        }
+        await supabaseClient.from('licenses').update({ 
+          status: 'REVOKED', 
+          device_id: null, 
+          uninstalled_at: new Date().toISOString() 
+        }).eq('id', licId);
       }
-      return new Response(JSON.stringify({ success: true, message: 'Wiped and license purged for fresh account' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+      return new Response(JSON.stringify({ success: true, message: 'Wiped and hardware binding cleared' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
     if (action === 'REPORT_ERROR') {

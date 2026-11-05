@@ -134,6 +134,11 @@ export const CustomerLicenses = () => {
   const handleAcknowledgeRevocation = async (licenseId: string) => {
     setClearingRevocation(true);
     try {
+      // Find the license to get device_id before deleting
+      const { data: lic } = await supabase.from('licenses').select('device_id').eq('id', licenseId).maybeSingle();
+      if (lic?.device_id) {
+        await supabase.from('devices').delete().eq('id', lic.device_id);
+      }
       await supabase.from('installation_logs').delete().eq('license_id', licenseId);
       await supabase.from('licenses').delete().eq('id', licenseId);
       setRevokedLicense(null);
@@ -260,13 +265,8 @@ export const CustomerLicenses = () => {
 
       setRevokedLicense(foundRevoked);
 
-      if (expiredLicenses.length > 0) {
-        for (const expLic of expiredLicenses) {
-          supabase.from('installation_logs').delete().eq('license_id', expLic.id).then(() => {
-            supabase.from('licenses').delete().eq('id', expLic.id);
-          });
-        }
-      }
+      // Do NOT silently delete expired or revoked licenses.
+      // Licenses remain until the admin manually deletes them or customer acknowledges.
 
       if (validLicenses.length > 0) {
         const primaryLicense = validLicenses[0];
