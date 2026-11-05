@@ -367,7 +367,7 @@ export const CustomerPackages = () => {
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                 step === 1 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
               }`}>1</span>
-              <span className="font-cinematic uppercase tracking-wider text-xs">ACT 01 // PASS</span>
+              <span className="font-semibold uppercase tracking-wider text-xs">1. Select Package</span>
             </div>
 
             <ChevronRight className="w-4 h-4 text-[#4e4e4e]" />
@@ -381,7 +381,7 @@ export const CustomerPackages = () => {
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                 step === 2 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
               }`}>2</span>
-              <span className="font-cinematic uppercase tracking-wider text-xs">ACT 02 // DOSSIER</span>
+              <span className="font-semibold uppercase tracking-wider text-xs">2. Profile Details</span>
             </div>
 
             <ChevronRight className="w-4 h-4 text-[#4e4e4e]" />
@@ -395,7 +395,7 @@ export const CustomerPackages = () => {
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                 step === 3 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
               }`}>3</span>
-              <span className="font-cinematic uppercase tracking-wider text-xs">ACT 03 // SETTLEMENT</span>
+              <span className="font-semibold uppercase tracking-wider text-xs">3. Payment</span>
             </div>
           </div>
         </div>
@@ -405,15 +405,15 @@ export const CustomerPackages = () => {
       {step === 1 && (
         <div className="space-y-6">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#de1b1c]/40 bg-[#de1b1c]/15 text-[#ededed] text-[11px] font-cinematic font-bold tracking-[0.2em] uppercase shadow-[0_0_15px_rgba(222,27,28,0.3)]">
-              <span className="w-2 h-2 rounded-full bg-[#de1b1c] animate-ping" />
-              <span>SCENE 01 // SAFE EXAM RUNTIME TIERING</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#de1b1c]/40 bg-[#de1b1c]/15 text-[#ededed] text-[11px] font-mono font-bold tracking-wider uppercase">
+              <span className="w-2 h-2 rounded-full bg-[#de1b1c]" />
+              <span>CHOOSE YOUR PLAN</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-display uppercase tracking-wider text-white">
-              SELECT AUTHORIZED <span className="text-[#de1b1c]">EXAM PASS</span>
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight uppercase text-white">
+              SELECT YOUR <span className="text-[#de1b1c]">EXAM PACKAGE</span>
             </h2>
             <p className="text-[#8a8a8a] text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-              Cryptographically locked workstation licenses. Choose sprint duration up to <span className="text-white font-bold font-mono">3 Months</span> or secure a <span className="text-[#de1b1c] font-bold font-mono">Permanent Lifetime Key</span>.
+              Locked to your machine on activation. Choose validity up to <span className="text-white font-bold font-mono">3 Months</span> or get a <span className="text-[#de1b1c] font-bold font-mono">Permanent Lifetime Key</span>.
             </p>
           </div>
           
@@ -532,8 +532,8 @@ export const CustomerPackages = () => {
 
                       {/* Included Tools */}
                       <div className="space-y-2.5 mb-4">
-                        <span className="text-[10px] font-cinematic uppercase tracking-[0.2em] text-[#8a8a8a] block font-bold">
-                          AUTHORIZED INJECTION MODULES
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-[#8a8a8a] block font-bold">
+                          INCLUDED ASSISTANTS
                         </span>
                         <div className="space-y-2">
                           {includesList.map((item: string) => (
@@ -548,9 +548,9 @@ export const CustomerPackages = () => {
 
                     <button 
                       onClick={() => handleBuyClick(pkg)} 
-                      className="w-full py-3.5 rounded-xl font-cinematic uppercase tracking-widest font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 bg-[#de1b1c] hover:bg-[#ff2a2b] text-white shadow-[0_0_20px_rgba(222,27,28,0.4)]"
+                      className="w-full py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 bg-[#de1b1c] hover:bg-[#ff2a2b] text-white shadow-md"
                     >
-                      <span>ACQUIRE PASS</span>
+                      <span>SELECT PACKAGE</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>

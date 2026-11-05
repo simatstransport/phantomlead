@@ -46,33 +46,33 @@ export const CustomerInstallation = () => {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-cinematic font-bold tracking-[0.2em] uppercase bg-[#de1b1c]/15 border border-[#de1b1c]/40 text-[#ededed] shadow-[0_0_15px_rgba(222,27,28,0.3)]">
-                <span className="w-2 h-2 rounded-full bg-[#de1b1c] animate-ping" />
-                SCENE 01 // DEPLOYMENT PROTOCOL
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase bg-[#de1b1c]/15 border border-[#de1b1c]/40 text-[#ededed]">
+                <span className="w-2 h-2 rounded-full bg-[#de1b1c]" />
+                SETUP GUIDE
               </span>
               <span className="text-xs font-mono text-[#8a8a8a] border border-white/10 bg-black/60 px-2.5 py-0.5 rounded-full">
                 SEB v3.10.2 VERIFIED
               </span>
-              <span className="text-xs font-mono text-[#de1b1c] border border-[#de1b1c]/30 bg-[#de1b1c]/10 px-2.5 py-0.5 rounded-full font-bold">
+              <span className="text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 rounded-full font-bold">
                 AUTO-WHITELIST ACTIVE
               </span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-display uppercase tracking-wide text-white flex items-center gap-3">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
               <BookOpen className="w-7 h-7 text-[#de1b1c] shrink-0" />
-              ARMAMENT MANUAL &amp; <span className="text-[#de1b1c]">DOSSIER</span>
+              Installation Manual &amp; <span className="text-[#de1b1c]">Shortcuts</span>
             </h1>
             <p className="text-xs sm:text-sm text-[#8a8a8a] max-w-2xl leading-relaxed">
-              Tactical step-by-step hardened installation protocol for Safe Exam Browser integration, hardware activation, and AI assistant keymaps.
+              Step-by-step setup guide for Safe Exam Browser integration, license activation, and keyboard shortcuts.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <Link
               to="/dashboard/licenses"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#de1b1c] hover:bg-[#ff2a2b] text-white font-cinematic uppercase tracking-widest font-bold text-xs shadow-[0_0_25px_rgba(222,27,28,0.4)] transition-all active:scale-95"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#de1b1c] hover:bg-[#ff2a2b] text-white font-medium text-xs shadow-md transition-all active:scale-95"
             >
               <Key className="w-4 h-4" />
-              SECURITY KEYS
+              My License
             </Link>
           </div>
         </div>
@@ -136,7 +136,7 @@ export const CustomerInstallation = () => {
             onClick={() => scrollToSection('step-warning')}
             className="px-3 py-1.5 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-300 border border-rose-800/50 font-mono font-semibold shrink-0 transition-colors"
           >
-            00. DRM Protocols
+            00. Important Notice
           </button>
           <button 
             onClick={() => scrollToSection('step-antivirus')}
@@ -160,7 +160,7 @@ export const CustomerInstallation = () => {
             onClick={() => scrollToSection('step-shortcuts')}
             className="px-3 py-1.5 rounded-xl bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-300 border border-indigo-800/50 font-mono font-semibold shrink-0 transition-colors"
           >
-            04. Hotkey Matrix
+            04. Keyboard Shortcuts
           </button>
           <button 
             onClick={() => scrollToSection('step-quota')}
@@ -180,43 +180,43 @@ export const CustomerInstallation = () => {
           <div className="space-y-3 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-mono tracking-widest uppercase px-3 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">
-                {lang === 'tanglish' ? '⚠️ முக்கிய எச்சரிக்கை (DRM)' : 'ACTIVE DRM DEFENSE'}
+                {lang === 'tanglish' ? '⚠️ முக்கிய எச்சரிக்கை' : 'IMPORTANT NOTICE'}
               </span>
               <span className="text-[10px] font-mono text-slate-400">
-                {lang === 'tanglish' ? 'SINGLE LAPTOP LOCK ACTIVE' : 'ZERO REPOSITORY TAMPER TOLERANCE'}
+                {lang === 'tanglish' ? 'SINGLE LAPTOP LOCK ACTIVE' : 'SINGLE DEVICE LOCK'}
               </span>
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-rose-200">
               {lang === 'tanglish'
-                ? 'முக்கிய தகவல்: Automated Time-Bomb & Single PC Hardware Lock'
-                : 'Critical Notice: Automated Time-Bomb & Hardware Sentinel Protocol'}
+                ? 'முக்கிய தகவல்: Auto-Expiry & Single PC Hardware Lock'
+                : 'Important Notice: Automatic Expiry & Hardware Lock'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               {lang === 'tanglish'
                 ? 'PhantomLead software unga laptop hardware-oda bind aagum. Friends kooda share panna koodathu. Keezhe irukura rules-ah kandippa follow pannunga:'
-                : 'PhantomLead features hardware-enforced DRM to safeguard test environments. Please observe the following policies before running the executable:'}
+                : 'PhantomLead is locked to a single PC to ensure secure testing environments. Please note the following rules:'}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div className="p-4 rounded-2xl bg-black/60 border border-rose-900/50 space-y-2">
                 <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider font-mono">
-                  <Zap className="w-4 h-4 text-rose-400" /> {lang === 'tanglish' ? 'Time-Bomb Expiry System' : 'Time-Bomb Expiry Automation'}
+                  <Zap className="w-4 h-4 text-rose-400" /> {lang === 'tanglish' ? 'Auto Expiry System' : 'Automatic Expiry System'}
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   {lang === 'tanglish'
-                    ? 'Neenga edutha validity (1, 2, or 3 months) mudinja odane, system automatic-ah exam files-ah delete pannidum. Account expire aagidum.'
-                    : 'For temporary packages (1, 2, or 3 months), an automated background sentinel purges all exam files and cryptographic traces on the exact expiration timestamp. Once expired, your account reverts to an unallocated state.'}
+                    ? 'Neenga edutha validity (1, 2, or 3 months) mudinja odane, software automatically expire aagidum.'
+                    : 'For temporary packages (1, 2, or 3 months), software access ends immediately upon expiration and the license reverts cleanly.'}
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-black/60 border border-rose-900/50 space-y-2">
                 <div className="flex items-center gap-2 text-rose-300 font-bold text-xs uppercase tracking-wider font-mono">
-                  <Lock className="w-4 h-4 text-rose-400" /> {lang === 'tanglish' ? 'Device Lock & Anti-Sharing' : 'Admin Kill-Switch Sentinel'}
+                  <Lock className="w-4 h-4 text-rose-400" /> {lang === 'tanglish' ? 'Device Lock & Anti-Sharing' : 'Strict 1-PC Lock'}
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   {lang === 'tanglish'
-                    ? 'Same license key-ah vera friends laptop-la podha try pannina, license block aagidum. Single machine-ku mattum dhaan valid.'
-                    : 'Attempting to share license keys across unregistered workstations or tampering with environment hooks triggers an immediate kill-switch on startup, wiping the suite and locking future assignments.'}
+                    ? 'Same license key-ah vera friends laptop-la podha try pannina, license bind aagadhu. Single machine-ku mattum dhaan valid.'
+                    : 'Your license key is locked to the first PC you activate it on. Sharing keys across multiple devices will prevent login.'}
                 </p>
               </div>
             </div>

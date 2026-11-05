@@ -330,14 +330,14 @@ export const CustomerLicenses = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#de1b1c] animate-ping" />
-            <span className="text-[11px] font-cinematic uppercase tracking-[0.2em] text-[#ededed] font-bold">
-              SCENE 01 // CRYPTOGRAPHIC KEY VAULT • DRM ARMAMENT
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-sans uppercase tracking-wider text-emerald-400 font-bold">
+              License Management
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-display uppercase tracking-wide text-white flex items-center gap-2.5">
-            <Key className="w-6 h-6 text-[#de1b1c]" />
-            SECURITY LICENSES &amp; <span className="text-[#de1b1c]">NODE LOCKS</span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            <Key className="w-6 h-6 text-emerald-400" />
+            My License &amp; Device Lock
           </h1>
         </div>
 
@@ -346,11 +346,11 @@ export const CustomerLicenses = () => {
             type="button"
             onClick={() => fetchLicenses(true)}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-black/80 hover:bg-white/[0.06] text-[#ededed] hover:text-white rounded-xl text-xs font-cinematic uppercase tracking-wider font-semibold border border-white/15 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-xs font-sans font-semibold border border-white/10 transition-all cursor-pointer disabled:opacity-50"
             title="Refresh license state"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#de1b1c] ${refreshing ? 'animate-spin' : ''}`} />
-            <span>{refreshing ? 'SYNCING...' : 'SYNC STATUS'}</span>
+            <RefreshCw className={`w-3.5 h-3.5 text-emerald-400 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh Status'}</span>
           </button>
         </div>
       </div>
@@ -361,25 +361,25 @@ export const CustomerLicenses = () => {
         </div>
       )}
       {error && (
-        <div className="p-4 rounded-xl bg-[#de1b1c]/15 border border-[#de1b1c]/30 text-[#ff2a2b] text-xs font-mono">
+        <div className="p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
       {/* ========================================================================= */}
       {revokedLicense && (
-        <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 border-2 border-[#de1b1c] bg-[#09090b] shadow-[0_0_40px_rgba(222,27,28,0.35)] space-y-5 mb-6 cinema-corner-mark">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#de1b1c]/30 pb-4">
+        <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 border border-rose-500/40 bg-rose-950/20 shadow-xl space-y-5 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-500/30 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#de1b1c]/20 border border-[#de1b1c]/50 flex items-center justify-center text-[#ff2a2b] shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 shrink-0">
                 <AlertTriangle className="w-6 h-6 animate-pulse" />
               </div>
               <div>
-                <span className="inline-block text-[10px] font-cinematic font-bold uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full bg-[#de1b1c]/25 text-[#ff2a2b] border border-[#de1b1c]/40 mb-1">
-                  SECURITY SENTINEL ALERT
+                <span className="inline-block text-[11px] font-sans font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 mb-1">
+                  License Status Notice
                 </span>
-                <h3 className="text-xl font-display uppercase tracking-wide text-white">
-                  LICENSE REVOKED BY ADMINISTRATOR
+                <h3 className="text-xl font-bold text-white">
+                  License Revoked by Administrator
                 </h3>
               </div>
             </div>
@@ -387,24 +387,24 @@ export const CustomerLicenses = () => {
             <button
               onClick={() => handleAcknowledgeRevocation(revokedLicense.id)}
               disabled={clearingRevocation}
-              className="px-6 py-3 rounded-xl bg-[#de1b1c] hover:bg-[#ff2a2b] text-white font-cinematic text-xs font-bold uppercase tracking-widest transition-all cursor-pointer shadow-[0_0_25px_rgba(222,27,28,0.4)] flex items-center gap-2 active:scale-95 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-sans text-xs font-bold transition-all cursor-pointer shadow-lg shadow-rose-500/30 flex items-center gap-2 active:scale-95 disabled:opacity-50"
             >
               {clearingRevocation ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-              <span>{clearingRevocation ? 'CLEARING ENCLAVE...' : 'ACKNOWLEDGE & RESET ENCLAVE'}</span>
+              <span>{clearingRevocation ? 'Clearing...' : 'Acknowledge & Clear'}</span>
             </button>
           </div>
 
-          <div className="p-4 rounded-xl bg-black/80 border border-white/10 space-y-2 text-xs">
-            <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
-              <span className="text-[#8a8a8a]">Target Package:</span>
-              <span className="text-white font-bold">{revokedLicense.packages?.package_name || 'Security Package'} ({revokedLicense.packages?.package_code || 'STANDARD'})</span>
+          <div className="p-4 rounded-xl bg-black/60 border border-white/10 space-y-2 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 font-sans">
+              <span className="text-slate-400">Package:</span>
+              <span className="text-white font-semibold">{revokedLicense.packages?.package_name || 'Package'} ({revokedLicense.packages?.package_code || 'STANDARD'})</span>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 font-mono">
-              <span className="text-[#8a8a8a]">Status:</span>
-              <span className="text-[#ff2a2b] font-bold uppercase tracking-wider">REVOKED (Host purge completed)</span>
+            <div className="flex flex-wrap items-center justify-between gap-2 font-sans">
+              <span className="text-slate-400">Status:</span>
+              <span className="text-rose-400 font-bold">Revoked</span>
             </div>
-            <p className="text-[#8a8a8a] text-xs leading-relaxed pt-2 border-t border-white/10">
-              Your license has been revoked by the administrator. All authorized Safe Exam Browser extension files on your machine have been terminated and wiped. Click <strong>Acknowledge &amp; Reset Enclave</strong> above to reset your account and activate a new license.
+            <p className="text-slate-400 text-xs leading-relaxed pt-2 border-t border-white/10">
+              Your license access has been revoked. All extension files on your machine were cleared. Click <strong>Acknowledge &amp; Clear</strong> above to reset your account and activate a new license.
             </p>
           </div>
         </div>
@@ -413,57 +413,53 @@ export const CustomerLicenses = () => {
       {/* CASE 1: FRESH ACCOUNT (No active license)                                  */}
       {/* ========================================================================= */}
       {!activeLicense ? (
-        <div className="relative overflow-hidden rounded-3xl glass-panel p-8 sm:p-12 shadow-2xl border border-white/15 text-center">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.15),transparent_70%)] pointer-events-none" />
-
-          {/* Tactical Status Icon */}
-          <div className="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
-              <ShieldCheck className="w-8 h-8 text-emerald-400" />
-            </div>
+        <div className="relative overflow-hidden rounded-2xl bg-[#09090b]/90 p-8 sm:p-12 shadow-xl border border-white/10 text-center">
+          {/* Status Icon */}
+          <div className="relative mx-auto mb-6 w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
+            <ShieldCheck className="w-8 h-8 text-emerald-400" />
           </div>
 
           {/* Fresh Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-300 text-xs font-mono font-bold tracking-wider uppercase mb-3 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-            Account Status: 100% Fresh
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-sans font-semibold mb-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Account Ready: 100% Clean
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight max-w-xl mx-auto mb-3">
-            Your Workstation is <span className="text-gradient-emerald">Fresh &amp; Ready</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight max-w-xl mx-auto mb-3">
+            Your Account is Fresh &amp; Ready
           </h2>
 
-          <p className="text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
-            No active or expired licenses are currently attached to this account. All previous exam configurations and machine bindings have been cleared, giving you an unrestricted workstation ready for new software activation.
+          <p className="text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
+            You do not have any active licenses attached to this account. You can choose a package to get a license key immediately.
           </p>
 
-          {/* 3 High-Tech Status Blocks */}
+          {/* 3 Status Blocks */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto mb-8 text-left">
-            <div className="glass-panel-interactive rounded-2xl p-5 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between">
+            <div className="bg-black/60 rounded-xl p-5 border border-white/10 flex flex-col justify-between">
               <div className="flex items-center gap-2 mb-2 text-emerald-400">
                 <HardDrive className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Hardware Slot</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Device Slot</span>
               </div>
-              <div className="text-base font-bold text-white font-mono">1/1 Slot Free</div>
-              <div className="text-[11px] text-slate-400 mt-1">Ready to pair with your PC on first install</div>
+              <div className="text-base font-bold text-white font-mono">1 PC Slot Free</div>
+              <div className="text-xs text-slate-400 mt-1">Ready to link to your PC on first install</div>
             </div>
 
-            <div className="glass-panel-interactive rounded-2xl p-5 border border-emerald-500/20 hover:border-emerald-400/50 flex flex-col justify-between">
+            <div className="bg-black/60 rounded-xl p-5 border border-white/10 flex flex-col justify-between">
               <div className="flex items-center gap-2 mb-2 text-emerald-400">
                 <ShieldCheck className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Clean State</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Status</span>
               </div>
-              <div className="text-base font-bold text-white font-mono">Zero Restrictions</div>
-              <div className="text-[11px] text-slate-400 mt-1">No expired time-bombs or lingering locks running</div>
+              <div className="text-base font-bold text-white font-mono">Clean State</div>
+              <div className="text-xs text-slate-400 mt-1">No old locks or expired trials</div>
             </div>
 
-            <div className="glass-panel-interactive rounded-2xl p-5 border border-purple-500/20 hover:border-purple-400/50 flex flex-col justify-between">
-              <div className="flex items-center gap-2 mb-2 text-purple-400">
+            <div className="bg-black/60 rounded-xl p-5 border border-white/10 flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-2 text-cyan-400">
                 <Cpu className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-200">AI Integration</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Exam Assistant</span>
               </div>
-              <div className="text-base font-bold text-white font-mono">Gemini 1.5 Ready</div>
-              <div className="text-[11px] text-slate-400 mt-1">Instant activation upon provisioning any package</div>
+              <div className="text-base font-bold text-white font-mono">SEB 3.10.2 Ready</div>
+              <div className="text-xs text-slate-400 mt-1">Instant setup upon entering your license</div>
             </div>
           </div>
 
@@ -471,18 +467,18 @@ export const CustomerLicenses = () => {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/dashboard/packages"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 rounded-xl transition-all hover:scale-[1.02] cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 rounded-xl transition-all cursor-pointer active:scale-95"
             >
-              <span>Browse Packages &amp; Activate Now</span>
+              <span>Browse Packages</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
             <Link
               to="/dashboard/install"
-              className="inline-flex items-center gap-2 px-6 py-3.5 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl font-medium text-sm transition-all border border-white/10"
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-black/60 hover:bg-white/[0.06] text-slate-200 hover:text-white rounded-xl font-medium text-sm transition-all border border-white/10"
             >
               <BookOpen className="w-4 h-4 text-emerald-400" />
-              <span>View Installation Guide</span>
+              <span>Installation Manual</span>
             </Link>
           </div>
         </div>
@@ -512,7 +508,7 @@ export const CustomerLicenses = () => {
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
                       </span>
                       <span className="text-[11px] font-mono uppercase tracking-widest font-bold text-emerald-300">
-                        ACTIVE STATION ARMED
+                        ACTIVE LICENSE
                       </span>
                       <span className="text-slate-500">•</span>
                       <span className="text-xs font-mono text-slate-300">
@@ -541,10 +537,10 @@ export const CustomerLicenses = () => {
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <span className="text-xs font-mono uppercase font-bold text-slate-300 flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-emerald-400" /> License Key Vault
+                          <Sparkles className="w-4 h-4 text-emerald-400" /> License Key
                         </span>
                         <span className="text-[10px] text-emerald-300 font-mono bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
-                          Encrypted
+                          Active
                         </span>
                       </div>
 
@@ -736,7 +732,7 @@ export const CustomerLicenses = () => {
                     <div className="flex items-center gap-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3.5 py-2.5 rounded-xl max-w-md">
                       <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
                       <span>
-                        <strong>Auto-Wipe Sentinel:</strong> Upon expiry, files on your host machine will be wiped and your account will automatically return to <strong>Fresh Status</strong>.
+                        <strong>License Notice:</strong> Upon expiration, access to the software will end and your device lock will be freed automatically.
                       </span>
                     </div>
                   )}
