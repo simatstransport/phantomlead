@@ -21,6 +21,10 @@ PACKAGES = {
         "extensions": ["viva_paragraph", "java_coding"],
         "version": "2.0.0"
     },
+    "JAVA_QA": {
+        "extensions": ["java_coding", "viva_paragraph", "lms_mcq"],
+        "version": "1.0.0"
+    },
     "QA_PLACEMENT": {
         "extensions": ["lms_mcq", "reasoning_mcq"],
         "version": "2.2.0"

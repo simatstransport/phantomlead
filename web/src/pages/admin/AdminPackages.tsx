@@ -21,6 +21,9 @@ export const calculateDurationPrice = (basePrice: number, months: number | null,
     if (packageCode === 'FULL_ACCESS' || p >= 5500) {
       return 7000;
     }
+    if (packageCode === 'JAVA_QA') {
+      return 5000;
+    }
     if (packageCode === 'JAVA_VIVA') {
       return 5500;
     }
@@ -30,6 +33,10 @@ export const calculateDurationPrice = (basePrice: number, months: number | null,
     return Math.round((p * 1.4) / 50) * 50;
   }
   if (months <= 1) return Math.round(p);
+  if (packageCode === 'JAVA_QA') {
+    if (months === 2) return 2800;
+    if (months === 3) return 3500;
+  }
   const multiplier = Math.pow(months, 0.76);
   return Math.round((p * multiplier) / 50) * 50;
 };

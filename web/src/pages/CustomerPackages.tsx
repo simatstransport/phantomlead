@@ -40,6 +40,12 @@ const packageGuides: Record<string, { purpose: string; badge: string; includes: 
     includes: ['Java Coding Helper', 'Viva Paragraph Explainer'],
     theme: 'amber'
   },
+  JAVA_QA: {
+    purpose: 'Complete combination of Java programming, viva voce preparation, and LMS multiple-choice questions.',
+    badge: 'JAVA + QA MCQS • NEW',
+    includes: ['Java Coding Helper', 'Viva Paragraph Explainer', 'LMS MCQ Helper'],
+    theme: 'violet'
+  },
   QA_PLACEMENT: {
     purpose: 'For LMS-based multiple-choice practice and QA or campus placement assessment rounds.',
     badge: 'MCQ & APTITUDE ROUNDS',
@@ -62,18 +68,20 @@ export const calculateDurationPrice = (_basePrice: number, months: number | null
   
   // 1 Month
   if (months <= 1) {
-    if (packageCode === 'FULL_ACCESS') return 2000;
+    if (packageCode === 'FULL_ACCESS' || packageCode === 'JAVA_QA') return 2000;
     return 1500;
   }
   
   // 2 Months
   if (months === 2) {
+    if (packageCode === 'JAVA_QA') return 2800;
     if (packageCode === 'FULL_ACCESS') return 2500;
     return 2000;
   }
   
   // 3 Months (Maximum term)
   if (months >= 3) {
+    if (packageCode === 'JAVA_QA') return 3500;
     if (packageCode === 'FULL_ACCESS') return 3000;
     return 2500;
   }
@@ -85,10 +93,12 @@ export const getDiscountLabel = (months: number | null, packageCode?: string): s
   if (months === null) return '👑 Godmode Forever (Best Deal)';
   if (months === 1) return '🔥 Starter Sprint';
   if (months === 2) {
+    if (packageCode === 'JAVA_QA') return '⚡ Save ₹1,200 (Popular Choice)';
     if (packageCode === 'FULL_ACCESS') return '⚡ Save ₹1,500 (Campus Choice)';
     return '⚡ Save ₹1,000 (Campus Choice)';
   }
   if (months === 3) {
+    if (packageCode === 'JAVA_QA') return '🚀 Semester Pass (Save ₹2,500)';
     if (packageCode === 'FULL_ACCESS') return '🚀 Semester Pass (Save ₹3,000)';
     return '🚀 Semester Pass (Save ₹2,000)';
   }
