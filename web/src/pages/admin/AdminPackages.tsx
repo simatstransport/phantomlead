@@ -307,66 +307,86 @@ export const AdminPackages = () => {
               <th className="pb-3.5 font-semibold">Package Code</th>
               <th className="pb-3.5 font-semibold">Package Name</th>
               <th className="pb-3.5 font-semibold">Included Tools / Description</th>
-              <th className="pb-3.5 font-semibold">Base Price (1 Mo)</th>
+              <th className="pb-3.5 font-semibold">Month-Wise Rates</th>
               <th className="pb-3.5 font-semibold">Version</th>
               <th className="pb-3.5 font-semibold">Store Status</th>
               <th className="pb-3.5 font-semibold text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="text-sm divide-y divide-gray-800/60">
-            {packages.map(p => (
-              <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
-                <td className="py-4 font-mono text-cyan-400 font-bold">
-                  {p.package_code}
-                </td>
-                <td className="py-4 font-semibold text-white">
-                  {p.package_name}
-                </td>
-                <td className="py-4 text-gray-300 max-w-xs">
-                  <div className="truncate text-xs leading-relaxed" title={p.description}>
-                    {p.description || <span className="text-gray-600 italic">No description</span>}
-                  </div>
-                </td>
-                <td className="py-4 font-extrabold text-white text-base">
-                  ₹{p.price}
-                  <span className="text-xs font-normal text-gray-500 block">/ month base</span>
-                </td>
-                <td className="py-4 font-mono text-xs text-gray-400">
-                  v{p.version || '1.0.0'}
-                </td>
-                <td className="py-4">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 w-max ${p.active ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                    {p.active ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-                    {p.active ? 'Active in Store' : 'Disabled'}
-                  </span>
-                </td>
-                <td className="py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => handleOpenEdit(p)}
-                      className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-cyan-500 text-gray-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                      title="Full access edit of all package properties"
-                    >
-                      <Edit3 className="w-3.5 h-3.5 text-cyan-400" /> Full Edit
-                    </button>
-                    <button
-                      onClick={() => togglePackageStatus(p.id, p.active)}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${p.active ? 'bg-yellow-950/30 text-yellow-400 border-yellow-800/50 hover:bg-yellow-900/40' : 'bg-cyan-950/30 text-cyan-400 border-cyan-800/50 hover:bg-cyan-900/40'}`}
-                      title={p.active ? 'Hide from student store' : 'Publish to student store'}
-                    >
-                      {p.active ? 'Disable' : 'Enable'}
-                    </button>
-                    <button
-                      onClick={() => handleDeletePackage(p)}
-                      className="p-1.5 rounded-lg bg-red-950/30 text-red-400 hover:text-red-300 border border-red-900/40 hover:bg-red-900/50 transition-all cursor-pointer"
-                      title="Delete package"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {packages.map(p => {
+              const custom = pricingMatrix[p.package_code] || {};
+              const r1 = custom['1'] !== undefined ? custom['1'] : (Number(p.price) || 2000);
+              const r2 = custom['2'] !== undefined ? custom['2'] : calculateDurationPrice(p.price, 2, p.package_code);
+              const r3 = custom['3'] !== undefined ? custom['3'] : calculateDurationPrice(p.price, 3, p.package_code);
+              const rLife = custom['lifetime'] !== undefined ? custom['lifetime'] : calculateDurationPrice(p.price, null, p.package_code);
+
+              return (
+                <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <td className="py-4 font-mono text-cyan-400 font-bold">
+                    {p.package_code}
+                  </td>
+                  <td className="py-4 font-semibold text-white">
+                    {p.package_name}
+                  </td>
+                  <td className="py-4 text-gray-300 max-w-xs">
+                    <div className="truncate text-xs leading-relaxed" title={p.description}>
+                      {p.description || <span className="text-gray-600 italic">No description</span>}
+                    </div>
+                  </td>
+                  <td className="py-4">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-gray-200">
+                        1M: <strong className="text-emerald-400">₹{r1}</strong>
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-gray-200">
+                        2M: <strong className="text-emerald-400">₹{r2}</strong>
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[11px] font-mono text-gray-200">
+                        3M: <strong className="text-emerald-400">₹{r3}</strong>
+                      </span>
+                      <span className="px-2 py-0.5 rounded bg-cyan-950/40 border border-cyan-800/50 text-[11px] font-mono text-cyan-300 font-bold">
+                        ∞: ₹{rLife}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4 font-mono text-xs text-gray-400">
+                    v{p.version || '1.0.0'}
+                  </td>
+                  <td className="py-4">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 w-max ${p.active ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                      {p.active ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                      {p.active ? 'Active in Store' : 'Disabled'}
+                    </span>
+                  </td>
+                  <td className="py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => handleOpenEdit(p)}
+                        className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-cyan-500 text-gray-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                        title="Full access edit of all package properties and month rates"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-cyan-400" /> Edit Rates
+                      </button>
+                      <button
+                        onClick={() => togglePackageStatus(p.id, p.active)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${p.active ? 'bg-yellow-950/30 text-yellow-400 border-yellow-800/50 hover:bg-yellow-900/40' : 'bg-cyan-950/30 text-cyan-400 border-cyan-800/50 hover:bg-cyan-900/40'}`}
+                        title={p.active ? 'Hide from student store' : 'Publish to student store'}
+                      >
+                        {p.active ? 'Disable' : 'Enable'}
+                      </button>
+                      <button
+                        onClick={() => handleDeletePackage(p)}
+                        className="p-1.5 rounded-lg bg-red-950/30 text-red-400 hover:text-red-300 border border-red-900/40 hover:bg-red-900/50 transition-all cursor-pointer"
+                        title="Delete package"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
             {packages.length === 0 && (
               <tr>
                 <td colSpan={7} className="py-12 text-center text-gray-500">
