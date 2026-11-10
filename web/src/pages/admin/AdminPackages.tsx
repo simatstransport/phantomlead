@@ -15,30 +15,33 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export const calculateDurationPrice = (basePrice: number, months: number | null, packageCode?: string): number => {
-  const p = Number(basePrice) || 3000;
+export const calculateDurationPrice = (_basePrice: number, months: number | null, packageCode?: string): number => {
+  // Lifetime Access (all packages: 5000 RS)
   if (months === null) {
-    if (packageCode === 'FULL_ACCESS' || p >= 5500) {
-      return 7000;
-    }
-    if (packageCode === 'JAVA_QA') {
-      return 5000;
-    }
-    if (packageCode === 'JAVA_VIVA') {
-      return 5500;
-    }
-    if (packageCode === 'QA_PLACEMENT') {
-      return 4500;
-    }
-    return Math.round((p * 1.4) / 50) * 50;
+    return 5000;
   }
-  if (months <= 1) return Math.round(p);
-  if (packageCode === 'JAVA_QA') {
-    if (months === 2) return 2800;
-    if (months === 3) return 3500;
+  
+  // 1 Month
+  if (months <= 1) {
+    if (packageCode === 'FULL_ACCESS' || packageCode === 'JAVA_QA') return 2000;
+    return 1500;
   }
-  const multiplier = Math.pow(months, 0.76);
-  return Math.round((p * multiplier) / 50) * 50;
+  
+  // 2 Months
+  if (months === 2) {
+    if (packageCode === 'JAVA_QA') return 2800;
+    if (packageCode === 'FULL_ACCESS') return 2500;
+    return 2000;
+  }
+  
+  // 3 Months (Maximum term)
+  if (months >= 3) {
+    if (packageCode === 'JAVA_QA') return 3500;
+    if (packageCode === 'FULL_ACCESS') return 3000;
+    return 2500;
+  }
+
+  return 2000;
 };
 
 export const AdminPackages = () => {
@@ -451,26 +454,18 @@ export const AdminPackages = () => {
                   </span>
                   <span className="text-[11px] text-gray-500">Auto-scales in student store</span>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
                   <div className="p-2 rounded bg-[#111] border border-gray-800/80">
                     <div className="text-gray-400 text-[10px]">1 Month</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 1)}</div>
+                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 1, modalForm.package_code)}</div>
                   </div>
                   <div className="p-2 rounded bg-[#111] border border-gray-800/80">
                     <div className="text-gray-400 text-[10px]">2 Months</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 2)}</div>
+                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 2, modalForm.package_code)}</div>
                   </div>
                   <div className="p-2 rounded bg-[#111] border border-gray-800/80">
                     <div className="text-gray-400 text-[10px]">3 Months</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 3)}</div>
-                  </div>
-                  <div className="p-2 rounded bg-[#111] border border-gray-800/80">
-                    <div className="text-gray-400 text-[10px]">6 Months</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 6)}</div>
-                  </div>
-                  <div className="p-2 rounded bg-[#111] border border-gray-800/80">
-                    <div className="text-gray-400 text-[10px]">12 Months</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 12)}</div>
+                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 3, modalForm.package_code)}</div>
                   </div>
                   <div className="p-2 rounded bg-[#111] border border-cyan-900/50 text-cyan-400">
                     <div className="text-cyan-500 text-[10px] font-semibold">Lifetime</div>
