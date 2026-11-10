@@ -11,7 +11,7 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "dist_packages")
 PACKAGES = {
     "FULL_ACCESS": {
         "extensions": ["lms_mcq", "reasoning_mcq", "viva_paragraph", "java_coding", "python_coding", "c_coding"],
-        "version": "2.1.0"
+        "version": "2.2.0"
     },
     "PYTHON_C": {
         "extensions": ["python_coding", "c_coding"],
@@ -23,7 +23,7 @@ PACKAGES = {
     },
     "QA_PLACEMENT": {
         "extensions": ["lms_mcq", "reasoning_mcq"],
-        "version": "2.1.0"
+        "version": "2.2.0"
     }
 }
 
