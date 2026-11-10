@@ -51,13 +51,18 @@ export const AdminPackages = () => {
   // Create / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPackageId, setEditingPackageId] = useState<string | null>(null);
+  const [pricingMatrix, setPricingMatrix] = useState<Record<string, Record<string, number>>>({});
   const [modalForm, setModalForm] = useState({
     package_code: '',
     package_name: '',
     description: '',
-    price: '3000',
+    price: '2000',
     version: '1.0.0',
-    active: true
+    active: true,
+    price_1m: '2000',
+    price_2m: '2500',
+    price_3m: '3000',
+    price_lifetime: '5000'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -65,7 +70,24 @@ export const AdminPackages = () => {
 
   useEffect(() => {
     fetchPackages();
+    fetchPricingMatrix();
   }, []);
+
+  const fetchPricingMatrix = async () => {
+    try {
+      const { data } = await supabase
+        .from('admin_settings')
+        .select('value')
+        .eq('key', 'custom_package_pricing')
+        .maybeSingle();
+
+      if (data && data.value && typeof data.value === 'object') {
+        setPricingMatrix(data.value);
+      }
+    } catch (e) {
+      console.warn('Could not load custom pricing matrix', e);
+    }
+  };
 
   const fetchPackages = async () => {
     const { data, error } = await supabase.from('packages').select('*').order('created_at', { ascending: true });
@@ -102,9 +124,13 @@ export const AdminPackages = () => {
       package_code: '',
       package_name: '',
       description: '',
-      price: '3000',
+      price: '2000',
       version: '1.0.0',
-      active: true
+      active: true,
+      price_1m: '2000',
+      price_2m: '2500',
+      price_3m: '3000',
+      price_lifetime: '5000'
     });
     setErrorMsg('');
     setSuccessMsg('');
@@ -113,13 +139,23 @@ export const AdminPackages = () => {
 
   const handleOpenEdit = (pkg: any) => {
     setEditingPackageId(pkg.id);
+    const custom = pricingMatrix[pkg.package_code] || {};
+    const p1 = custom['1'] !== undefined ? String(custom['1']) : String(pkg.price || '2000');
+    const p2 = custom['2'] !== undefined ? String(custom['2']) : String(calculateDurationPrice(pkg.price, 2, pkg.package_code));
+    const p3 = custom['3'] !== undefined ? String(custom['3']) : String(calculateDurationPrice(pkg.price, 3, pkg.package_code));
+    const pLife = custom['lifetime'] !== undefined ? String(custom['lifetime']) : String(calculateDurationPrice(pkg.price, null, pkg.package_code));
+
     setModalForm({
       package_code: pkg.package_code,
       package_name: pkg.package_name,
       description: pkg.description || '',
-      price: String(pkg.price),
+      price: p1,
       version: pkg.version || '1.0.0',
-      active: pkg.active !== false
+      active: pkg.active !== false,
+      price_1m: p1,
+      price_2m: p2,
+      price_3m: p3,
+      price_lifetime: pLife
     });
     setErrorMsg('');
     setSuccessMsg('');
@@ -146,52 +182,87 @@ export const AdminPackages = () => {
       return;
     }
 
+    const p1 = Number(modalForm.price_1m) || Number(modalForm.price) || 2000;
+    const p2 = Number(modalForm.price_2m) || 2500;
+    const p3 = Number(modalForm.price_3m) || 3000;
+    const pLife = Number(modalForm.price_lifetime) || 5000;
+
+    const updatedMatrix = {
+      ...pricingMatrix,
+      [code]: {
+        '1': p1,
+        '2': p2,
+        '3': p3,
+        'lifetime': pLife
+      }
+    };
+
+    const packagePayload = {
+      package_code: code,
+      package_name: modalForm.package_name.trim(),
+      description: modalForm.description.trim(),
+      price: p1,
+      version: modalForm.version.trim() || '1.0.0',
+      active: modalForm.active
+    };
+
     if (editingPackageId) {
-      // Full Access Update
-      const { error } = await supabase.from('packages').update({
-        package_code: code,
-        package_name: modalForm.package_name.trim(),
-        description: modalForm.description.trim(),
-        price: numPrice,
-        version: modalForm.version.trim() || '1.0.0',
-        active: modalForm.active
-      }).eq('id', editingPackageId);
+      // 1. Update package in DB
+      const { error } = await supabase.from('packages').update(packagePayload).eq('id', editingPackageId);
+
+      // 2. Save month-wise pricing matrix into admin_settings
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase.functions.invoke('admin-manage-packages', {
+          body: {
+            action: 'SAVE_PRICING_MATRIX',
+            pricing_matrix: updatedMatrix
+          }
+        });
+      }
 
       setIsSubmitting(false);
       if (error) {
         setErrorMsg('Error updating package: ' + error.message);
       } else {
-        setSuccessMsg('Package updated successfully!');
+        setPricingMatrix(updatedMatrix);
+        setSuccessMsg('Package and month-wise prices updated successfully!');
         setTimeout(() => {
           setIsModalOpen(false);
           fetchPackages();
+          fetchPricingMatrix();
         }, 800);
       }
     } else {
       // Create New Package
-      const { error } = await supabase.from('packages').insert({
-        package_code: code,
-        package_name: modalForm.package_name.trim(),
-        description: modalForm.description.trim(),
-        price: numPrice,
-        version: modalForm.version.trim() || '1.0.0',
-        active: modalForm.active
-      });
+      const { error } = await supabase.from('packages').insert(packagePayload);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase.functions.invoke('admin-manage-packages', {
+          body: {
+            action: 'SAVE_PRICING_MATRIX',
+            pricing_matrix: updatedMatrix
+          }
+        });
+      }
 
       setIsSubmitting(false);
       if (error) {
         setErrorMsg('Error creating package: ' + error.message);
       } else {
-        setSuccessMsg('Package created successfully!');
+        setPricingMatrix(updatedMatrix);
+        setSuccessMsg('Package and month-wise prices created successfully!');
         setTimeout(() => {
           setIsModalOpen(false);
           fetchPackages();
+          fetchPricingMatrix();
         }, 800);
       }
     }
   };
 
-  const currentModalPrice = Number(modalForm.price) || 0;
+
 
   if (loading) return <div className="text-gray-400">Loading package manager...</div>;
 
@@ -446,30 +517,69 @@ export const AdminPackages = () => {
                 </button>
               </div>
 
-              {/* DYNAMIC MONTHLY PRICE PREVIEW ACCORDION */}
-              <div className="mt-4 p-4 rounded-xl bg-black border border-gray-800">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Calculator className="w-3.5 h-3.5 text-cyan-400" /> Dynamic Adjustable Month Pricing Preview
+              {/* MONTH-WISE PRICING CONTROLS */}
+              <div className="mt-4 p-4 rounded-xl bg-black border border-cyan-500/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-cyan-400 flex items-center gap-1.5 uppercase tracking-wider">
+                    <Calculator className="w-3.5 h-3.5 text-cyan-400" /> Month-Wise Price Customization
                   </span>
-                  <span className="text-[11px] text-gray-500">Auto-scales in student store</span>
+                  <span className="text-[11px] text-gray-400">Directly syncs to Student Store</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-                  <div className="p-2 rounded bg-[#111] border border-gray-800/80">
-                    <div className="text-gray-400 text-[10px]">1 Month</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 1, modalForm.package_code)}</div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-mono text-gray-400 mb-1">
+                      1 Month (₹)
+                    </label>
+                    <input
+                      type="number"
+                      step="50"
+                      value={modalForm.price_1m}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setModalForm({ ...modalForm, price_1m: val, price: val });
+                      }}
+                      className="w-full px-3 py-2 bg-[#111] border border-gray-800 rounded-lg text-white font-mono text-sm font-bold focus:outline-none focus:border-cyan-500"
+                    />
                   </div>
-                  <div className="p-2 rounded bg-[#111] border border-gray-800/80">
-                    <div className="text-gray-400 text-[10px]">2 Months</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 2, modalForm.package_code)}</div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono text-gray-400 mb-1">
+                      2 Months (₹)
+                    </label>
+                    <input
+                      type="number"
+                      step="50"
+                      value={modalForm.price_2m}
+                      onChange={e => setModalForm({ ...modalForm, price_2m: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#111] border border-gray-800 rounded-lg text-white font-mono text-sm font-bold focus:outline-none focus:border-cyan-500"
+                    />
                   </div>
-                  <div className="p-2 rounded bg-[#111] border border-gray-800/80">
-                    <div className="text-gray-400 text-[10px]">3 Months</div>
-                    <div className="font-bold text-white mt-0.5">₹{calculateDurationPrice(currentModalPrice, 3, modalForm.package_code)}</div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono text-gray-400 mb-1">
+                      3 Months (₹)
+                    </label>
+                    <input
+                      type="number"
+                      step="50"
+                      value={modalForm.price_3m}
+                      onChange={e => setModalForm({ ...modalForm, price_3m: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#111] border border-gray-800 rounded-lg text-white font-mono text-sm font-bold focus:outline-none focus:border-cyan-500"
+                    />
                   </div>
-                  <div className="p-2 rounded bg-[#111] border border-cyan-900/50 text-cyan-400">
-                    <div className="text-cyan-500 text-[10px] font-semibold">Lifetime</div>
-                    <div className="font-extrabold text-cyan-400 mt-0.5">₹{calculateDurationPrice(currentModalPrice, null, modalForm.package_code)}</div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono text-cyan-400 mb-1">
+                      Lifetime (₹)
+                    </label>
+                    <input
+                      type="number"
+                      step="50"
+                      value={modalForm.price_lifetime}
+                      onChange={e => setModalForm({ ...modalForm, price_lifetime: e.target.value })}
+                      className="w-full px-3 py-2 bg-[#111] border border-cyan-800/60 rounded-lg text-cyan-300 font-mono text-sm font-extrabold focus:outline-none focus:border-cyan-400"
+                    />
                   </div>
                 </div>
               </div>

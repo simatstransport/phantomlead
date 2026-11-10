@@ -60,33 +60,48 @@ const installationSteps = [
   'Enter your Gemini API key when prompted, then let the installer validate and install the authorized tools.'
 ];
 
-export const calculateDurationPrice = (_basePrice: number, months: number | null, packageCode?: string): number => {
-  // Lifetime Access (all packages: 5000 RS)
+export const calculateDurationPrice = (
+  basePrice: number, 
+  months: number | null, 
+  packageCode?: string,
+  customPricingMap?: Record<string, Record<string, number>>
+): number => {
+  // Check if admin has set custom pricing in admin_settings
+  if (customPricingMap && packageCode && customPricingMap[packageCode]) {
+    const pkgRates = customPricingMap[packageCode];
+    if (months === null && pkgRates['lifetime'] !== undefined) {
+      return Number(pkgRates['lifetime']);
+    }
+    if (months !== null && pkgRates[String(months)] !== undefined) {
+      return Number(pkgRates[String(months)]);
+    }
+  }
+
+  // Fallback defaults
   if (months === null) {
     return 5000;
   }
   
-  // 1 Month
+  const bp = Number(basePrice) || 2000;
   if (months <= 1) {
+    if (bp > 0) return bp;
     if (packageCode === 'FULL_ACCESS' || packageCode === 'JAVA_QA') return 2000;
     return 1500;
   }
   
-  // 2 Months
   if (months === 2) {
     if (packageCode === 'JAVA_QA') return 2800;
     if (packageCode === 'FULL_ACCESS') return 2500;
-    return 2000;
+    return Math.round(bp * 1.35 / 50) * 50;
   }
   
-  // 3 Months (Maximum term)
   if (months >= 3) {
     if (packageCode === 'JAVA_QA') return 3500;
     if (packageCode === 'FULL_ACCESS') return 3000;
-    return 2500;
+    return Math.round(bp * 1.7 / 50) * 50;
   }
 
-  return 2000;
+  return bp;
 };
 
 export const getDiscountLabel = (months: number | null, packageCode?: string): string | null => {
@@ -158,6 +173,7 @@ export const CustomerPackages = () => {
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [merchantUpiId, setMerchantUpiId] = useState('phantomlead@upi');
   const [merchantUpiName, setMerchantUpiName] = useState('Phantom Lead');
+  const [customPricingMap, setCustomPricingMap] = useState<Record<string, Record<string, number>>>({});
 
   const phoneStatus = isValidIndianPhoneNumber(formData.phone);
 
@@ -172,7 +188,7 @@ export const CustomerPackages = () => {
       const { data } = await supabase
         .from('admin_settings')
         .select('key, value')
-        .in('key', ['merchant_upi_id', 'merchant_upi_name']);
+        .in('key', ['merchant_upi_id', 'merchant_upi_name', 'custom_package_pricing']);
       
       if (data) {
         data.forEach(item => {
@@ -181,6 +197,9 @@ export const CustomerPackages = () => {
           }
           if (item.key === 'merchant_upi_name' && item.value) {
             setMerchantUpiName(String(item.value).trim());
+          }
+          if (item.key === 'custom_package_pricing' && item.value && typeof item.value === 'object') {
+            setCustomPricingMap(item.value);
           }
         });
       }
@@ -231,7 +250,7 @@ export const CustomerPackages = () => {
 
   const handleBuyClick = (pkg: any) => {
     const duration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
-    const price = calculateDurationPrice(pkg.price, duration, pkg.package_code);
+    const price = calculateDurationPrice(pkg.price, duration, pkg.package_code, customPricingMap);
     const label = getDurationLabel(duration);
 
     setSelectedPackage(pkg);
@@ -431,7 +450,7 @@ export const CustomerPackages = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
-              const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code);
+              const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code, customPricingMap);
               const discount = getDiscountLabel(currentDuration, pkg.package_code);
               const includesList = getPackageIncludes(pkg);
               const isFeatured = pkg.package_code === 'FULL_ACCESS';
