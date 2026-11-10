@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
 import { 
   CreditCard, 
-  CheckCircle,
+  CheckCircle2,
   Clock,
   Sparkles, 
   Check, 
@@ -16,48 +16,47 @@ import {
   GraduationCap, 
   Package, 
   ChevronRight,
-  Zap,
   ShieldCheck,
-  QrCode
+  Lock
 } from 'lucide-react';
 
-const packageGuides: Record<string, { purpose: string; badge: string; includes: string[]; theme: 'violet' | 'emerald' | 'amber' | 'sky' }> = {
+const packageGuides: Record<string, { purpose: string; badge: string; includes: string[]; highlight?: boolean }> = {
   FULL_ACCESS: {
-    purpose: 'Complete all-in-one suite with all 6 specialized assistants for LMS MCQs, Visual Reasoning, Viva, Java, Python, and C.',
-    badge: 'COMMAND SUITE • MOST POPULAR',
+    purpose: 'Complete all-in-one assistant bundle with all 6 tools for MCQs, reasoning, viva, and multi-language programming.',
+    badge: 'Most Popular • All-in-One Suite',
     includes: ['LMS MCQ Helper', 'LMS Reasoning MCQ Helper', 'Viva Paragraph Explainer', 'Java Coding Helper', 'Python 3 Coding Helper', 'C Coding Helper'],
-    theme: 'violet'
-  },
-  PYTHON_C: {
-    purpose: 'Engineered for students practicing Python and C programming with AI answer and code assistance.',
-    badge: 'DEVELOPER DUO • PYTHON & C',
-    includes: ['Python 3 Coding Helper', 'C Coding Helper'],
-    theme: 'emerald'
-  },
-  JAVA_VIVA: {
-    purpose: 'For students practicing Java programming and preparing for oral viva voce questions.',
-    badge: 'JAVA & ORAL EXAM SUITE',
-    includes: ['Java Coding Helper', 'Viva Paragraph Explainer'],
-    theme: 'amber'
+    highlight: true
   },
   JAVA_QA: {
-    purpose: 'Complete combination of Java programming, viva voce preparation, and LMS multiple-choice questions.',
-    badge: 'JAVA + QA MCQS • NEW',
+    purpose: 'Specialized bundle combining Java programming, oral viva answers, and automated LMS multiple-choice helpers.',
+    badge: 'Recommended for Java & Aptitude',
     includes: ['Java Coding Helper', 'Viva Paragraph Explainer', 'LMS MCQ Helper'],
-    theme: 'violet'
+    highlight: false
   },
   QA_PLACEMENT: {
-    purpose: 'For LMS-based multiple-choice practice and QA or campus placement assessment rounds.',
-    badge: 'MCQ & APTITUDE ROUNDS',
+    purpose: 'Engineered specifically for automated LMS multiple-choice questions, visual reasoning, and campus aptitude rounds.',
+    badge: 'Aptitude & MCQ Rounds',
     includes: ['LMS MCQ Helper', 'LMS Reasoning MCQ Helper'],
-    theme: 'sky'
+    highlight: false
+  },
+  PYTHON_C: {
+    purpose: 'Focused coding assistants for Python 3 and C programming courses, lab tests, and debugging assistance.',
+    badge: 'Developer Duo',
+    includes: ['Python 3 Coding Helper', 'C Coding Helper'],
+    highlight: false
+  },
+  JAVA_VIVA: {
+    purpose: 'Tailored for core Java laboratory exams, code writing, and automated technical viva voce paragraph explanations.',
+    badge: 'Java Lab & Viva Prep',
+    includes: ['Java Coding Helper', 'Viva Paragraph Explainer'],
+    highlight: false
   }
 };
 
 const installationSteps = [
-  'After payment approval, open your dashboard and download SecureInstaller.exe.',
-  'Run the installer and enter the license key issued for your package.',
-  'Enter your Gemini API key when prompted, then let the installer validate and install the authorized tools.'
+  'Once payment is verified, your license key appears instantly in your dashboard.',
+  'Download your edition-matched SecureInstaller.exe directly from the Licenses tab.',
+  'Run the installer, paste your license key and Gemini API key, and complete setup in under 60 seconds.'
 ];
 
 export const calculateDurationPrice = (
@@ -105,17 +104,17 @@ export const calculateDurationPrice = (
 };
 
 export const getDiscountLabel = (months: number | null, packageCode?: string): string | null => {
-  if (months === null) return '👑 Godmode Forever (Best Deal)';
-  if (months === 1) return '🔥 Starter Sprint';
+  if (months === null) return 'Best Value • Permanent Access';
+  if (months === 1) return 'Starter Plan • 30 Days';
   if (months === 2) {
-    if (packageCode === 'JAVA_QA') return '⚡ Save ₹1,200 (Popular Choice)';
-    if (packageCode === 'FULL_ACCESS') return '⚡ Save ₹1,500 (Campus Choice)';
-    return '⚡ Save ₹1,000 (Campus Choice)';
+    if (packageCode === 'JAVA_QA') return 'Save ₹1,200 • Popular Choice';
+    if (packageCode === 'FULL_ACCESS') return 'Save ₹1,500 • High Value';
+    return 'Save ₹1,000 • 60 Days';
   }
   if (months === 3) {
-    if (packageCode === 'JAVA_QA') return '🚀 Semester Pass (Save ₹2,500)';
-    if (packageCode === 'FULL_ACCESS') return '🚀 Semester Pass (Save ₹3,000)';
-    return '🚀 Semester Pass (Save ₹2,000)';
+    if (packageCode === 'JAVA_QA') return 'Semester Pass • Save ₹2,500';
+    if (packageCode === 'FULL_ACCESS') return 'Semester Pass • Save ₹3,000';
+    return 'Semester Pass • Save ₹2,000';
   }
   return null;
 };
@@ -358,73 +357,88 @@ export const CustomerPackages = () => {
     return [pkg.description || 'Full extension features'];
   };
 
+  // UPI payment URI for QR code
+  const upiPayUri = `upi://pay?pa=${encodeURIComponent(merchantUpiId || 'phantomlead@upi')}&pn=${encodeURIComponent(merchantUpiName || 'Phantom Lead')}&am=${selectedPrice}&cu=INR&tn=${encodeURIComponent(`License - ${selectedPackage?.package_code || 'Package'}`)}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=8&data=${encodeURIComponent(upiPayUri)}`;
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-400 space-y-4">
-        <div className="w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(6,182,212,0.4)]" />
-        <p className="font-mono text-xs tracking-wider uppercase text-cyan-300">Loading security packages...</p>
+        <div className="w-9 h-9 border-3 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+        <p className="font-mono text-xs tracking-wider uppercase text-slate-400">Loading packages...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-16 px-2 sm:px-4">
-      {/* Checkout Progress Stepper with Multi-Color Badges */}
-      <div className="relative overflow-hidden rounded-3xl glass-panel p-5 sm:p-7 shadow-2xl border border-white/10">
+    <div className="max-w-6xl mx-auto space-y-8 pb-16 px-3 sm:px-6">
+      {/* Header & Clean Stepper */}
+      <div className="relative rounded-2xl bg-slate-900/70 border border-white/10 p-5 sm:p-6 shadow-xl backdrop-blur-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-300 font-bold">
-                SECURITY SUITE STORE • INSTANT CLEARANCE
-              </span>
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Official Student License Portal</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-              <Package className="w-6 h-6 text-cyan-400" />
-              Hardened Safe Exam Browser <span className="text-gradient-rainbow">Access Packages</span>
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <Package className="w-5 h-5 text-emerald-400 shrink-0" />
+              Exam Assistant Packages
             </h1>
+            <p className="text-xs text-slate-400">
+              Select your required tool bundle, duration, and complete verification for instant license issuance.
+            </p>
           </div>
 
-          {/* Stepper Pills */}
-          <div className="flex items-center gap-2 text-xs font-mono">
+          {/* Minimalist 3-Step Progress Indicator */}
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono">
             {/* Step 1 */}
-            <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
               step === 1 
-                ? 'bg-[#de1b1c]/15 border-[#de1b1c]/50 text-white font-bold shadow-[0_0_15px_rgba(222,27,28,0.25)]' 
-                : 'bg-black/60 text-[#8a8a8a] border-white/5'
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold shadow-sm' 
+                : step > 1
+                ? 'bg-slate-800/60 border-white/10 text-slate-300'
+                : 'bg-slate-900/60 border-white/5 text-slate-500'
             }`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 1 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
-              }`}>1</span>
-              <span className="font-semibold uppercase tracking-wider text-xs">1. Select Package</span>
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
+                step > 1 ? 'bg-emerald-500 text-slate-950 font-bold' : step === 1 ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
+              }`}>
+                {step > 1 ? '✓' : '1'}
+              </span>
+              <span className="font-semibold text-xs">Plan</span>
             </div>
 
-            <ChevronRight className="w-4 h-4 text-[#4e4e4e]" />
+            <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
 
             {/* Step 2 */}
-            <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
               step === 2 
-                ? 'bg-[#de1b1c]/15 border-[#de1b1c]/50 text-white font-bold shadow-[0_0_15px_rgba(222,27,28,0.25)]' 
-                : 'bg-black/60 text-[#8a8a8a] border-white/5'
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold shadow-sm' 
+                : step > 2
+                ? 'bg-slate-800/60 border-white/10 text-slate-300'
+                : 'bg-slate-900/60 border-white/5 text-slate-500'
             }`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 2 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
-              }`}>2</span>
-              <span className="font-semibold uppercase tracking-wider text-xs">2. Profile Details</span>
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
+                step > 2 ? 'bg-emerald-500 text-slate-950 font-bold' : step === 2 ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
+              }`}>
+                {step > 2 ? '✓' : '2'}
+              </span>
+              <span className="font-semibold text-xs">Profile</span>
             </div>
 
-            <ChevronRight className="w-4 h-4 text-[#4e4e4e]" />
+            <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
 
             {/* Step 3 */}
-            <div className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
               step === 3 
-                ? 'bg-[#de1b1c]/15 border-[#de1b1c]/50 text-white font-bold shadow-[0_0_15px_rgba(222,27,28,0.25)]' 
-                : 'bg-black/60 text-[#8a8a8a] border-white/5'
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold shadow-sm' 
+                : 'bg-slate-900/60 border-white/5 text-slate-500'
             }`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === 3 ? 'bg-[#de1b1c] text-white' : 'bg-white/10 text-[#8a8a8a]'
-              }`}>3</span>
-              <span className="font-semibold uppercase tracking-wider text-xs">3. Payment</span>
+              <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
+                step === 3 ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
+              }`}>
+                3
+              </span>
+              <span className="font-semibold text-xs">Payment</span>
             </div>
           </div>
         </div>
@@ -433,21 +447,17 @@ export const CustomerPackages = () => {
       {/* STEP 1: Package Grid */}
       {step === 1 && (
         <div className="space-y-6">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#de1b1c]/40 bg-[#de1b1c]/15 text-[#ededed] text-[11px] font-mono font-bold tracking-wider uppercase">
-              <span className="w-2 h-2 rounded-full bg-[#de1b1c]" />
-              <span>CHOOSE YOUR PLAN</span>
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight uppercase text-white">
-              SELECT YOUR <span className="text-[#de1b1c]">EXAM PACKAGE</span>
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              Choose the Right Plan for Your Exams
             </h2>
-            <p className="text-[#8a8a8a] text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-              Locked to your machine on activation. Choose validity up to <span className="text-white font-bold font-mono">3 Months</span> or get a <span className="text-[#de1b1c] font-bold font-mono">Permanent Lifetime Key</span>.
+            <p className="text-slate-400 text-xs sm:text-sm">
+              Licenses lock to your laptop on first activation. Choose 1 to 3 months for exam terms or get permanent lifetime access.
             </p>
           </div>
           
-          {/* Balanced 2x2 Grid Layout for 4 Packages */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+          {/* Balanced 2-Column Responsive Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
             {packages.map(pkg => {
               const currentDuration = packageDurations[pkg.id] !== undefined ? packageDurations[pkg.id] : 1;
               const calculatedPrice = calculateDurationPrice(pkg.price, currentDuration, pkg.package_code, customPricingMap);
@@ -456,64 +466,69 @@ export const CustomerPackages = () => {
               const isFeatured = pkg.package_code === 'FULL_ACCESS';
               const guide = packageGuides[pkg.package_code] || {
                 purpose: pkg.description || 'Full features',
-                badge: 'SPECIALIZED ACCESS',
+                badge: 'Specialized Access',
                 includes: includesList,
-                theme: 'sky'
+                highlight: false
               };
-
-              const cardClasses = isFeatured
-                ? 'border-2 border-[#de1b1c] bg-[#09090b] shadow-[0_0_35px_rgba(222,27,28,0.25)]'
-                : 'border border-white/10 hover:border-[#de1b1c]/50 bg-[#09090b]/80 shadow-[0_20px_40px_rgba(0,0,0,0.8)]';
 
               return (
                 <div 
                   key={pkg.id} 
-                  className={`rounded-2xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden group backdrop-blur-2xl hover:-translate-y-1.5 cinema-corner-mark ${cardClasses}`}
+                  className={`rounded-2xl flex flex-col justify-between transition-all duration-200 relative overflow-hidden backdrop-blur-xl ${
+                    isFeatured
+                      ? 'bg-slate-900/90 border-2 border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.12)]'
+                      : 'bg-slate-900/60 border border-white/10 hover:border-slate-700 hover:bg-slate-900/80 shadow-lg'
+                  }`}
                 >
-                  {/* Featured Header Ribbon */}
+                  {/* Top Badge Ribbon */}
                   {guide.badge && (
-                    <div className={`py-1.5 px-3 text-center ${isFeatured ? 'bg-[#de1b1c] text-white font-bold' : 'bg-black/80 text-[#8a8a8a] border-b border-white/10'}`}>
-                      <span className="text-[10px] font-cinematic font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-1.5">
-                        {isFeatured ? <Sparkles className="w-3.5 h-3.5 text-white" /> : <Zap className="w-3 h-3 text-[#de1b1c]" />}
+                    <div className={`py-1.5 px-4 text-center border-b ${
+                      isFeatured 
+                        ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-semibold' 
+                        : 'bg-slate-950/60 border-white/5 text-slate-400'
+                    }`}>
+                      <span className="text-[11px] font-mono tracking-wider uppercase flex items-center justify-center gap-1.5">
+                        {isFeatured && <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
                         {guide.badge}
                       </span>
                     </div>
                   )}
 
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
-                    <div>
+                    <div className="space-y-4">
                       {/* Package Name & Code */}
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-2xl font-display uppercase tracking-wide text-white">
-                          {pkg.package_name}
-                        </h3>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-lg border border-white/15 bg-black/60 text-[#ededed] font-semibold">
-                          {pkg.package_code}
-                        </span>
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h3 className="text-xl font-bold text-white tracking-tight">
+                            {pkg.package_name}
+                          </h3>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md border border-white/10 bg-slate-950/80 text-slate-300 font-medium shrink-0">
+                            {pkg.package_code}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 leading-relaxed min-h-[36px]">
+                          {guide.purpose || pkg.description}
+                        </p>
                       </div>
 
-                      <p className="text-xs text-[#8a8a8a] mb-5 leading-relaxed min-h-[38px]">
-                        {guide.purpose || pkg.description}
-                      </p>
-
-                      {/* Clean 4-Button Term Selector (Max 3 Mos + Lifetime) */}
-                      <div className="p-3.5 rounded-xl bg-black/70 border border-white/10 space-y-2.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-cinematic uppercase tracking-wider font-bold text-[#ededed] flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5 text-[#de1b1c]" /> SELECT TERM
+                      {/* Professional 4-Tab Duration Switcher */}
+                      <div className="p-3 rounded-xl bg-slate-950/80 border border-white/10 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] font-mono">
+                          <span className="text-slate-300 font-medium flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-emerald-400" /> Validity Term
                           </span>
-                          <span className="text-[10px] font-mono text-[#8a8a8a]">
-                            Max 3 Mo or ∞
+                          <span className="text-slate-400 text-[10px]">
+                            {currentDuration === null ? 'Permanent Key' : `${currentDuration} Month${currentDuration > 1 ? 's' : ''}`}
                           </span>
                         </div>
 
-                        {/* Direct 4 Option Buttons: 1 Mo, 2 Mos, 3 Mos, ∞ Lifetime */}
-                        <div className="grid grid-cols-2 gap-1.5">
+                        {/* Segmented Control Buttons */}
+                        <div className="grid grid-cols-4 gap-1 p-1 bg-black/40 rounded-lg border border-white/5">
                           {[
-                            { value: 1, label: '1 MO', desc: 'Sprint' },
-                            { value: 2, label: '2 MOS', desc: 'Mid-Sem' },
-                            { value: 3, label: '3 MOS', desc: 'Semester' },
-                            { value: null, label: '∞ LIFETIME', desc: 'Permanent' },
+                            { value: 1, label: '1 Mo', sub: 'Sprint' },
+                            { value: 2, label: '2 Mos', sub: 'Popular' },
+                            { value: 3, label: '3 Mos', sub: 'Semester' },
+                            { value: null, label: 'Lifetime', sub: 'Forever' },
                           ].map(opt => {
                             const isSelected = currentDuration === opt.value;
                             return (
@@ -521,65 +536,75 @@ export const CustomerPackages = () => {
                                 key={opt.label}
                                 type="button"
                                 onClick={() => setPackageDurations({ ...packageDurations, [pkg.id]: opt.value })}
-                                className={`py-2 px-2.5 rounded-lg text-left transition-all cursor-pointer flex flex-col justify-center ${
+                                className={`py-2 px-1 rounded-md text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
                                   isSelected 
-                                    ? 'bg-[#de1b1c] text-white shadow-[0_0_15px_rgba(222,27,28,0.4)] scale-[1.02]' 
-                                    : 'bg-black/60 text-[#8a8a8a] hover:text-white hover:bg-white/[0.06] border border-white/5'
+                                    ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20' 
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
                               >
-                                <span className="font-cinematic text-xs font-bold leading-none">{opt.label}</span>
-                                <span className={`text-[9px] font-mono mt-0.5 ${isSelected ? 'text-white/80' : 'text-[#8a8a8a]'}`}>{opt.desc}</span>
+                                <span className="text-xs font-bold leading-tight">{opt.label}</span>
+                                <span className={`text-[9px] font-mono leading-tight mt-0.5 ${isSelected ? 'text-slate-900/80 font-medium' : 'text-slate-500'}`}>
+                                  {opt.sub}
+                                </span>
                               </button>
                             );
                           })}
                         </div>
+                      </div>
 
-                        {/* Discount Badge */}
-                        {discount && (
-                          <div className="pt-1 text-center">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-cinematic uppercase tracking-wider font-bold px-3 py-0.5 rounded-full border border-[#de1b1c]/40 bg-[#de1b1c]/15 text-[#ff2a2b]">
-                              <Sparkles className="w-3 h-3" /> {discount}
+                      {/* Price Display */}
+                      <div className="p-4 rounded-xl bg-slate-950/80 border border-white/10 flex items-baseline justify-between">
+                        <div>
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
+                              ₹{calculatedPrice.toLocaleString('en-IN')}
+                            </span>
+                            <span className="text-xs text-slate-400 font-mono">
+                              / {currentDuration ? `${currentDuration} mo${currentDuration > 1 ? 's' : ''}` : 'lifetime'}
                             </span>
                           </div>
-                        )}
-                      </div>
+                          {discount && (
+                            <span className="text-[11px] text-emerald-400 font-medium flex items-center gap-1 mt-1">
+                              <Sparkles className="w-3 h-3 shrink-0" />
+                              {discount}
+                            </span>
+                          )}
+                        </div>
 
-                      {/* Pricing Tag */}
-                      <div className="my-5 p-4 rounded-xl bg-black/70 border border-white/10 flex items-baseline justify-between">
-                        <div>
-                          <div className="text-3xl font-display uppercase tracking-wider text-white">
-                            ₹{calculatedPrice}
-                          </div>
-                          <span className="text-[11px] font-mono text-[#8a8a8a]">
-                            {getDurationLabel(currentDuration)}
+                        <div className="text-right">
+                          <span className="text-[10px] font-mono px-2 py-1 rounded-md bg-slate-800 text-slate-300 border border-white/10 flex items-center gap-1">
+                            <Lock className="w-3 h-3 text-emerald-400" /> 1 Device Lock
                           </span>
                         </div>
-                        <span className="text-[10px] font-cinematic uppercase tracking-wider px-2.5 py-1 rounded-lg bg-black border border-[#de1b1c]/40 text-[#de1b1c] font-bold">
-                          1 NODE LOCK
-                        </span>
                       </div>
 
-                      {/* Included Tools */}
-                      <div className="space-y-2.5 mb-4">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-[#8a8a8a] block font-bold">
-                          INCLUDED ASSISTANTS
+                      {/* Included Assistants List */}
+                      <div className="space-y-2 pt-1">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold block">
+                          Included Assistants ({includesList.length})
                         </span>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           {includesList.map((item: string) => (
-                            <div key={item} className="flex items-center text-xs text-[#ededed]">
-                              <CheckCircle className="w-4 h-4 mr-2 shrink-0 text-[#de1b1c]" />
-                              <span>{item}</span>
+                            <div key={item} className="flex items-center text-xs text-slate-300 gap-2">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span className="font-medium">{item}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     </div>
 
+                    {/* Action Button */}
                     <button 
+                      type="button"
                       onClick={() => handleBuyClick(pkg)} 
-                      className="w-full py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 bg-[#de1b1c] hover:bg-[#ff2a2b] text-white shadow-md"
+                      className={`w-full py-3 px-4 rounded-xl font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] ${
+                        isFeatured
+                          ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/25'
+                          : 'bg-white/10 hover:bg-white/15 text-white border border-white/10 hover:border-white/20'
+                      }`}
                     >
-                      <span>SELECT PACKAGE</span>
+                      <span>Choose {pkg.package_name}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -592,22 +617,27 @@ export const CustomerPackages = () => {
 
       {/* STEP 2: Student Details Form */}
       {step === 2 && (
-        <div className="max-w-xl mx-auto rounded-3xl glass-panel p-6 sm:p-8 shadow-2xl border border-white/15 space-y-6">
-          <div className="border-b border-white/10 pb-5">
-            <div className="flex items-center gap-2 text-xs font-mono text-purple-400 mb-1.5">
-              <User className="w-4 h-4" /> STEP 02 • STUDENT VERIFICATION
+        <div className="max-w-xl mx-auto rounded-2xl bg-slate-900/80 border border-white/10 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
+          <div className="border-b border-white/10 pb-5 space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 font-semibold">
+              <User className="w-4 h-4" /> Step 2 • Student Verification
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Customer Profile &amp; Enrollment
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              Customer Details &amp; Registration
             </h2>
-            <div className="mt-3.5 p-4 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between text-xs">
+            <p className="text-xs text-slate-400">
+              Provide your details so the system can verify payment and associate your hardware license key.
+            </p>
+
+            {/* Selected Package Summary Pill */}
+            <div className="mt-4 p-4 rounded-xl bg-slate-950/80 border border-white/10 flex items-center justify-between text-xs">
               <div>
-                <span className="text-slate-400 block font-mono text-[11px]">Selected Package:</span>
+                <span className="text-slate-400 block font-mono text-[11px]">Selected Plan:</span>
                 <span className="font-bold text-white text-sm">{selectedPackage?.package_name} ({selectedLabel})</span>
               </div>
               <div className="text-right">
-                <span className="text-slate-400 block font-mono text-[11px]">Payable Total:</span>
-                <span className="text-emerald-400 font-black text-lg">₹{selectedPrice}</span>
+                <span className="text-slate-400 block font-mono text-[11px]">Total Payable:</span>
+                <span className="text-emerald-400 font-bold text-lg font-mono">₹{selectedPrice.toLocaleString('en-IN')}</span>
               </div>
             </div>
           </div>
@@ -615,7 +645,7 @@ export const CustomerPackages = () => {
           <form onSubmit={handleDetailsSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-cyan-400" /> Full Name
+                <User className="w-3.5 h-3.5 text-slate-400" /> Full Name
               </label>
               <input 
                 required 
@@ -623,14 +653,14 @@ export const CustomerPackages = () => {
                 value={formData.fullName} 
                 onChange={e => setFormData({...formData, fullName: e.target.value})} 
                 placeholder="e.g. John Doe"
-                className="w-full px-4 py-3 bg-slate-950/80 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 text-white text-sm font-mono transition-all" 
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 text-white text-sm font-mono transition-all" 
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-emerald-400" /> Mobile Number (Indian 10-Digit)
+                  <Phone className="w-3.5 h-3.5 text-slate-400" /> Mobile Number (10-Digit)
                 </label>
                 {phoneStatus.isValid ? (
                   <span className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
@@ -643,9 +673,11 @@ export const CustomerPackages = () => {
                 )}
               </div>
               <div className={`relative flex rounded-xl overflow-hidden border transition-all ${
-                phoneTouched && !phoneStatus.isValid ? 'border-rose-500' : 'border-white/10 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/30'
+                phoneTouched && !phoneStatus.isValid 
+                  ? 'border-rose-500' 
+                  : 'border-white/10 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-500/30'
               }`}>
-                <div className="inline-flex items-center px-4 bg-slate-900 border-r border-white/10 text-slate-300 text-xs font-mono font-bold select-none gap-1.5">
+                <div className="inline-flex items-center px-3.5 bg-slate-900 border-r border-white/10 text-slate-300 text-xs font-mono font-bold select-none gap-1.5">
                   <span>🇮🇳</span>
                   <span className="text-slate-400">+91</span>
                 </div>
@@ -663,38 +695,38 @@ export const CustomerPackages = () => {
                     const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
                     setFormData({...formData, phone: digitsOnly});
                   }}
-                  className="w-full px-4 py-3 bg-slate-950/80 text-white text-sm font-mono tracking-wider focus:outline-none"
+                  className="w-full px-4 py-2.5 bg-slate-950/80 text-white text-sm font-mono tracking-wider focus:outline-none"
                 />
               </div>
               <span className="text-[11px] text-slate-500 mt-1 block">
-                Official Indian mobile number used for emergency license recovery.
+                Used to verify payment and support device license recovery.
               </span>
             </div>
 
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <School className="w-3.5 h-3.5 text-blue-400" /> College / University Name
+                <School className="w-3.5 h-3.5 text-slate-400" /> College / University Name
               </label>
               <input 
                 required 
                 type="text" 
                 value={formData.collegeName} 
                 onChange={e => setFormData({...formData, collegeName: e.target.value})} 
-                placeholder="e.g. National Institute of Technology"
-                className="w-full px-4 py-3 bg-slate-950/80 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 text-white text-sm font-mono transition-all" 
+                placeholder="e.g. Saveetha School of Engineering"
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 text-white text-sm font-mono transition-all" 
               />
             </div>
 
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5 text-pink-400" /> Academic Year / Branch
+                <GraduationCap className="w-3.5 h-3.5 text-slate-400" /> Academic Year / Branch
               </label>
               <input 
                 required 
                 type="text" 
                 value={formData.academicYear} 
                 onChange={e => setFormData({...formData, academicYear: e.target.value})} 
-                className="w-full px-4 py-3 bg-slate-950/80 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-400 text-white text-sm font-mono transition-all" 
+                className="w-full px-4 py-2.5 bg-slate-950/80 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 text-white text-sm font-mono transition-all" 
                 placeholder="e.g. 3rd Year B.Tech CSE" 
               />
             </div>
@@ -703,13 +735,13 @@ export const CustomerPackages = () => {
               <button 
                 type="button" 
                 onClick={() => setStep(1)} 
-                className="flex-1 py-3.5 glass-panel hover:bg-slate-800 border border-white/10 rounded-xl font-medium cursor-pointer text-xs font-mono flex items-center justify-center gap-2 transition-colors text-slate-300"
+                className="flex-1 py-3 bg-slate-800/80 hover:bg-slate-800 border border-white/10 rounded-xl font-medium cursor-pointer text-xs font-mono flex items-center justify-center gap-2 transition-colors text-slate-300"
               >
                 <ArrowLeft className="w-4 h-4" /> Back to Packages
               </button>
               <button 
                 type="submit" 
-                className="flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-white rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               >
                 <span>Continue to Payment</span>
                 <ArrowRight className="w-4 h-4" />
@@ -721,83 +753,125 @@ export const CustomerPackages = () => {
 
       {/* STEP 3: UPI Payment Card */}
       {step === 3 && (
-        <div className="max-w-xl mx-auto rounded-3xl glass-panel p-6 sm:p-8 shadow-2xl border border-white/15 space-y-6">
-          <div className="text-center space-y-2 border-b border-white/10 pb-5">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold">
-              <CreditCard className="w-4 h-4" /> STEP 03 • SECURE UPI SETTLEMENT
+        <div className="max-w-xl mx-auto rounded-2xl bg-slate-900/80 border border-white/10 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
+          <div className="text-center space-y-1.5 border-b border-white/10 pb-5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-semibold">
+              <CreditCard className="w-3.5 h-3.5" /> Step 3 • UPI Payment Settlement
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">
-              Direct UPI Payment Terminal
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              Direct UPI Payment
             </h2>
             <p className="text-xs text-slate-400">
-              Transfer the exact amount to the official merchant handle below using any UPI app (GPay, PhonePe, Paytm).
+              Scan the QR code or transfer the exact amount to the official merchant VPA using any UPI app (GPay, PhonePe, Paytm).
             </p>
           </div>
           
           {/* Payment Terminal Card */}
-          <div className="rounded-2xl border border-white/10 bg-black/60 p-6 space-y-5">
-            <div className="text-center">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                Amount Payable
+          <div className="rounded-xl border border-white/10 bg-slate-950/80 p-5 space-y-5">
+            {/* Amount Card */}
+            <div className="text-center pb-2 border-b border-white/5">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">
+                Total Amount Payable
               </span>
-              <div className="text-4xl font-black text-emerald-400 tracking-tight font-mono">
-                ₹{selectedPrice}
+              <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-tight font-mono">
+                ₹{selectedPrice.toLocaleString('en-IN')}
               </div>
-              <span className="text-xs font-mono text-slate-400 mt-0.5 block">
-                {selectedPackage?.package_name} ({selectedLabel})
+              <span className="text-xs font-mono text-slate-300 mt-1 block">
+                {selectedPackage?.package_name} • {selectedLabel}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl glass-panel border border-cyan-500/30 space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400 font-mono flex items-center gap-1.5">
-                  <QrCode className="w-4 h-4 text-cyan-400" /> Direct Merchant VPA {merchantUpiName ? `(${merchantUpiName})` : ''}:
-                </span>
-                <button
-                  type="button"
-                  onClick={copyUpiId}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-mono text-xs font-bold transition-colors cursor-pointer border border-cyan-500/30"
-                >
-                  {copiedUpi ? <Check className="w-3.5 h-3.5 text-cyan-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  {copiedUpi ? 'Copied VPA' : 'Copy VPA'}
-                </button>
+            {/* Dynamic QR Code & Merchant VPA */}
+            <div className="flex flex-col sm:flex-row items-center gap-5 justify-center py-2">
+              <div className="p-2.5 bg-white rounded-xl shadow-md shrink-0 flex items-center justify-center">
+                <img 
+                  src={qrCodeUrl} 
+                  alt="UPI Payment QR Code" 
+                  className="w-36 h-36 object-contain"
+                  onError={(e) => {
+                    // Fallback to hidden if QR server unreachable
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
               </div>
-              <div className="font-mono text-lg font-bold text-white tracking-wider select-all text-center py-1">
-                {merchantUpiId || 'phantomlead@upi'}
+
+              <div className="space-y-3 text-center sm:text-left flex-1">
+                <div>
+                  <span className="text-[11px] font-mono text-slate-400 block">Merchant Name</span>
+                  <span className="text-sm font-semibold text-white">{merchantUpiName || 'Phantom Lead'}</span>
+                </div>
+                
+                <div>
+                  <span className="text-[11px] font-mono text-slate-400 block mb-1">Official UPI VPA</span>
+                  <div className="inline-flex items-center gap-2 p-2 rounded-lg bg-black/60 border border-white/10">
+                    <span className="font-mono text-xs text-emerald-300 font-bold select-all">
+                      {merchantUpiId || 'phantomlead@upi'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={copyUpiId}
+                      className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                      title="Copy UPI ID"
+                    >
+                      {copiedUpi ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                {copiedUpi && (
+                  <span className="text-[11px] text-emerald-400 font-mono block">
+                    ✓ UPI ID copied to clipboard!
+                  </span>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Activation Roadmap */}
-          <div className="p-4 rounded-2xl glass-panel border border-white/10 space-y-2.5">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-300 font-bold block flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-cyan-400" /> Activation Roadmap Upon Clearance
+          {/* Quick Payment Instructions */}
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-300 font-semibold block flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" /> How to Complete Payment:
             </span>
-            <ol className="space-y-1.5 text-xs text-slate-300">
-              {installationSteps.map((stepText, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <span className="font-mono text-cyan-400 font-bold shrink-0 text-[11px]">0{idx + 1}.</span>
-                  <span>{stepText}</span>
-                </li>
-              ))}
+            <ol className="space-y-1.5 text-xs text-slate-400 list-decimal list-inside leading-relaxed">
+              <li>Open Google Pay, PhonePe, or Paytm and scan the QR or pay to the UPI ID above.</li>
+              <li>Complete the payment of <strong className="text-white font-mono">₹{selectedPrice.toLocaleString('en-IN')}</strong>.</li>
+              <li>Find the <strong className="text-white">12-digit UPI Reference / UTR Number</strong> in your transaction receipt.</li>
+              <li>Paste the UTR number below and submit for instant verification.</li>
             </ol>
           </div>
 
+          {/* Next Steps Roadmap */}
+          <div className="p-4 rounded-xl bg-slate-950/40 border border-white/5 space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-medium block">
+              What Happens Next:
+            </span>
+            <ul className="space-y-1.5 text-xs text-slate-400">
+              {installationSteps.map((stepText, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="text-emerald-400 font-mono text-[11px] font-bold">0{idx + 1}.</span>
+                  <span>{stepText}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* UTR Submission Form */}
           <form onSubmit={handlePaymentSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-300 mb-1.5 text-center">
-                Paste 12-Digit UPI Ref / UTR Number
+                Enter 12-Digit UPI Reference / UTR Number
               </label>
               <input 
                 required 
                 type="text" 
+                maxLength={24}
                 value={formData.upiId} 
                 onChange={e => setFormData({...formData, upiId: e.target.value})} 
-                className="w-full px-4 py-3 bg-slate-950/80 border border-white/15 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400 font-mono text-center text-lg text-white font-bold tracking-wider transition-all" 
+                className="w-full px-4 py-3 bg-slate-950/80 border border-white/15 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-400 font-mono text-center text-lg text-white font-bold tracking-wider transition-all placeholder:text-slate-600" 
                 placeholder="e.g. 403819284719" 
               />
-              <span className="text-[11px] text-slate-500 mt-1.5 block text-center">
-                Found in your payment app under "Transaction Details" or "UPI Ref ID".
+              <span className="text-[11px] text-slate-500 mt-1 block text-center">
+                Found on your payment app receipt as "UPI Ref ID" or "UTR Number".
               </span>
             </div>
 
@@ -805,17 +879,17 @@ export const CustomerPackages = () => {
               <button 
                 type="button" 
                 onClick={() => setStep(2)} 
-                className="flex-1 py-3.5 glass-panel hover:bg-slate-800 border border-white/10 rounded-xl font-medium cursor-pointer text-xs font-mono flex items-center justify-center gap-2 transition-colors text-slate-300"
+                className="flex-1 py-3 bg-slate-800/80 hover:bg-slate-800 border border-white/10 rounded-xl font-medium cursor-pointer text-xs font-mono flex items-center justify-center gap-2 transition-colors text-slate-300"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                <ArrowLeft className="w-4 h-4" /> Back to Details
               </button>
               <button 
                 type="submit" 
                 disabled={submittingPayment}
-                className="flex-1 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 disabled:opacity-50 text-white rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 transition-all active:scale-95"
+                className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 rounded-xl font-bold cursor-pointer text-xs font-mono uppercase tracking-wider shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               >
                 {submittingPayment ? (
-                  <span>Verifying Transaction...</span>
+                  <span>Recording UTR...</span>
                 ) : (
                   <>
                     <span>Submit Payment Proof</span>
