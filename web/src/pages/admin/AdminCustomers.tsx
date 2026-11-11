@@ -65,12 +65,35 @@ export const AdminCustomers = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('WARNING: Are you absolutely sure you want to DELETE this customer? This will immediately wipe their database records.')) return;
+    // Locate customer record details prior to deletion
+    const targetCustomer = customers.find(c => c.id === id);
+    const targetName = targetCustomer?.full_name || 'Customer';
+    const targetEmail = targetCustomer?.email;
+
+    if (!window.confirm(`WARNING: Are you absolutely sure you want to DELETE customer "${targetName}" (${targetEmail || id})?\n\nThis will remove their profile and notify them via email.`)) return;
     
     const { error } = await supabase.from('customers').delete().eq('id', id);
     if (error) {
       alert("Could not delete user. They might have active payments or licenses preventing deletion. (To force delete, those must be revoked/deleted first). Error: " + error.message);
     } else {
+      // Dispatch Account Deletion Notice to Customer
+      if (targetEmail) {
+        const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+          ? '/api/send-invoice'
+          : 'http://localhost:3001/api/send-invoice';
+
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            isDeletionNotice: true,
+            toEmail: targetEmail,
+            toName: targetName,
+            timestamp: new Date().toISOString(),
+          }),
+        }).catch(err => console.warn('[Customer delete email notice]:', err));
+      }
+
       fetchCustomers();
     }
   };
