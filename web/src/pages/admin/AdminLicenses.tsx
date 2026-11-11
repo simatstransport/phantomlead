@@ -3,7 +3,7 @@ import { supabase } from '../../services/supabase';
 import { 
   Trash2, AlertTriangle, Clock, Search, Plus, 
   Laptop, Shield, RefreshCw, X, Download, Loader2, Key, CheckCircle2, ShieldAlert,
-  CalendarPlus, Check
+  CalendarPlus, Check, Mail
 } from 'lucide-react';
 import { downloadInstaller } from '../../utils/download';
 import { processAndSendInvoice } from '../../services/billingService';
@@ -35,6 +35,53 @@ export const AdminLicenses = () => {
   const [availablePackages, setAvailablePackages] = useState<any[]>([]);
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
   const [isSweepingTimebomb, setIsSweepingTimebomb] = useState(false);
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
+
+  const handleManualSendInvoice = async (lic: any) => {
+    const custEmail = lic.customers?.email;
+    if (!custEmail) {
+      setActionAlert({ type: 'error', message: 'Candidate has no email address associated.' });
+      return;
+    }
+
+    setSendingEmailId(lic.id);
+    setActionAlert({ type: 'info', message: `Generating PDF and emailing invoice to ${custEmail}...` });
+
+    try {
+      const isFree = lic.payment_type === 'FREE' || !lic.payment_id;
+      const pkgName = lic.packages?.package_name || 'PhantomLead Security Package';
+      const pkgCode = lic.packages?.package_code || 'SECURITY_SUITE';
+      const custName = lic.customers?.full_name || custEmail.split('@')[0];
+
+      const res = await processAndSendInvoice({
+        paymentId: lic.payment_id || undefined,
+        customerId: lic.customer_id,
+        customerName: custName,
+        customerEmail: custEmail,
+        packageName: pkgName,
+        packageCode: pkgCode,
+        amount: isFree ? 0 : 2000,
+        tax: 0,
+        transactionRef: `MANUAL-${lic.id.substring(0, 8).toUpperCase()}`,
+        paymentMethod: isFree ? 'Complimentary Grant (₹0)' : 'UPI / Direct Clearance',
+        licenseKey: lic.license_key || undefined,
+        isFree: isFree,
+      });
+
+      setActionAlert({
+        type: 'success',
+        message: `✅ Official PDF Invoice ${res.invoiceNumber} emailed successfully to ${custEmail}!`
+      });
+    } catch (err: any) {
+      setActionAlert({
+        type: 'error',
+        message: `Failed to dispatch invoice: ${err.message}`
+      });
+    } finally {
+      setSendingEmailId(null);
+      setTimeout(() => setActionAlert(null), 5000);
+    }
+  };
 
   const handleRunTimebombSweep = async () => {
     setIsSweepingTimebomb(true);
@@ -671,6 +718,21 @@ export const AdminLicenses = () => {
                     {/* Actions */}
                     <td className="py-4 px-4 text-right">
                       <div className="inline-flex items-center gap-2">
+                        {/* Manual Send Invoice & Entitlement PDF Email Button */}
+                        <button
+                          onClick={() => handleManualSendInvoice(lic)}
+                          disabled={sendingEmailId === lic.id}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/25 transition-all cursor-pointer font-mono text-xs font-semibold shadow-sm shadow-cyan-500/20 active:scale-95 disabled:opacity-50"
+                          title="Dispatch Official PDF Invoice & Entitlement Email to candidate"
+                        >
+                          {sendingEmailId === lic.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                          ) : (
+                            <Mail className="w-3.5 h-3.5 text-cyan-400" />
+                          )}
+                          <span>Send Email</span>
+                        </button>
+
                         {/* Extend Days Button (for timed licenses with an expiration date) */}
                         {!isRevoked && (lic.expires_at || lic.duration_months) && (
                           <button
