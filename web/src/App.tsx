@@ -5,7 +5,7 @@ import {
   Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
   Users, Download, Settings, Menu, X, BookOpen, AlertTriangle,
   Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2,
-  Loader2, Radio
+  Loader2, Radio, Star
 } from 'lucide-react';
 import { downloadInstaller } from './utils/download';
 import { AdminPayments } from './pages/admin/AdminPayments';
@@ -18,6 +18,7 @@ import { AdminDevices } from './pages/admin/AdminDevices';
 import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerInstallation } from './pages/CustomerInstallation';
 import { CustomerLicenses } from './pages/CustomerLicenses';
+import { CustomerReviews } from './pages/CustomerReviews';
 import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
@@ -422,6 +423,18 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               >
                 <Package className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/dashboard/packages') ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'}`} />
                 Buy Packages
+              </Link>
+              <Link 
+                to="/dashboard/reviews" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-sans text-xs sm:text-sm font-semibold ${
+                  isCurrent('/dashboard/reviews') 
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <Star className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/dashboard/reviews') ? 'text-amber-400 fill-amber-400' : 'text-slate-400 group-hover:text-amber-400'}`} />
+                Reviews &amp; Ratings
               </Link>
               {hasActiveLicense && (
                 <Link 
@@ -1145,6 +1158,7 @@ function App() {
             <Route path="/dashboard" element={session ? <CustomerDashboard isActualAdmin={isAdmin} /> : <Navigate to="/login" />} />
             <Route path="/dashboard/licenses" element={session ? <DashboardLayout title="My Licenses" isAdmin={false} isActualAdmin={isAdmin}><CustomerLicenses /></DashboardLayout> : <Navigate to="/login" />} />
             <Route path="/dashboard/packages" element={session ? <DashboardLayout title="Buy Packages" isAdmin={false} isActualAdmin={isAdmin}><CustomerPackages /></DashboardLayout> : <Navigate to="/login" />} />
+            <Route path="/dashboard/reviews" element={session ? <DashboardLayout title="Student Reviews & Ratings" isAdmin={false} isActualAdmin={isAdmin}><CustomerReviews /></DashboardLayout> : <Navigate to="/login" />} />
             <Route path="/dashboard/install" element={session ? <DashboardLayout title="Installation Guide" isAdmin={false} isActualAdmin={isAdmin}><CustomerInstallation /></DashboardLayout> : <Navigate to="/login" />} />
 
             <Route path="/admin" element={session ? (isAdmin ? <AdminDashboard /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
