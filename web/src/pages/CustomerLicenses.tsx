@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
+import { FeedbackModal } from '../components/FeedbackModal';
+import { FeedbackSummaryCard } from '../components/FeedbackSummaryCard';
 import { downloadInstaller } from '../utils/download';
 import { generatePhantomInvoicePDF } from '../services/invoiceGenerator';
 
@@ -138,6 +140,37 @@ export const CustomerLicenses = () => {
   const [currentTime, setCurrentTime] = useState<number>(Date.now());
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
   const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
+  const [hasRated, setHasRated] = useState<boolean>(false);
+
+  // Check whether to show the feedback modal automatically after purchase
+  useEffect(() => {
+    try {
+      const isCompleted = localStorage.getItem('phantomlead_feedback_completed') === 'true';
+      if (isCompleted) {
+        setHasRated(true);
+        return;
+      }
+
+      const postponedUntilStr = localStorage.getItem('phantomlead_feedback_postponed_until');
+      if (postponedUntilStr) {
+        const postponedUntil = parseInt(postponedUntilStr, 10);
+        if (Date.now() < postponedUntil) {
+          return; // Postponed, don't popup automatically
+        }
+      }
+
+      // If customer has an active license and hasn't rated or postponed, trigger friendly prompt
+      if (activeLicense && !loading) {
+        const timer = setTimeout(() => {
+          setIsFeedbackOpen(true);
+        }, 1200);
+        return () => clearTimeout(timer);
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, [activeLicense, loading]);
 
   const handleAcknowledgeRevocation = async (licenseId: string) => {
     setClearingRevocation(true);
@@ -786,6 +819,30 @@ export const CustomerLicenses = () => {
             </div>
           );
         })()
+      )}
+
+      {/* Customer Feedback & Star Rating Showcase Box */}
+      {activeLicense && (
+        <FeedbackSummaryCard
+          hasRated={hasRated}
+          onOpenFeedback={() => setIsFeedbackOpen(true)}
+        />
+      )}
+
+      {/* Interactive Feedback & Star Rating Modal */}
+      {activeLicense && (
+        <FeedbackModal
+          isOpen={isFeedbackOpen}
+          onClose={() => setIsFeedbackOpen(false)}
+          customerId={activeLicense.id}
+          customerEmail={activeLicense.customers?.email}
+          customerName={activeLicense.customers?.full_name}
+          licenseId={activeLicense.id}
+          packageName={activeLicense.packages?.package_name}
+          onSubmitted={() => {
+            setHasRated(true);
+          }}
+        />
       )}
 
       <HowItWorksCard />

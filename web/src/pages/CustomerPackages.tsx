@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
+import { FeedbackModal } from '../components/FeedbackModal';
 import { 
   CreditCard, 
   CheckCircle2,
@@ -173,6 +174,10 @@ export const CustomerPackages = () => {
   const [merchantUpiId, setMerchantUpiId] = useState('phantomlead@upi');
   const [merchantUpiName, setMerchantUpiName] = useState('Phantom Lead');
   const [customPricingMap, setCustomPricingMap] = useState<Record<string, Record<string, number>>>({});
+  const [showPurchaseFeedback, setShowPurchaseFeedback] = useState<boolean>(false);
+  const [lastPurchasedPackage, setLastPurchasedPackage] = useState<string>('');
+  const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
 
   const phoneStatus = isValidIndianPhoneNumber(formData.phone);
 
@@ -223,6 +228,8 @@ export const CustomerPackages = () => {
   const fetchCustomerProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setCurrentUserId(user.id);
+      setCurrentUserEmail(user.email || '');
       const { data: customer } = await supabase
         .from('customers')
         .select('*')
@@ -353,11 +360,16 @@ export const CustomerPackages = () => {
         }),
       }).catch(err => console.warn('[Admin UTR notification notice]:', err));
 
-      alert("Payment details submitted successfully! Your UTR reference has been recorded. Admin will manually verify the payment and approve your license shortly.");
+      setLastPurchasedPackage(selectedPackage.package_name);
       setStep(1);
       setSelectedPackage(null);
       setFormData(prev => ({ ...prev, upiId: '' }));
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Trigger post-purchase Star Rating & Feedback box
+      setTimeout(() => {
+        setShowPurchaseFeedback(true);
+      }, 500);
     }
   };
 
@@ -934,6 +946,19 @@ export const CustomerPackages = () => {
           </form>
         </div>
       )}
+
+      {/* Post-Purchase Star Rating & Feedback Box */}
+      <FeedbackModal
+        isOpen={showPurchaseFeedback}
+        onClose={() => setShowPurchaseFeedback(false)}
+        customerId={currentUserId}
+        customerEmail={currentUserEmail}
+        customerName={formData.fullName}
+        packageName={lastPurchasedPackage}
+        onSubmitted={() => {
+          setShowPurchaseFeedback(false);
+        }}
+      />
     </div>
   );
 };
