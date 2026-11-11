@@ -373,6 +373,18 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
                 <Settings className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/settings') ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'}`} />
                 Settings
               </Link>
+              <Link 
+                to="/admin/reviews" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-sans text-xs sm:text-sm font-semibold ${
+                  isCurrent('/admin/reviews') 
+                    ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm shadow-amber-500/10' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <Star className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/reviews') ? 'text-amber-400 fill-amber-400' : 'text-slate-400 group-hover:text-amber-400'}`} />
+                Moderate Reviews
+              </Link>
               <div className="pt-3 mt-3 border-t border-white/10">
                 <Link 
                   to="/dashboard" 
@@ -1169,6 +1181,7 @@ function App() {
             <Route path="/admin/devices" element={session ? (isAdmin ? <DashboardLayout title="Hardware Telemetry Radar" isAdmin={true}><AdminDevices /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/admin/wipe-folders" element={session ? (isAdmin ? <DashboardLayout title="Delete User Folders" isAdmin={true}><AdminWipeFolders /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/admin/settings" element={session ? (isAdmin ? <DashboardLayout title="Settings" isAdmin={true}><AdminSettings /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+            <Route path="/admin/reviews" element={session ? (isAdmin ? <DashboardLayout title="Reviews Moderation" isAdmin={true}><CustomerReviews isAdminView={true} /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />
           </Routes>
         </div>

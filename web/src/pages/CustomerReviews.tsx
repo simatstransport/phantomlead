@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Star, MessageSquare, ShieldCheck, Sparkles, Filter, 
-  Search, CheckCircle2, User, Calendar, ThumbsUp, TrendingUp
+  Search, CheckCircle2, User, Calendar, ThumbsUp, TrendingUp,
+  Trash2, Loader2
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { FeedbackModal } from '../components/FeedbackModal';
@@ -14,6 +15,10 @@ interface CustomerFeedback {
   rating: number;
   feedback_text: string | null;
   created_at: string;
+}
+
+interface CustomerReviewsProps {
+  isAdminView?: boolean;
 }
 
 // Fallback high-quality customer reviews if table is freshly created
@@ -65,7 +70,7 @@ const DEFAULT_REVIEWS: CustomerFeedback[] = [
   }
 ];
 
-export const CustomerReviews: React.FC = () => {
+export const CustomerReviews: React.FC<CustomerReviewsProps> = ({ isAdminView = false }) => {
   const [reviews, setReviews] = useState<CustomerFeedback[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
@@ -74,11 +79,62 @@ export const CustomerReviews: React.FC = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
   const [currentUserName, setCurrentUserName] = useState<string>('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isActualAdmin, setIsActualAdmin] = useState<boolean>(isAdminView);
 
   useEffect(() => {
     fetchReviews();
     fetchCurrentUser();
+    checkAdminRole();
   }, []);
+
+  const checkAdminRole = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: adminData } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (adminData) {
+          setIsActualAdmin(true);
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    if (!confirm('Are you sure you want to permanently delete this customer review?')) {
+      return;
+    }
+
+    setDeletingId(id);
+    try {
+      // 1. If it's stored in Supabase customer_feedbacks
+      if (!id.startsWith('rev-')) {
+        const { error } = await supabase
+          .from('customer_feedbacks')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          console.error('Delete error:', error);
+          alert(`Failed to delete: ${error.message}`);
+          return;
+        }
+      }
+
+      // 2. Remove from local state
+      setReviews(prev => prev.filter(r => r.id !== id));
+    } catch (err: any) {
+      console.error('Error deleting review:', err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const fetchCurrentUser = async () => {
     try {
@@ -390,9 +446,29 @@ export const CustomerReviews: React.FC = () => {
                     <Calendar className="w-3 h-3 text-slate-500" />
                     <span>{dateStr}</span>
                   </span>
-                  <span className="text-emerald-400/80 flex items-center gap-1 text-[10px] font-bold">
-                    <ThumbsUp className="w-3 h-3" /> Verified Purchase
-                  </span>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-emerald-400/80 flex items-center gap-1 text-[10px] font-bold">
+                      <ThumbsUp className="w-3 h-3" /> Verified Purchase
+                    </span>
+
+                    {/* Admin Delete Action */}
+                    {isActualAdmin && (
+                      <button
+                        onClick={() => handleDeleteReview(item.id)}
+                        disabled={deletingId === item.id}
+                        className="p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-md transition-colors cursor-pointer flex items-center gap-1"
+                        title="Delete Review (Admin Only)"
+                      >
+                        {deletingId === item.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
+                        <span className="text-[10px] text-rose-400 font-sans font-semibold">Delete</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
