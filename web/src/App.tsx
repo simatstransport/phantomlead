@@ -25,6 +25,33 @@ import { AnimatedGlow } from './components/AnimatedGlow';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThemeToggle } from './components/ThemeToggle';
 
+// Safe user login greeting dispatcher (deduplicated per browser session)
+const dispatchGreetingEmail = (email: string, fullName?: string) => {
+  if (!email) return;
+  const storageKey = `login_greeting_sent_${email}`;
+  if (sessionStorage.getItem(storageKey)) return;
+
+  const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? '/api/send-invoice'
+    : 'http://localhost:3001/api/send-invoice';
+
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      toEmail: email,
+      toName: fullName || email.split('@')[0],
+      isWelcome: true,
+      timestamp: new Date().toISOString(),
+    }),
+  }).then(() => {
+    sessionStorage.setItem(storageKey, 'true');
+    console.log(`[Greeting Email Dispatched] to ${email}`);
+  }).catch(err => {
+    console.warn('[Greeting notice]:', err);
+  });
+};
+
 const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [notice, setNotice] = useState<{ kind: 'error' | 'success'; message: string } | null>(null);
@@ -1067,11 +1094,17 @@ function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       checkAdmin(session?.user?.id);
+      if (session?.user?.email) {
+        dispatchGreetingEmail(session.user.email, session.user.user_metadata?.full_name);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       checkAdmin(session?.user?.id);
+      if (session?.user?.email) {
+        dispatchGreetingEmail(session.user.email, session.user.user_metadata?.full_name);
+      }
     });
 
     return () => subscription.unsubscribe();
