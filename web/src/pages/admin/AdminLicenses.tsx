@@ -197,14 +197,37 @@ export const AdminLicenses = () => {
     
     setProcessingId(id);
     try {
+      // Find candidate details before deleting
+      const targetLic = licenses.find(l => l.id === id);
+      const custEmail = targetLic?.customers?.email;
+      const custName = targetLic?.customers?.full_name || customerName;
+
       await supabase.from('installation_logs').delete().eq('license_id', id);
       const { error } = await supabase.from('licenses').delete().eq('id', id);
       if (error) {
         setActionAlert({ type: 'error', message: `❌ Error deleting license: ${error.message}` });
       } else {
+        // Dispatch Deletion & Fresh Account Reset Email to Customer
+        if (custEmail) {
+          const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+            ? '/api/send-invoice'
+            : 'http://localhost:3001/api/send-invoice';
+
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              isDeletionNotice: true,
+              toEmail: custEmail,
+              toName: custName,
+              timestamp: new Date().toISOString(),
+            }),
+          }).catch(err => console.warn('[Customer delete email notice]:', err));
+        }
+
         setActionAlert({ 
           type: 'success', 
-          message: `🗑️ License ${targetLabel} deleted successfully. Customer account is now 100% fresh.` 
+          message: `🗑️ License ${targetLabel} deleted & notification email sent to ${custEmail || 'customer'}. Customer account is now 100% fresh.` 
         });
         fetchLicenses();
         setTimeout(() => setActionAlert(null), 5000);
@@ -222,8 +245,11 @@ export const AdminLicenses = () => {
     
     setProcessingId(id);
     try {
-      // Find the license to get device_id
+      // Find the license to get device_id and customer details
       const targetLic = licenses.find(l => l.id === id);
+      const custEmail = targetLic?.customers?.email;
+      const custName = targetLic?.customers?.full_name || customerName;
+      const pkgName = targetLic?.packages?.package_name;
 
       // Unbind device and revoke license (device_id: null clears the hardware lock)
       const { error } = await supabase
@@ -242,9 +268,28 @@ export const AdminLicenses = () => {
           await supabase.from('devices').delete().eq('id', targetLic.device_id);
         }
 
+        // Dispatch Official Revocation Email to Customer
+        if (custEmail) {
+          const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+            ? '/api/send-invoice'
+            : 'http://localhost:3001/api/send-invoice';
+
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              isRevocationNotice: true,
+              toEmail: custEmail,
+              toName: custName,
+              packageName: pkgName,
+              timestamp: new Date().toISOString(),
+            }),
+          }).catch(err => console.warn('[Customer revoke email notice]:', err));
+        }
+
         setActionAlert({ 
           type: 'success', 
-          message: `✅ License ${targetLabel} revoked successfully! Hardware node lock cleared. License remains listed until you manually delete it.` 
+          message: `✅ License ${targetLabel} revoked & notification emailed to ${custEmail || 'customer'}! Hardware node lock cleared.` 
         });
         fetchLicenses();
         setTimeout(() => setActionAlert(null), 5000);

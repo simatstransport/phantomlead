@@ -333,6 +333,26 @@ export const CustomerPackages = () => {
     if (error) {
       alert("Error submitting payment: " + error.message);
     } else {
+      // Dispatch Instant Real-Time Alert to Admin with UTR Slip & Customer details
+      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+        ? '/api/send-invoice'
+        : 'http://localhost:3001/api/send-invoice';
+
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isUtrSubmissionAlert: true,
+          candidateEmail: user.email,
+          candidateName: formData.fullName || user.email?.split('@')[0],
+          customerPhone: formData.phone || '',
+          utrNumber: formData.upiId.trim(),
+          packageNameSubmitted: selectedPackage.package_name,
+          amountSubmitted: selectedPrice,
+          timestamp: new Date().toISOString(),
+        }),
+      }).catch(err => console.warn('[Admin UTR notification notice]:', err));
+
       alert("Payment details submitted successfully! Your UTR reference has been recorded. Admin will manually verify the payment and approve your license shortly.");
       setStep(1);
       setSelectedPackage(null);

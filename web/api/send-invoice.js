@@ -62,8 +62,244 @@ export default async function handler(req, res) {
         collegeName,
         academicYear,
         timestamp,
+        // UTR Submission Alert to Admin
+        isUtrSubmissionAlert,
+        utrNumber,
+        packageNameSubmitted,
+        amountSubmitted,
+        customerPhone,
+        // License Revocation / Deletion Alert to Customer
+        isRevocationNotice,
+        isDeletionNotice,
         currency = 'INR' 
       } = req.body;
+
+      // 1. Handle Admin Alert: Candidate Submitted Payment UTR Slip
+      if (isUtrSubmissionAlert) {
+        console.log(`[Admin Alert] Payment submitted: ${candidateEmail} - UTR: ${utrNumber}`);
+        const utrHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; }
+              .wrapper { max-width: 600px; margin: 30px auto; background-color: #0d111a; border: 1px solid #1a2333; border-radius: 8px; overflow: hidden; }
+              .header-bar { height: 4px; background: #f59e0b; }
+              .content { padding: 32px; }
+              .brand { font-size: 22px; font-weight: 800; color: #f59e0b; letter-spacing: 1px; }
+              .status-badge { display: inline-block; padding: 6px 14px; background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; border-radius: 4px; color: #f59e0b; font-size: 12px; font-weight: 700; margin: 16px 0; }
+              .card { background: #131926; border: 1px solid #1e293b; border-radius: 6px; padding: 20px; }
+              .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+              .label { color: #94a3b8; }
+              .val { color: #ffffff; font-weight: 600; text-align: right; }
+              .amber-val { color: #f59e0b; font-weight: 700; font-family: monospace; font-size: 15px; }
+              .cyan-val { color: #00ffff; font-weight: 700; }
+              .btn { display: inline-block; padding: 10px 20px; background: #f59e0b; color: #000; font-weight: bold; text-decoration: none; border-radius: 6px; font-size: 13px; margin-top: 15px; }
+              .footer { padding: 18px 32px; background: #090c14; border-top: 1px solid #1a2333; font-size: 11px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="wrapper">
+              <div class="header-bar"></div>
+              <div class="content">
+                <div class="brand">PHANTOMLEAD CLEARING DESK</div>
+                <div class="status-badge">⚡ INCOMING PAYMENT SUBMISSION (PENDING REVIEW)</div>
+
+                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">
+                  A candidate has submitted their UPI payment reference slip and is awaiting admin approval:
+                </p>
+
+                <div class="card">
+                  <div class="row">
+                    <span class="label">Candidate Name:</span>
+                    <span class="val">${candidateName || 'Verified Candidate'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Email Address:</span>
+                    <span class="val">${candidateEmail}</span>
+                  </div>
+                  ${customerPhone ? `
+                  <div class="row">
+                    <span class="label">Phone / Contact:</span>
+                    <span class="val">${customerPhone}</span>
+                  </div>
+                  ` : ''}
+                  <div class="row">
+                    <span class="label">Package Requested:</span>
+                    <span class="cyan-val">${packageNameSubmitted || 'Security Suite'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Amount Transferred:</span>
+                    <span class="val" style="color: #10b981; font-weight: bold; font-size: 16px;">INR ${Number(amountSubmitted || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div style="height: 1px; background: #1e293b; margin: 12px 0;"></div>
+                  <div class="row">
+                    <span class="label" style="color: #f59e0b; font-weight: bold;">Submitted UTR / Ref:</span>
+                    <span class="amber-val">${utrNumber}</span>
+                  </div>
+                </div>
+
+                <div style="text-align: center;">
+                  <a href="https://myphantolead.vercel.app/admin/payments" class="btn">Open Admin Payments to Approve &rarr;</a>
+                </div>
+              </div>
+              <div class="footer">
+                PhantomLead Automated Merchant Clearing System
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        await transporter.sendMail({
+          from: `"PhantomLead Clearing" <${GMAIL_USER}>`,
+          to: GMAIL_USER,
+          subject: `[PAYMENT PENDING] INR ${amountSubmitted} - UTR: ${utrNumber} (${candidateName || candidateEmail})`,
+          html: utrHtml,
+        });
+
+        return res.status(200).json({ success: true, message: 'Admin UTR alert dispatched' });
+      }
+
+      // 2. Handle Customer Alert: License Revocation
+      if (isRevocationNotice) {
+        console.log(`[Customer Alert] Sending revocation notice to: ${toEmail}`);
+        const revokeHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; }
+              .wrapper { max-width: 600px; margin: 30px auto; background-color: #0d111a; border: 1px solid #1a2333; border-radius: 8px; overflow: hidden; }
+              .header-bar { height: 4px; background: #ff2a2b; }
+              .content { padding: 32px; }
+              .brand { font-size: 22px; font-weight: 800; color: #ff2a2b; letter-spacing: 1px; }
+              .status-badge { display: inline-block; padding: 6px 14px; background: rgba(255, 42, 43, 0.1); border: 1px solid #ff2a2b; border-radius: 4px; color: #ff2a2b; font-size: 12px; font-weight: 700; margin: 16px 0; }
+              .card { background: #131926; border: 1px solid #1e293b; border-radius: 6px; padding: 20px; }
+              .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+              .label { color: #94a3b8; }
+              .val { color: #ffffff; font-weight: 600; text-align: right; }
+              .red-val { color: #ff2a2b; font-weight: 700; }
+              .footer { padding: 18px 32px; background: #090c14; border-top: 1px solid #1a2333; font-size: 11px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="wrapper">
+              <div class="header-bar"></div>
+              <div class="content">
+                <div class="brand">PHANTOMLEAD SECURITY SENTINEL</div>
+                <div class="status-badge">🛑 LICENSE STATUS: REVOKED</div>
+
+                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">
+                  Hello <strong>${toName || 'Candidate'}</strong>,<br/>
+                  This is an official administrative notice that your license clearance for <strong>${packageName || 'PhantomLead Workstation'}</strong> has been <strong>revoked</strong>.
+                </p>
+
+                <div class="card">
+                  <div class="row">
+                    <span class="label">Software Bundle:</span>
+                    <span class="val">${packageName || 'Security Workstation'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Hardware Node Lock:</span>
+                    <span class="val" style="color: #00ffff;">Disengaged & Cleared</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Clearance Status:</span>
+                    <span class="red-val">TERMINATED / REVOKED</span>
+                  </div>
+                </div>
+
+                <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin-top: 16px;">
+                  Your previous PC machine binding has been unlocked. If you believe this action was taken in error or if you wish to appeal or acquire a new pass, please contact our support desk:
+                </p>
+                <p style="font-size: 13px; color: #00ffff; font-family: monospace;">
+                  Support: support@phantomlead.com
+                </p>
+              </div>
+              <div class="footer">
+                PhantomLead Security Platforms &bull; Central Identity Dispatch
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        await transporter.sendMail({
+          from: `"PhantomLead Security Platforms" <billing-automated@phantomlead.com>`,
+          replyTo: `"PhantomLead Support Desk" <support@phantomlead.com>`,
+          to: toEmail,
+          subject: `[NOTICE] License Revocation Notice - PhantomLead Workstation`,
+          html: revokeHtml,
+        });
+
+        return res.status(200).json({ success: true, message: 'Revocation notice delivered' });
+      }
+
+      // 3. Handle Customer Alert: License Deletion / Account Reset
+      if (isDeletionNotice) {
+        console.log(`[Customer Alert] Sending deletion reset notice to: ${toEmail}`);
+        const deleteHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; }
+              .wrapper { max-width: 600px; margin: 30px auto; background-color: #0d111a; border: 1px solid #1a2333; border-radius: 8px; overflow: hidden; }
+              .header-bar { height: 4px; background: #64748b; }
+              .content { padding: 32px; }
+              .brand { font-size: 22px; font-weight: 800; color: #00ffff; letter-spacing: 1px; }
+              .status-badge { display: inline-block; padding: 6px 14px; background: rgba(100, 116, 139, 0.15); border: 1px solid #64748b; border-radius: 4px; color: #cbd5e1; font-size: 12px; font-weight: 700; margin: 16px 0; }
+              .card { background: #131926; border: 1px solid #1e293b; border-radius: 6px; padding: 20px; }
+              .footer { padding: 18px 32px; background: #090c14; border-top: 1px solid #1a2333; font-size: 11px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="wrapper">
+              <div class="header-bar"></div>
+              <div class="content">
+                <div class="brand">PHANTOMLEAD PLATFORMS</div>
+                <div class="status-badge">ACCOUNT STATUS: RESET &bull; 100% FRESH</div>
+
+                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">
+                  Hello <strong>${toName || 'Candidate'}</strong>,<br/>
+                  Your previous license profile and associated hardware bindings have been <strong>deleted and reset</strong> by the administrator.
+                </p>
+
+                <div class="card">
+                  <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin: 0;">
+                    Your account has been restored to a clean, fresh state. You are now free to select a new software package or submit a fresh enrollment without previous hardware conflicts.
+                  </p>
+                </div>
+
+                <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; margin-top: 16px;">
+                  To select a new package, log into your student workstation portal anytime:
+                </p>
+                <p style="text-align: center;">
+                  <a href="https://myphantolead.vercel.app/dashboard/packages" style="display: inline-block; padding: 10px 20px; background: #00ffff; color: #000; font-weight: bold; text-decoration: none; border-radius: 6px; font-size: 13px;">View Available Packages &rarr;</a>
+                </p>
+              </div>
+              <div class="footer">
+                PhantomLead Security Platforms &bull; support@phantomlead.com
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        await transporter.sendMail({
+          from: `"PhantomLead Security Platforms" <billing-automated@phantomlead.com>`,
+          replyTo: `"PhantomLead Support Desk" <support@phantomlead.com>`,
+          to: toEmail,
+          subject: `[ACCOUNT UPDATE] Your License Profile Has Been Reset - PhantomLead`,
+          html: deleteHtml,
+        });
+
+        return res.status(200).json({ success: true, message: 'Deletion notice delivered' });
+      }
 
       // Handle Admin New User Enrollment Alert
       if (isNewUserAlert) {
