@@ -823,6 +823,19 @@ export const CustomerPackages = () => {
                     ✓ UPI ID copied to clipboard!
                   </span>
                 )}
+
+                {/* Specific UPI Application Payment Guide & Warning Box */}
+                <div className="mt-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-[11px] font-mono text-amber-300 space-y-1.5 text-left">
+                  <div className="font-bold flex items-center gap-1.5 text-amber-200 uppercase tracking-wide">
+                    <span>📱 In UPI Application:</span>
+                  </div>
+                  <div className="text-slate-200">
+                    In <strong className="text-white">GPay</strong> &rarr; Select <span className="text-cyan-300 font-bold">"Pay to anyone"</span> &rarr; Enter the UPI ID above and pay the exact amount.
+                  </div>
+                  <div className="text-rose-300 text-[10.5px] font-semibold pt-1 border-t border-amber-500/20">
+                    ⚠️ <strong>Notice:</strong> If the transferred amount is less than the selected plan price, the payment will be rejected, refunded, and your license will not be issued.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
