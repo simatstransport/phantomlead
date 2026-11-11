@@ -1,4 +1,5 @@
 import { generatePhantomInvoicePDF, InvoiceData } from './invoiceGenerator';
+import { generateManualInstallationPDF } from './manualGenerator';
 import { supabase } from './supabase';
 
 // Prioritize Vercel production serverless API `/api/send-invoice`, fall back to localhost if local
@@ -52,9 +53,12 @@ export const processAndSendInvoice = async (params: ProcessAndSendInvoiceParams)
     supportEmail: 'support@phantomlead.com',
   };
 
-  // 1. Generate PDF
+  // 1. Generate PDF Invoice & PDF Manual
   const pdfDoc = generatePhantomInvoicePDF(invoiceData);
   const pdfBase64 = pdfDoc.output('datauristring');
+
+  const manualDoc = generateManualInstallationPDF(params.customerName);
+  const manualBase64 = manualDoc.output('datauristring');
 
   // 2. Persist record to Supabase invoices table (gracefully skip if table not created yet)
   try {
@@ -97,6 +101,7 @@ export const processAndSendInvoice = async (params: ProcessAndSendInvoiceParams)
         amount: total,
         transactionRef: params.transactionRef,
         pdfBase64,
+        manualBase64,
         licenseKey: params.licenseKey,
         currency: 'INR',
       }),
