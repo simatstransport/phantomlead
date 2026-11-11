@@ -67,10 +67,30 @@ serve(async (req) => {
       return new Response(JSON.stringify({ success: true, reported_error: errorMsg }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
+    // Check if the current machine / fingerprint is blacklisted
+    if (fingerprint) {
+      const { data: blacklistedDev } = await supabaseClient
+        .from('devices')
+        .select('id, is_blacklisted, blacklist_reason')
+        .eq('fingerprint', fingerprint)
+        .maybeSingle()
+
+      if (blacklistedDev && blacklistedDev.is_blacklisted) {
+        return new Response(
+          JSON.stringify({ 
+            valid: false, 
+            status: 'DEVICE_BLACKLISTED', 
+            error: `Hardware device has been blackmarked by Admin: ${blacklistedDev.blacklist_reason || 'Security Violation'}. Execution halted.` 
+          }), 
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        )
+      }
+    }
+
     // Find license
     const { data: licenseData, error: licenseError } = await supabaseClient
       .from('licenses')
-      .select('*, packages(package_code), devices(fingerprint, hostname)')
+      .select('*, packages(package_code), devices(fingerprint, hostname, is_blacklisted, blacklist_reason)')
       .eq('license_key_hash', license_key_hash)
       .single()
 
@@ -78,12 +98,41 @@ serve(async (req) => {
       return new Response(JSON.stringify({ valid: false, status: 'INVALID', error: 'Invalid license key' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 })
     }
 
+    if (licenseData.devices && licenseData.devices.is_blacklisted) {
+      return new Response(
+        JSON.stringify({ 
+          valid: false, 
+          status: 'DEVICE_BLACKLISTED', 
+          error: `Bound machine is blacklisted: ${licenseData.devices.blacklist_reason || 'Prohibited Device HWID'}` 
+        }), 
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      )
+    }
+
     if (licenseData.status !== 'ACTIVE') {
       return new Response(JSON.stringify({ valid: false, status: licenseData.status || 'REVOKED', error: 'License is not active' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
     }
 
     if (licenseData.expires_at && new Date(licenseData.expires_at) < new Date()) {
-      return new Response(JSON.stringify({ valid: false, status: 'EXPIRED', error: 'License expired' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+      // Mark license EXPIRED and trigger remote wipe command flag
+      await supabaseClient
+        .from('licenses')
+        .update({ status: 'EXPIRED', device_id: null, expired_at: new Date().toISOString() })
+        .eq('id', licenseData.id)
+
+      if (licenseData.device_id) {
+        await supabaseClient.from('devices').delete().eq('id', licenseData.device_id)
+      }
+
+      return new Response(
+        JSON.stringify({ 
+          valid: false, 
+          status: 'EXPIRED', 
+          execute_wipe: true, 
+          error: 'License validity period expired. Client session self-destruct engaged.' 
+        }), 
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      )
     }
 
     // If license was wiped/uninstalled, allow reinstall on the same or new device

@@ -5,7 +5,7 @@ import {
   Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
   Users, Download, Settings, Menu, X, BookOpen, AlertTriangle,
   Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2,
-  Loader2
+  Loader2, Radio
 } from 'lucide-react';
 import { downloadInstaller } from './utils/download';
 import { AdminPayments } from './pages/admin/AdminPayments';
@@ -14,6 +14,7 @@ import { AdminLicenses } from './pages/admin/AdminLicenses';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminSettings } from './pages/admin/AdminSettings';
 import { AdminWipeFolders } from './pages/admin/AdminWipeFolders';
+import { AdminDevices } from './pages/admin/AdminDevices';
 import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerInstallation } from './pages/CustomerInstallation';
 import { CustomerLicenses } from './pages/CustomerLicenses';
@@ -319,6 +320,18 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               >
                 <Users className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/customers') ? 'text-emerald-400' : 'text-slate-400 group-hover:text-emerald-400'}`} />
                 Customers
+              </Link>
+              <Link 
+                to="/admin/devices" 
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-3.5 py-2.5 rounded-xl transition-all group font-sans text-xs sm:text-sm font-semibold ${
+                  isCurrent('/admin/devices') 
+                    ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 shadow-sm shadow-cyan-500/10' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <Radio className={`w-4 h-4 mr-3 transition-transform group-hover:scale-105 ${isCurrent('/admin/devices') ? 'text-cyan-400 animate-pulse' : 'text-slate-400 group-hover:text-cyan-400'}`} />
+                Telemetry Radar
               </Link>
               <Link 
                 to="/admin/settings" 
@@ -1106,6 +1119,7 @@ function App() {
             <Route path="/admin/packages" element={session ? (isAdmin ? <DashboardLayout title="All Packages" isAdmin={true}><AdminPackages /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/admin/payments" element={session ? (isAdmin ? <DashboardLayout title="Payments" isAdmin={true}><AdminPayments /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/admin/customers" element={session ? (isAdmin ? <DashboardLayout title="Customers" isAdmin={true}><AdminCustomers /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
+            <Route path="/admin/devices" element={session ? (isAdmin ? <DashboardLayout title="Hardware Telemetry Radar" isAdmin={true}><AdminDevices /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/admin/wipe-folders" element={session ? (isAdmin ? <DashboardLayout title="Delete User Folders" isAdmin={true}><AdminWipeFolders /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/admin/settings" element={session ? (isAdmin ? <DashboardLayout title="Settings" isAdmin={true}><AdminSettings /></DashboardLayout> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} />
             <Route path="/" element={<Navigate to={session ? (isAdmin ? "/admin" : "/dashboard") : "/login"} />} />

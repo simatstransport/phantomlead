@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { 
   Download, Copy, Check, Clock, Calendar, ShieldCheck, Laptop, 
   AlertTriangle, Sparkles, BookOpen, Cpu, RefreshCw, HardDrive, 
-  CheckCircle2, ArrowRight, Key, Loader2
+  CheckCircle2, ArrowRight, Key, Loader2, FileText
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
 import { downloadInstaller } from '../utils/download';
+import { generatePhantomInvoicePDF } from '../services/invoiceGenerator';
 
 type CustomerLicense = {
   id: string;
@@ -726,6 +727,33 @@ export const CustomerLicenses = () => {
                       <BookOpen className="w-4 h-4 text-emerald-400" />
                       <span>Installation Manual &amp; Shortcuts</span>
                     </Link>
+
+                    {/* Customer Invoice Download Action */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const invoiceDoc = generatePhantomInvoicePDF({
+                          invoiceNumber: `PL-INV-${activeLicense.id.substring(0, 8).toUpperCase()}`,
+                          date: new Date(activeLicense.issued_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                          customerName: activeLicense.customers?.full_name || 'Verified Client',
+                          customerEmail: 'Registered Account',
+                          packageName: activeLicense.packages?.package_name || 'PhantomLead Security Package',
+                          packageCode: activeLicense.packages?.package_code || 'SECURITY_SUITE',
+                          amount: 2000,
+                          tax: 0,
+                          total: 2000,
+                          currency: 'INR',
+                          transactionRef: activeLicense.id.substring(0, 16).toUpperCase(),
+                          paymentMethod: 'UPI / Direct Clearance',
+                          licenseKey: activeLicense.license_key || undefined,
+                        });
+                        invoiceDoc.save(`PhantomLead-Invoice-${activeLicense.packages?.package_code || 'LICENSE'}.pdf`);
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border border-cyan-400/30 text-sm font-medium transition-all cursor-pointer shadow-sm shadow-cyan-500/10 active:scale-95"
+                    >
+                      <FileText className="w-4 h-4 text-cyan-400" />
+                      <span>Download Invoice PDF</span>
+                    </button>
                   </div>
 
                   {(activeLicense.expires_at || activeLicense.duration_months === -10 || (activeLicense.duration_months && activeLicense.duration_months > 0)) && (

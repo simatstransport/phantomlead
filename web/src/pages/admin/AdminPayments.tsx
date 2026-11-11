@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
+import { processAndSendInvoice } from '../../services/billingService';
 import { 
   CreditCard, 
   CheckCircle, 
@@ -10,7 +11,8 @@ import {
   Check, 
   Mail,
   Trash2,
-  Loader2
+  Loader2,
+  FileText
 } from 'lucide-react';
 
 export const AdminPayments = () => {
@@ -58,7 +60,55 @@ export const AdminPayments = () => {
         message: status === 'APPROVED' ? '✅ Payment approved and license generated!' : '🚫 Payment rejected.' 
       });
       fetchPayments();
-      setTimeout(() => setActionAlert(null), 4000);
+
+      // Automated Invoice PDF Generation and Email Dispatch upon Approval
+      if (status === 'APPROVED') {
+        const paymentItem = payments.find(p => p.id === id);
+        if (paymentItem && paymentItem.customers?.email) {
+          handleGenerateInvoice(paymentItem, false);
+        }
+      }
+
+      setTimeout(() => setActionAlert(null), 5000);
+    }
+  };
+
+  const handleGenerateInvoice = async (p: any, downloadOnly = false) => {
+    try {
+      setProcessingId(p.id);
+      const res = await processAndSendInvoice({
+        paymentId: p.id,
+        customerId: p.customer_id,
+        customerName: p.customers?.full_name || 'Customer',
+        customerEmail: p.customers?.email || '',
+        packageName: p.packages?.package_name || 'PhantomLead Security Package',
+        packageCode: p.packages?.package_code || 'SECURITY_SUITE',
+        amount: p.amount || 0,
+        transactionRef: p.upi_transaction_id || 'VERIFIED',
+      });
+
+      if (downloadOnly) {
+        res.pdfDoc.save(`${res.invoiceNumber}.pdf`);
+        setActionAlert({
+          type: 'success',
+          message: `📄 Invoice ${res.invoiceNumber} downloaded successfully!`
+        });
+      } else {
+        res.pdfDoc.save(`${res.invoiceNumber}.pdf`);
+        setActionAlert({
+          type: 'success',
+          message: `✅ Invoice ${res.invoiceNumber} generated & sent to ${p.customers?.email}!`
+        });
+      }
+    } catch (err: any) {
+      console.error(err);
+      setActionAlert({
+        type: 'error',
+        message: `Failed to compile invoice: ${err.message}`
+      });
+    } finally {
+      setProcessingId(null);
+      setTimeout(() => setActionAlert(null), 5000);
     }
   };
 
@@ -345,6 +395,23 @@ export const AdminPayments = () => {
                       {/* Actions */}
                       <td className="py-4 px-4 text-right">
                         <div className="inline-flex items-center gap-2 justify-end">
+                          {/* Invoice Action for Approved Payments */}
+                          {isApproved && (
+                            <button
+                              onClick={() => handleGenerateInvoice(p, false)}
+                              disabled={isProcessing}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/30 hover:text-white transition-all cursor-pointer font-mono text-xs font-semibold shadow-sm shadow-cyan-500/20 active:scale-95"
+                              title="Send & Download PDF Invoice"
+                            >
+                              {isProcessing ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                              )}
+                              <span>Invoice</span>
+                            </button>
+                          )}
+
                           {isPending && (
                             <>
                               <button 

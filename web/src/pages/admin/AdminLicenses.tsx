@@ -6,6 +6,7 @@ import {
   CalendarPlus, Check
 } from 'lucide-react';
 import { downloadInstaller } from '../../utils/download';
+import { processAndSendInvoice } from '../../services/billingService';
 
 export const AdminLicenses = () => {
   const [licenses, setLicenses] = useState<any[]>([]);
@@ -33,6 +34,59 @@ export const AdminLicenses = () => {
   const [modalMessage, setModalMessage] = useState({ type: '', text: '' });
   const [availablePackages, setAvailablePackages] = useState<any[]>([]);
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+  const [isSweepingTimebomb, setIsSweepingTimebomb] = useState(false);
+
+  const handleRunTimebombSweep = async () => {
+    setIsSweepingTimebomb(true);
+    setActionAlert({ type: 'info', message: '⏳ Scanning fleet for expired licenses and disengaging hardware locks...' });
+
+    try {
+      const nowIso = new Date().toISOString();
+      // Find all ACTIVE licenses that have passed expires_at
+      const { data: expiredLicenses, error: fetchErr } = await supabase
+        .from('licenses')
+        .select('id, expires_at, device_id, customers(full_name, email), packages(package_name)')
+        .eq('status', 'ACTIVE')
+        .not('expires_at', 'is', null)
+        .lte('expires_at', nowIso);
+
+      if (fetchErr) throw fetchErr;
+
+      if (!expiredLicenses || expiredLicenses.length === 0) {
+        setActionAlert({ type: 'success', message: '✅ Fleet Scan Complete: Zero expired licenses found. All active nodes valid.' });
+        return;
+      }
+
+      let count = 0;
+      for (const lic of expiredLicenses) {
+        await supabase
+          .from('licenses')
+          .update({
+            status: 'EXPIRED',
+            device_id: null,
+            expired_at: nowIso,
+            expiration_notified: true,
+          })
+          .eq('id', lic.id);
+
+        if (lic.device_id) {
+          await supabase.from('devices').delete().eq('id', lic.device_id);
+        }
+        count++;
+      }
+
+      setActionAlert({
+        type: 'success',
+        message: `💥 Timebomb Sweep Complete: ${count} expired license(s) revoked & hardware locks freed automatically!`
+      });
+      fetchLicenses();
+    } catch (err: any) {
+      setActionAlert({ type: 'error', message: `Sweep failed: ${err.message}` });
+    } finally {
+      setIsSweepingTimebomb(false);
+      setTimeout(() => setActionAlert(null), 6000);
+    }
+  };
 
   const handleDownload = async (name: string) => {
     setDownloadingFile(name);
@@ -268,12 +322,35 @@ export const AdminLicenses = () => {
       const exeAssigned = duration === null 
         ? (lifetimeExe === 'A' ? 'SecureInstaller_A.exe (Admin-Controlled)' : 'SecureInstaller_L.exe (Lifetime Vault)')
         : 'SecureInstaller_T.exe (Timed Edition)';
+
+      // Selected package metadata
+      const selectedPkg = availablePackages.find(p => p.package_code === packageCode);
+      const pkgName = selectedPkg?.package_name || packageCode;
+
+      // Automatically compile & dispatch official PDF Entitlement Invoice via Gmail Nodemailer
+      processAndSendInvoice({
+        customerName: customerEmail.split('@')[0],
+        customerEmail: customerEmail.trim(),
+        packageName: `${pkgName} (Admin Grant)`,
+        packageCode: packageCode,
+        amount: 0,
+        tax: 0,
+        transactionRef: `FREE-GRANT-${Date.now().toString().slice(-6)}`,
+        paymentMethod: 'Admin Complimentary Grant (₹0)',
+        licenseKey: issuedKey,
+        isFree: true,
+      }).then(res => {
+        console.log('[Free License Invoice Dispatched]:', res.invoiceNumber);
+      }).catch(err => {
+        console.warn('[Free License Invoice Notice]:', err);
+      });
+
       setModalMessage({ 
         type: 'success', 
-        text: `Success! License Key: ${issuedKey} • Target: ${exeAssigned}` 
+        text: `Success! Key: ${issuedKey} (${exeAssigned}) • Official PDF Invoice emailed to ${customerEmail.trim()}!` 
       });
       fetchLicenses();
-      setTimeout(() => setIsModalOpen(false), 3500);
+      setTimeout(() => setIsModalOpen(false), 4000);
     } else {
       setModalMessage({ type: 'error', text: 'License created, but key was missing in response.' });
     }
@@ -367,6 +444,20 @@ export const AdminLicenses = () => {
                 A-Admin
               </button>
             </div>
+
+            <button 
+              onClick={handleRunTimebombSweep}
+              disabled={isSweepingTimebomb}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs sm:text-sm font-bold font-mono transition-all cursor-pointer whitespace-nowrap active:scale-95 disabled:opacity-50"
+              title="Scan and revoke all licenses whose validity has expired"
+            >
+              {isSweepingTimebomb ? (
+                <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+              ) : (
+                <Clock className="w-4 h-4 text-amber-400" />
+              )}
+              <span>Run Expiry Sweep</span>
+            </button>
 
             <button 
               onClick={handleOpenModal} 
