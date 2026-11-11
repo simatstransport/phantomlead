@@ -24,7 +24,6 @@ import { MatrixBackground } from './components/MatrixBackground';
 import { AnimatedGlow } from './components/AnimatedGlow';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThemeToggle } from './components/ThemeToggle';
-import { dispatchWelcomeEmail } from './services/welcomeService';
 
 const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -1068,17 +1067,11 @@ function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       checkAdmin(session?.user?.id);
-      if (session?.user?.email) {
-        dispatchWelcomeEmail(session.user.email, session.user.user_metadata?.full_name);
-      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       checkAdmin(session?.user?.id);
-      if (session?.user?.email) {
-        dispatchWelcomeEmail(session.user.email, session.user.user_metadata?.full_name);
-      }
     });
 
     return () => subscription.unsubscribe();

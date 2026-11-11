@@ -56,8 +56,93 @@ export default async function handler(req, res) {
         isExtension,
         extendedDays,
         newExpiry,
+        isNewUserAlert,
+        candidateEmail,
+        candidateName,
+        collegeName,
+        academicYear,
+        timestamp,
         currency = 'INR' 
       } = req.body;
+
+      // Handle Admin New User Enrollment Alert
+      if (isNewUserAlert) {
+        console.log(`[Admin Alert] New candidate enrolled: ${candidateEmail}`);
+        const alertHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; }
+              .wrapper { max-width: 600px; margin: 30px auto; background-color: #0d111a; border: 1px solid #1a2333; border-radius: 8px; overflow: hidden; }
+              .header-bar { height: 4px; background: #00ffff; }
+              .content { padding: 32px; }
+              .brand { font-size: 22px; font-weight: 800; color: #00ffff; letter-spacing: 1px; }
+              .status-badge { display: inline-block; padding: 6px 14px; background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; border-radius: 4px; color: #00ffff; font-size: 12px; font-weight: 700; margin: 16px 0; }
+              .card { background: #131926; border: 1px solid #1e293b; border-radius: 6px; padding: 20px; }
+              .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+              .label { color: #94a3b8; }
+              .val { color: #ffffff; font-weight: 600; text-align: right; }
+              .cyan-val { color: #00ffff; font-weight: 700; }
+              .footer { padding: 18px 32px; background: #090c14; border-top: 1px solid #1a2333; font-size: 11px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="wrapper">
+              <div class="header-bar"></div>
+              <div class="content">
+                <div class="brand">PHANTOMLEAD SENTINEL</div>
+                <div class="status-badge">● NEW CANDIDATE ENROLLMENT ALERT</div>
+
+                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">
+                  An incoming student has just completed their initial platform registration and verified their profile details:
+                </p>
+
+                <div class="card">
+                  <div class="row">
+                    <span class="label">Candidate Name:</span>
+                    <span class="cyan-val">${candidateName || 'Not specified'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Google / Auth Email:</span>
+                    <span class="val">${candidateEmail}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">College / Institute:</span>
+                    <span class="val">${collegeName || 'Not specified'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Academic Year / Batch:</span>
+                    <span class="val">${academicYear || 'Not specified'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Enrolled At:</span>
+                    <span class="val" style="color: #94a3b8; font-size: 12px;">${timestamp || new Date().toISOString()}</span>
+                  </div>
+                </div>
+
+                <p style="font-size: 12px; color: #64748b; margin-top: 20px;">
+                  This is a single-time automated briefing dispatched only upon first-time profile submission. No routine login alerts are sent.
+                </p>
+              </div>
+              <div class="footer">
+                PhantomLead Security Telemetry &bull; Admin Incident Protocol
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        await transporter.sendMail({
+          from: `"PhantomLead Telemetry" <${GMAIL_USER}>`,
+          to: GMAIL_USER,
+          subject: `[ALERT] New Candidate Enrolled: ${candidateName} (${candidateEmail})`,
+          html: alertHtml,
+        });
+
+        return res.status(200).json({ success: true, message: 'Admin alert dispatched' });
+      }
 
       if (!toEmail) {
         return res.status(400).json({ error: 'toEmail is required in payload' });

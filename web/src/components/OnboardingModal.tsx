@@ -72,6 +72,24 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
         if (insertError) throw insertError;
       }
 
+      // Dispatch ONE-TIME High-Priority New Student Enrollment Alert to Admin
+      const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+        ? '/api/send-invoice'
+        : 'http://localhost:3001/api/send-invoice';
+
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isNewUserAlert: true,
+          candidateEmail: session.user.email,
+          candidateName: formData.full_name,
+          collegeName: formData.college_name,
+          academicYear: formData.academic_year,
+          timestamp: new Date().toISOString(),
+        }),
+      }).catch(err => console.warn('[Admin alert notice]:', err));
+
       setNeedsOnboarding(false);
       onComplete();
     } catch (err: any) {
