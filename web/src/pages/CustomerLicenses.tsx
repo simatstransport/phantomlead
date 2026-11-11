@@ -19,8 +19,15 @@ type CustomerLicense = {
   expires_at: string | null;
   device_id?: string | null;
   license_key: string | null;
-  packages: { package_name: string; package_code: string };
-  customers: { full_name: string };
+  payment_id?: string | null;
+  payments?: {
+    id: string;
+    amount: number;
+    upi_transaction_id: string;
+    submitted_at?: string;
+  } | null;
+  packages: { package_name: string; package_code: string; price?: number };
+  customers: { full_name: string; email?: string };
   devices?: { registered_at: string; hostname?: string | null } | { registered_at: string; hostname?: string | null }[] | null;
 };
 
@@ -228,8 +235,10 @@ export const CustomerLicenses = () => {
           issued_at,
           expires_at,
           device_id,
-          packages (package_name, package_code),
-          customers (full_name),
+          payment_id,
+          payments (id, amount, upi_transaction_id, submitted_at),
+          packages (package_name, package_code, price),
+          customers (full_name, email),
           devices (registered_at, hostname)
         `)
         .order('issued_at', { ascending: false });
@@ -732,22 +741,30 @@ export const CustomerLicenses = () => {
                     <button
                       type="button"
                       onClick={() => {
+                        const isFreePlan = activeLicense.payment_type === 'FREE' || !activeLicense.payment_id;
+                        const actualAmount = isFreePlan 
+                          ? 0 
+                          : Number(activeLicense.payments?.amount ?? activeLicense.packages?.price ?? 2000);
+                        const actualTxnRef = activeLicense.payments?.upi_transaction_id 
+                          || (isFreePlan ? `COMPLIMENTARY-${activeLicense.id.substring(0, 8).toUpperCase()}` : activeLicense.id.substring(0, 16).toUpperCase());
+
                         const invoiceDoc = generatePhantomInvoicePDF({
                           invoiceNumber: `PL-INV-${activeLicense.id.substring(0, 8).toUpperCase()}`,
-                          date: new Date(activeLicense.issued_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                          date: new Date(activeLicense.payments?.submitted_at || activeLicense.issued_at || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
                           customerName: activeLicense.customers?.full_name || 'Verified Client',
-                          customerEmail: 'Registered Account',
+                          customerEmail: activeLicense.customers?.email || 'Registered Candidate',
                           packageName: activeLicense.packages?.package_name || 'PhantomLead Security Package',
                           packageCode: activeLicense.packages?.package_code || 'SECURITY_SUITE',
-                          amount: 2000,
+                          amount: actualAmount,
                           tax: 0,
-                          total: 2000,
+                          total: actualAmount,
                           currency: 'INR',
-                          transactionRef: activeLicense.id.substring(0, 16).toUpperCase(),
-                          paymentMethod: 'UPI / Direct Clearance',
+                          transactionRef: actualTxnRef,
+                          paymentMethod: isFreePlan ? 'Admin Complimentary Grant (₹0)' : 'UPI / Direct Clearance',
+                          isFree: isFreePlan,
                           licenseKey: activeLicense.license_key || undefined,
                         });
-                        invoiceDoc.save(`PhantomLead-Invoice-${activeLicense.packages?.package_code || 'LICENSE'}.pdf`);
+                        invoiceDoc.save(`PhantomLead-Invoice-${activeLicense.packages?.package_code || 'ENTITLEMENT'}.pdf`);
                       }}
                       className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border border-cyan-400/30 text-sm font-medium transition-all cursor-pointer shadow-sm shadow-cyan-500/10 active:scale-95"
                     >

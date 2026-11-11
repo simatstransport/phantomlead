@@ -193,6 +193,24 @@ export default async function handler(req, res) {
                   ` : ''}
                 </div>
 
+                <!-- CRITICAL SECURITY PROTOCOLS & ANTI-TAMPER POLICY -->
+                <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; padding: 16px; margin: 20px 0;">
+                  <div style="color: #ff4d4d; font-weight: 800; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">
+                    ⚠️ MANDATORY SECURITY RULES &amp; SYSTEM INTEGRITY POLICY
+                  </div>
+                  <ol style="margin: 0; padding-left: 18px; font-size: 12px; color: #fca5a5; line-height: 1.6;">
+                    <li style="margin-bottom: 6px;">
+                      <strong>Zero-Sharing &amp; 1-PC Lock:</strong> This license key is cryptographically bounded to your specific machine hardware upon first activation. Sharing, re-distributing, or running this key on multiple computers is strictly prohibited.
+                    </li>
+                    <li style="margin-bottom: 6px;">
+                      <strong>Background Integrity Analysis:</strong> The Sentinel runtime conducts active integrity telemetry during examination sessions. Any attempt to modify, reverse-engineer, decompile, or violate the official installation setup guide will trigger an automated alert.
+                    </li>
+                    <li>
+                      <strong>Immediate Revocation &amp; No Refund Policy:</strong> Any unauthorized hardware mismatch or policy violation results in <em>immediate, irreversible license revocation</em> with automatic remote host sanitization. In such events, <strong>no refunds or reinstatement will be granted</strong> under any circumstances.
+                    </li>
+                  </ol>
+                </div>
+
                 <p style="font-size: 13px; color: #94a3b8; line-height: 1.5;">
                   <strong>2 PDF Documents Attached:</strong><br/>
                   1. 📄 <strong>Official Tax Invoice &amp; Entitlement Receipt</strong><br/>
