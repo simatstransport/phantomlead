@@ -305,9 +305,37 @@ export const AdminLicenses = () => {
         });
 
         const customerName = extendModalLicense.customers?.full_name || extendModalLicense.customers?.email || 'Candidate';
+        const customerEmail = extendModalLicense.customers?.email;
+        const newExpiryFormatted = `${newExpiryTime.toLocaleDateString()} ${newExpiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+        // Dispatch automated extension notification email to the customer
+        if (customerEmail) {
+          const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+            ? '/api/send-invoice'
+            : 'http://localhost:3001/api/send-invoice';
+
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              toEmail: customerEmail,
+              toName: customerName,
+              isExtension: true,
+              extendedDays: daysToAdd,
+              newExpiry: newExpiryFormatted,
+              packageName: extendModalLicense.packages?.package_name || 'PhantomLead Workstation',
+              transactionRef: `EXTEND-${Date.now().toString().slice(-6)}`,
+            }),
+          }).then(() => {
+            console.log(`[Extension Email Sent] to ${customerEmail}`);
+          }).catch(err => {
+            console.warn('[Extension Email Notice]:', err);
+          });
+        }
+
         setActionAlert({
           type: 'success',
-          message: `⏳ Granted +${daysToAdd} day(s) extension for ${customerName}! New expiry: ${newExpiryTime.toLocaleDateString()} ${newExpiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+          message: `⏳ Granted +${daysToAdd} day(s) extension & emailed notification to ${customerName}! New expiry: ${newExpiryFormatted}`
         });
         setExtendModalLicense(null);
         fetchLicenses();
