@@ -286,6 +286,7 @@ export const AdminPackages = () => {
           <Link
             to="/dashboard/packages"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-3 sm:px-4 py-2 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all hover:border-cyan-500/50 shadow-sm"
           >
             <ExternalLink className="w-4 h-4 text-cyan-400" /> Preview Store

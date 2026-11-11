@@ -12,29 +12,49 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // Production CORS Hardening
+  const allowedOrigins = [
+    'https://myphantolead.vercel.app',
+    'https://phantomlead.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (!origin) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else {
+    // If request comes from another subdomain on vercel.app
+    if (origin.endsWith('.vercel.app')) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+  }
+
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Hardened Security Headers on API responses
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Health check endpoint
+  // Health check endpoint (information disclosure minimized)
   if (req.method === 'GET') {
     try {
       await transporter.verify();
       return res.status(200).json({ 
         status: 'online', 
         service: 'PhantomLead Vercel Serverless Email Engine',
-        gmail: GMAIL_USER,
         smtp_verified: true
       });
     } catch (verifyErr) {
       return res.status(500).json({
         status: 'error',
-        error: verifyErr.message,
         smtp_verified: false
       });
     }
