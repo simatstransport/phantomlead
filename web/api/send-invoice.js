@@ -136,7 +136,8 @@ export default async function handler(req, res) {
       `;
 
       const mailOptions = {
-        from: `"PhantomLead Billing" <${GMAIL_USER}>`,
+        from: `"PhantomLead Security Platforms" <billing-automated@phantomlead.com>`,
+        replyTo: `"PhantomLead Support Desk" <support@phantomlead.com>`,
         to: toEmail,
         subject: `[INVOICE ${invoiceNumber}] Official Receipt - PhantomLead Security Platforms`,
         html: htmlContent,
