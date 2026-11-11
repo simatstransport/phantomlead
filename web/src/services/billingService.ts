@@ -1,7 +1,13 @@
 import { generatePhantomInvoicePDF, InvoiceData } from './invoiceGenerator';
 import { supabase } from './supabase';
 
-const DAEMON_API_URL = 'http://localhost:3001/api/send-invoice';
+// Prioritize Vercel production serverless API `/api/send-invoice`, fall back to localhost if local
+const getEmailApiUrl = () => {
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return '/api/send-invoice';
+  }
+  return 'http://localhost:3001/api/send-invoice';
+};
 
 export interface ProcessAndSendInvoiceParams {
   paymentId?: string;
@@ -74,12 +80,13 @@ export const processAndSendInvoice = async (params: ProcessAndSendInvoiceParams)
     console.warn('[PhantomLead Invoices DB Notice]:', dbErr);
   }
 
-  // 3. Dispatch Email via Nodemailer Billing Daemon
+  // 3. Dispatch Email via Nodemailer Serverless Endpoint (Vercel) / Local Daemon
   let emailSuccess = false;
   let emailNotice = '';
 
   try {
-    const res = await fetch(DAEMON_API_URL, {
+    const apiUrl = getEmailApiUrl();
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -90,20 +97,22 @@ export const processAndSendInvoice = async (params: ProcessAndSendInvoiceParams)
         amount: total,
         transactionRef: params.transactionRef,
         pdfBase64,
+        licenseKey: params.licenseKey,
         currency: 'INR',
       }),
     });
 
-    if (res.ok) {
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.success !== false) {
       emailSuccess = true;
-      emailNotice = `Invoice ${invoiceNumber} emailed directly to ${params.customerEmail}`;
+      emailNotice = `Invoice ${invoiceNumber} emailed directly to ${params.customerEmail}!`;
     } else {
-      const errData = await res.json().catch(() => ({}));
-      emailNotice = `Email Daemon notice: ${errData.error || res.statusText}`;
+      throw new Error(data.error || `Server responded with ${res.status}: ${res.statusText}`);
     }
   } catch (err: any) {
-    console.warn('[Email Daemon dispatch failed]:', err);
-    emailNotice = `Daemon connection bypassed: PDF ready for local download.`;
+    console.error('[Email Dispatch Error]:', err);
+    throw new Error(`Email Dispatch Blocked: ${err.message}`);
   }
 
   return {
