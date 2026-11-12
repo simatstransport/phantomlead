@@ -67,6 +67,7 @@ export default async function handler(req, res) {
         toName, 
         invoiceNumber, 
         packageName, 
+        packageCode,
         amount, 
         transactionRef, 
         pdfBase64, 
@@ -601,6 +602,108 @@ export default async function handler(req, res) {
                     <div class="key-box">${licenseKey}</div>
                   ` : ''}
                 </div>
+
+                <!-- PLAN-SPECIFIC TOOL SHORTCUTS & USAGE INSTRUCTIONS -->
+                ${(() => {
+                  const code = (packageCode || packageName || '').toUpperCase();
+                  const showMcq = code.includes('MCQ') || code.includes('QA') || code.includes('FULL') || !code;
+                  const showReasoning = code.includes('REASONING') || code.includes('PLACEMENT') || code.includes('FULL');
+                  const showJava = code.includes('JAVA') || code.includes('FULL') || !code;
+                  const showViva = code.includes('VIVA') || code.includes('JAVA') || code.includes('FULL') || !code;
+                  const showC = code.includes('C_') || code.includes('PYTHON_C') || (code.includes('C') && !code.includes('MCQ')) || code.includes('FULL');
+                  const showPython = code.includes('PYTHON') || code.includes('FULL');
+
+                  return `
+                    <div style="background: #0f172a; border: 1px solid #00ffff; border-radius: 8px; padding: 20px; margin: 24px 0;">
+                      <div style="color: #00ffff; font-weight: 800; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center;">
+                        ⚡ OPERATING INSTRUCTIONS FOR YOUR PLAN: ${packageName || 'ASSISTANT SUITE'}
+                      </div>
+                      <p style="font-size: 12px; color: #94a3b8; margin: 0 0 16px 0;">
+                        Open <strong>Safe Exam Browser (SEB v3.10.2)</strong>. Only the tools included in your active plan below will trigger:
+                      </p>
+
+                      <div style="display: flex; flex-direction: column; gap: 14px;">
+                        ${showMcq ? `
+                          <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6; padding: 12px 14px; border-radius: 4px;">
+                            <div style="font-size: 13px; font-weight: bold; color: #60a5fa; margin-bottom: 4px;">
+                              🎯 1. LMS MCQ Helper &bull; <code style="background: #1e293b; color: #93c5fd; padding: 2px 6px; border-radius: 4px;">Ctrl + J</code> (or <code style="background: #1e293b; color: #93c5fd; padding: 2px 6px; border-radius: 4px;">Ctrl + I</code> / F8)
+                            </div>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                              &bull; After attempting a quiz question, press <strong>Ctrl + J</strong> once.<br/>
+                              &bull; The assistant automatically analyzes options and selects the correct answer.<br/>
+                              &bull; <strong>Continuous Execution:</strong> When you click "Next", you do NOT need to press Ctrl + J again! It runs continuously once triggered.
+                            </div>
+                          </div>
+                        ` : ''}
+
+                        ${showReasoning ? `
+                          <div style="background: rgba(6, 182, 212, 0.08); border-left: 3px solid #06b6d4; padding: 12px 14px; border-radius: 4px;">
+                            <div style="font-size: 13px; font-weight: bold; color: #22d3ee; margin-bottom: 4px;">
+                              🧩 2. LMS Reasoning MCQ Helper &bull; <code style="background: #1e293b; color: #67e8f9; padding: 2px 6px; border-radius: 4px;">Ctrl + I</code>
+                            </div>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                              &bull; Designed for visual patterns, analytical sequences, and deduction questions.<br/>
+                              &bull; Press <strong>Ctrl + I</strong> to solve and lock deduction radio choices.
+                            </div>
+                          </div>
+                        ` : ''}
+
+                        ${showJava ? `
+                          <div style="background: rgba(168, 85, 247, 0.08); border-left: 3px solid #a855f7; padding: 12px 14px; border-radius: 4px;">
+                            <div style="font-size: 13px; font-weight: bold; color: #c084fc; margin-bottom: 4px;">
+                              ☕ 3. Java Coding Helper &bull; <code style="background: #1e293b; color: #d8b4fe; padding: 2px 6px; border-radius: 4px;">Ctrl + K</code> (or F10)
+                            </div>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                              &bull; Place your mouse cursor inside the <strong>Question area</strong> (NOT in the code sandbox editor).<br/>
+                              &bull; Press <strong>Ctrl + K</strong>. A pop-up HUD overlay appears in the bottom-right corner.<br/>
+                              &bull; Click <strong>"Replace Code"</strong>: it will automatically inject the complete solution into the code sandbox.<br/>
+                              &bull; <strong>Auto-Correction:</strong> If compiler errors or test fails occur, press Ctrl + K again and click <strong>"Regenerate Code"</strong> for the corrected version.
+                            </div>
+                          </div>
+                        ` : ''}
+
+                        ${showViva ? `
+                          <div style="background: rgba(236, 72, 153, 0.08); border-left: 3px solid #ec4899; padding: 12px 14px; border-radius: 4px;">
+                            <div style="font-size: 13px; font-weight: bold; color: #f472b6; margin-bottom: 4px;">
+                              📝 4. Java Viva Paragraph Helper &bull; <code style="background: #1e293b; color: #fbcfe8; padding: 2px 6px; border-radius: 4px;">Ctrl + L</code>
+                            </div>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                              &bull; Functions identical to Java Coding, but triggers via <strong>Ctrl + L</strong>.<br/>
+                              &bull; A pop-up HUD appears in the <strong>top-right</strong> corner with full theoretical and viva answers.<br/>
+                              &bull; Click <strong>"Push to Sandbox"</strong> to transfer the paragraph directly into your answer editor.
+                            </div>
+                          </div>
+                        ` : ''}
+
+                        ${showC ? `
+                          <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 12px 14px; border-radius: 4px;">
+                            <div style="font-size: 13px; font-weight: bold; color: #34d399; margin-bottom: 4px;">
+                              ⚙️ 5. C Coding Helper &bull; <code style="background: #1e293b; color: #a7f3d0; padding: 2px 6px; border-radius: 4px;">Ctrl + Y</code>
+                            </div>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                              &bull; Same workflow as Java: place cursor in question description (outside sandbox).<br/>
+                              &bull; Press <strong>Ctrl + Y</strong> &rarr; click <strong>"Replace Code"</strong> to inject verified C program.<br/>
+                              &bull; Press <strong>Ctrl + Y</strong> again if compiler flags an error and click <strong>"Regenerate"</strong>.
+                            </div>
+                          </div>
+                        ` : ''}
+
+                        ${showPython ? `
+                          <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 12px 14px; border-radius: 4px;">
+                            <div style="font-size: 13px; font-weight: bold; color: #34d399; margin-bottom: 4px;">
+                              🐍 6. Python 3 Coding Helper &bull; <code style="background: #1e293b; color: #a7f3d0; padding: 2px 6px; border-radius: 4px;">Ctrl + T</code>
+                            </div>
+                            <div style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                              &bull; Place cursor in question area &rarr; press <strong>Ctrl + T</strong>.<br/>
+                              &bull; Pop-up HUD appears in the bottom-right &rarr; click <strong>"Replace Code"</strong> for clean, indented Python 3 scripts.<br/>
+                              &bull; Press <strong>Ctrl + T</strong> again to regenerate if adjustments are needed.
+                            </div>
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  `;
+                })()}
 
                 <!-- CRITICAL SECURITY PROTOCOLS & ANTI-TAMPER POLICY -->
                 <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; padding: 16px; margin: 20px 0;">

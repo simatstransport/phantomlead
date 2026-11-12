@@ -98,6 +98,7 @@ export const processAndSendInvoice = async (params: ProcessAndSendInvoiceParams)
         toName: params.customerName,
         invoiceNumber,
         packageName: params.packageName,
+        packageCode: params.packageCode,
         amount: total,
         transactionRef: params.transactionRef,
         pdfBase64,

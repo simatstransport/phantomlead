@@ -19,6 +19,7 @@ import { CustomerPackages } from './pages/CustomerPackages';
 import { CustomerInstallation } from './pages/CustomerInstallation';
 import { CustomerLicenses } from './pages/CustomerLicenses';
 import { CustomerReviews } from './pages/CustomerReviews';
+import { PackageToolsUsageCard } from './components/PackageToolsUsageCard';
 import { OnboardingModal } from './components/OnboardingModal';
 import { PageTransitionLoader } from './components/PageTransitionLoader';
 import { MatrixBackground } from './components/MatrixBackground';
@@ -222,7 +223,7 @@ const useHasActiveLicense = (isAdmin: boolean) => {
 
         const { data: licenses, error } = await supabase
           .from('licenses')
-          .select('id, duration_months, payment_type, expires_at')
+          .select('id, duration_months, payment_type, expires_at, packages(package_name, package_code)')
           .eq('customer_id', customer.id)
           .eq('status', 'ACTIVE');
 
@@ -848,6 +849,14 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             </div>
           )}
         </div>
+
+        {/* Dynamic Plan-Specific Tools Usage Card for Active Students */}
+        {hasActiveLicense && licenseDetails?.packages && (
+          <PackageToolsUsageCard
+            packageCode={licenseDetails.packages.package_code}
+            packageName={licenseDetails.packages.package_name}
+          />
+        )}
       </div>
     </DashboardLayout>
   );

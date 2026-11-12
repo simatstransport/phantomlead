@@ -9,6 +9,7 @@ import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { FeedbackSummaryCard } from '../components/FeedbackSummaryCard';
+import { PackageToolsUsageCard } from '../components/PackageToolsUsageCard';
 import { downloadInstaller } from '../utils/download';
 import { generatePhantomInvoicePDF } from '../services/invoiceGenerator';
 
@@ -816,6 +817,12 @@ export const CustomerLicenses = () => {
                   )}
                 </div>
               </div>
+
+              {/* Dynamic Package Tools & Usage Instructions */}
+              <PackageToolsUsageCard
+                packageCode={activeLicense.packages?.package_code}
+                packageName={activeLicense.packages?.package_name}
+              />
             </div>
           );
         })()
