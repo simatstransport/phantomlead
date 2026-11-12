@@ -510,12 +510,12 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
         </nav>
 
         {/* User Footer / Logout */}
-        <div className="p-3.5 border-t border-white/10 bg-[#000000]">
+        <div className="p-3.5 border-t border-slate-800 bg-[#050811]">
           <button 
             onClick={() => supabase.auth.signOut()}
-            className="flex items-center w-full px-3.5 py-2.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-all group cursor-pointer"
+            className="flex items-center justify-center w-full px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 border border-rose-500/30 rounded-xl text-xs sm:text-sm font-semibold transition-all group cursor-pointer shadow-sm active:scale-95"
           >
-            <LogOut className="w-4 h-4 mr-3 text-rose-400 group-hover:-translate-x-0.5 transition-transform" /> 
+            <LogOut className="w-4 h-4 mr-2 text-rose-400 group-hover:-translate-x-0.5 transition-transform" /> 
             Sign Out
           </button>
         </div>
@@ -549,6 +549,16 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
               <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
                 <User className="w-4 h-4 text-emerald-400" />
               </div>
+
+              {/* 1-Click Top Navbar Sign Out Button */}
+              <button
+                onClick={() => supabase.auth.signOut()}
+                title="Sign Out"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-100 border border-rose-500/30 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95 ml-1"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                <span className="hidden md:inline">Sign Out</span>
+              </button>
             </div>
           </div>
         </header>
