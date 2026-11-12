@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Download, Copy, Check, Clock, Calendar, ShieldCheck, Laptop, 
-  AlertTriangle, Sparkles, BookOpen, Cpu, RefreshCw, HardDrive, 
+  AlertTriangle, Sparkles, Cpu, RefreshCw, HardDrive, 
   CheckCircle2, ArrowRight, Key, Loader2, FileText
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
@@ -515,14 +515,6 @@ export const CustomerLicenses = () => {
               <span>Browse Packages</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-
-            <Link
-              to="/dashboard/install"
-              className="inline-flex items-center gap-2 px-6 py-3.5 bg-black/60 hover:bg-white/[0.06] text-slate-200 hover:text-white rounded-xl font-medium text-sm transition-all border border-white/10"
-            >
-              <BookOpen className="w-4 h-4 text-emerald-400" />
-              <span>Installation Manual</span>
-            </Link>
           </div>
         </div>
       ) : (
@@ -761,14 +753,6 @@ export const CustomerLicenses = () => {
                         {editionLabel}
                       </span>
                     </button>
-
-                    <Link
-                      to="/dashboard/install"
-                      className="inline-flex items-center gap-2 px-5 py-3.5 glass-panel hover:bg-slate-800 text-slate-200 hover:text-white rounded-xl text-sm font-medium border border-white/10 transition-colors"
-                    >
-                      <BookOpen className="w-4 h-4 text-emerald-400" />
-                      <span>Installation Manual &amp; Shortcuts</span>
-                    </Link>
 
                     {/* Customer Invoice Download Action */}
                     <button
