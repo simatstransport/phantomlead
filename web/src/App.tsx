@@ -294,28 +294,55 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
 
       {/* Modern Cinematic Noir Sidebar */}
       <aside className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 z-50 w-64 bg-[#050505] border-r border-white/10 flex flex-col transition-transform duration-200 ease-out shadow-[10px_0_30px_rgba(0,0,0,0.8)]`}>
-        {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 bg-[#000000]">
-          <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8">
+        {/* Brand Header & Quick Top Sign Out */}
+        <div className="h-16 flex items-center justify-between px-4 sm:px-5 border-b border-white/10 bg-[#000000]">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 shrink-0">
               <img src="/logo.jpg" alt="Logo" className="w-full h-full rounded-lg border border-[#de1b1c]/80 shadow-[0_0_10px_rgba(222,27,28,0.5)] object-cover relative z-10" />
             </div>
             <div className="flex flex-col">
-              <span className="font-display uppercase text-lg tracking-wider text-white leading-none">
+              <span className="font-display uppercase text-base sm:text-lg tracking-wider text-white leading-none">
                 Phantom<span className="text-[#de1b1c]">Lead</span>
               </span>
-              <span className="text-[9px] font-cinematic tracking-[0.2em] uppercase text-[#de1b1c] font-bold mt-0.5">
+              <span className="text-[8px] sm:text-[9px] font-cinematic tracking-[0.2em] uppercase text-[#de1b1c] font-bold mt-0.5">
                 SCENE // SENTINEL
               </span>
             </div>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-[#8a8a8a] hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
+
+          <div className="flex items-center gap-1.5">
+            {/* Direct Top-Sidebar Quick Exit Button */}
+            <button 
+              onClick={() => supabase.auth.signOut()}
+              title="Sign Out Now"
+              className="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/25 text-rose-300 hover:text-rose-100 border border-rose-500/40 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm active:scale-95"
+            >
+              <LogOut className="w-3.5 h-3.5 text-rose-400" />
+              <span>Exit</span>
+            </button>
+            <button onClick={() => setSidebarOpen(false)} className="md:hidden text-[#8a8a8a] hover:text-white p-1">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Navigation Items */}
         <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
+          {/* Top Quick Action for Mobile / Fast Logout */}
+          <div className="pb-2 mb-2 border-b border-white/10">
+            <button 
+              onClick={() => supabase.auth.signOut()}
+              className="w-full flex items-center justify-between px-3.5 py-2 bg-gradient-to-r from-rose-500/15 to-red-600/10 hover:from-rose-500/25 hover:to-red-600/20 text-rose-300 hover:text-rose-100 border border-rose-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 group"
+            >
+              <span className="flex items-center gap-2">
+                <LogOut className="w-4 h-4 text-rose-400 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Sign Out Account</span>
+              </span>
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-rose-950/80 border border-rose-500/30 text-rose-300">
+                Exit
+              </span>
+            </button>
+          </div>
           {isAdmin ? (
             <>
               <div className="px-3 py-1.5 text-[11px] font-sans uppercase tracking-wider text-slate-400 font-bold">
