@@ -26,31 +26,62 @@ import { AnimatedGlow } from './components/AnimatedGlow';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThemeToggle } from './components/ThemeToggle';
 
-// Safe user login greeting dispatcher (deduplicated per browser session)
-const dispatchGreetingEmail = (email: string, fullName?: string) => {
-  if (!email) return;
-  const storageKey = `login_greeting_sent_${email}`;
-  if (sessionStorage.getItem(storageKey)) return;
+// Strict 1st-time only greeting dispatcher (permanently recorded across logins)
+const dispatchGreetingEmail = async (user: any) => {
+  if (!user || !user.email) return;
+
+  const email = user.email;
+  const storageKey = `login_welcome_email_sent_${email}`;
+
+  // 1. Instant check in localStorage across all browser sessions
+  try {
+    if (localStorage.getItem(storageKey)) {
+      return; // Already sent permanently, never send again!
+    }
+  } catch {
+    // Ignore storage issues
+  }
+
+  // 2. Check if user is newly created or existing user
+  // If user was created more than 2 minutes ago or has logged in previously, do not send!
+  if (user.created_at) {
+    const createdAtTime = new Date(user.created_at).getTime();
+    const nowTime = Date.now();
+    const ageInMinutes = (nowTime - createdAtTime) / (1000 * 60);
+
+    // If account was created more than 10 minutes ago, treat as returning user and permanently mark sent
+    if (ageInMinutes > 10) {
+      try {
+        localStorage.setItem(storageKey, 'true');
+      } catch {}
+      return;
+    }
+  }
+
+  // 3. Mark in localStorage BEFORE network request to guarantee no race condition / duplicates
+  try {
+    localStorage.setItem(storageKey, 'true');
+  } catch {}
 
   const apiUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
     ? '/api/send-invoice'
     : 'http://localhost:3001/api/send-invoice';
 
-  fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      toEmail: email,
-      toName: fullName || email.split('@')[0],
-      isWelcome: true,
-      timestamp: new Date().toISOString(),
-    }),
-  }).then(() => {
-    sessionStorage.setItem(storageKey, 'true');
-    console.log(`[Greeting Email Dispatched] to ${email}`);
-  }).catch(err => {
-    console.warn('[Greeting notice]:', err);
-  });
+  try {
+    await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        toEmail: email,
+        toName: user.user_metadata?.full_name || email.split('@')[0],
+        isWelcome: true,
+        timestamp: new Date().toISOString(),
+      }),
+    });
+    console.log(`[1st-Time Welcome Email Dispatched] to new user: ${email}`);
+  } catch (err) {
+    console.warn('[Welcome notice error]:', err);
+  }
 };
 
 const Login = () => {
@@ -1119,16 +1150,17 @@ function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       checkAdmin(session?.user?.id);
-      if (session?.user?.email) {
-        dispatchGreetingEmail(session.user.email, session.user.user_metadata?.full_name);
+      if (session?.user) {
+        dispatchGreetingEmail(session.user);
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       checkAdmin(session?.user?.id);
-      if (session?.user?.email) {
-        dispatchGreetingEmail(session.user.email, session.user.user_metadata?.full_name);
+      // Only dispatch greeting on SIGNED_IN event for brand-new users, never on TOKEN_REFRESHED or tab focus
+      if (event === 'SIGNED_IN' && session?.user) {
+        dispatchGreetingEmail(session.user);
       }
     });
 
