@@ -33,7 +33,7 @@ serve(async (req) => {
       .select('role')
       .eq('id', userData.user.id)
       .single()
-    if (profile?.role !== 'admin') throw new Error('Forbidden')
+    if (profile?.role !== 'admin' && profile?.role !== 'co_admin') throw new Error('Forbidden')
 
     const { action, package_id, package_data, pricing_matrix } = await req.json()
 

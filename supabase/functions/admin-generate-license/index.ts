@@ -36,7 +36,7 @@ serve(async (req) => {
       .select('role')
       .eq('id', userData.user.id)
       .single()
-    if (profile?.role !== 'admin') throw new Error('Forbidden')
+    if (profile?.role !== 'admin' && profile?.role !== 'co_admin') throw new Error('Forbidden')
 
     const { customer_email, package_code, duration_months } = await req.json()
     if (typeof customer_email !== 'string' || typeof package_code !== 'string') {

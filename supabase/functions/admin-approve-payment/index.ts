@@ -34,7 +34,7 @@ serve(async (req) => {
     if (!userData.user) throw new Error('Unauthorized')
 
     const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', userData.user.id).single()
-    if (!profile || profile.role !== 'admin') throw new Error('Forbidden')
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'co_admin')) throw new Error('Forbidden')
 
     if (action === 'REJECT') {
       await supabaseClient.from('payments').update({ status: 'REJECTED', reviewed_at: new Date(), reviewed_by: userData.user.id }).eq('id', payment_id)

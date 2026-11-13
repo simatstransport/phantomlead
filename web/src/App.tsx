@@ -1199,7 +1199,32 @@ function App() {
       return;
     }
     const { data } = await supabase.from('profiles').select('role').eq('id', userId).single();
-    setIsAdmin(data?.role === 'admin');
+    let isUserAdmin = data?.role === 'admin' || data?.role === 'co_admin';
+
+    // Also check co_admins registry in admin_settings by user ID or email
+    if (!isUserAdmin) {
+      try {
+        const { data: coSetting } = await supabase
+          .from('admin_settings')
+          .select('value')
+          .eq('key', 'co_admins')
+          .single();
+        if (coSetting && Array.isArray(coSetting.value)) {
+          const userObj = (await supabase.auth.getUser()).data.user;
+          const userEmail = userObj?.email?.toLowerCase();
+          const isCoAdmin = coSetting.value.some((c: any) => 
+            (c.id && c.id === userId) || (c.email && c.email.toLowerCase() === userEmail)
+          );
+          if (isCoAdmin) {
+            isUserAdmin = true;
+          }
+        }
+      } catch (err) {
+        console.warn('Error verifying co_admin registry:', err);
+      }
+    }
+
+    setIsAdmin(isUserAdmin);
     setLoading(false);
   };
 
