@@ -105,35 +105,50 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 relative z-10 py-12">
+    <div className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden bg-[#000000]">
+      {/* Full-bleed Cinematic Ambient Video Background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-45 scale-105"
+        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_063509_7d167302-4fd4-480b-8260-18ab572333d4.mp4"
+      />
+      
+      {/* Liquid Vignette & Grain */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/80 pointer-events-none z-[1]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.85)_100%)] pointer-events-none z-[1]" />
+
       <div className="absolute top-6 right-6 z-20">
         <ThemeToggle />
       </div>
-      <div className="w-full max-w-md relative overflow-hidden rounded-2xl bg-[#09090b]/90 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_30px_70px_rgba(0,0,0,0.9)] border border-white/10 before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-[#de1b1c] before:to-transparent cinema-corner-mark">
+
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl motionsites-glass p-8 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.95)] z-10 ms-animate-in">
         <div className="relative z-10">
           <div className="flex justify-center mb-6">
             <div className="relative w-20 h-20">
               <img 
                 src="/logo.jpg" 
                 alt="Logo" 
-                className="w-full h-full rounded-2xl border-2 border-[#de1b1c]/80 shadow-[0_0_30px_rgba(222,27,28,0.35)] object-cover relative z-10" 
+                className="w-full h-full rounded-2xl border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.2)] object-cover relative z-10" 
               />
-              <div className="absolute inset-[-4px] rounded-2xl border border-[#de1b1c]/30 z-0 animate-pulse" />
+              <div className="absolute inset-[-4px] rounded-2xl border border-emerald-500/40 z-0 animate-pulse" />
             </div>
           </div>
 
           <div className="text-center mb-7">
             <div className="flex items-center justify-center gap-2 mb-2.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-sans font-semibold tracking-wider uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-0.5 rounded-full inline-block">
-                SECURE EXAM SUITE
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-0.5 rounded-full inline-block">
+                SENTINEL SECURE RUNTIME
               </span>
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight text-white">
               Phantom<span className="text-emerald-400">Lead</span>
             </h2>
             <p className="text-slate-400 mt-1.5 text-xs font-sans leading-relaxed">
-              Safe Exam Browser Assistant • License Management
+              Safe Exam Browser Assistant • Hardware Verified Licensing
             </p>
           </div>
 
@@ -142,7 +157,7 @@ const Login = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={googleLoading}
-            className="w-full py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-900 rounded-xl font-sans font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-[0.98] shadow-lg disabled:opacity-60 group border border-slate-200"
+            className="w-full py-3.5 px-5 bg-white hover:bg-slate-100 text-slate-950 rounded-2xl font-bold text-sm flex items-center justify-center gap-3.5 transition-all cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(255,255,255,0.15)] disabled:opacity-60 group border border-slate-200"
           >
             <svg className="w-5 h-5 shrink-0 group-hover:scale-105 transition-transform" viewBox="0 0 24 24">
               <path
@@ -163,7 +178,7 @@ const Login = () => {
               />
             </svg>
             <span>
-              {googleLoading ? 'Signing in...' : 'Sign In with Google'}
+              {googleLoading ? 'Connecting...' : 'Sign In with Google'}
             </span>
           </button>
 
@@ -180,7 +195,7 @@ const Login = () => {
               <span>Safe Exam Browser 3.10.2 • 1 PC Device Lock</span>
             </div>
             <p className="text-[11px] text-slate-500">
-              Sign in with your Google account to access your licenses and downloads.
+              Encrypted credentials with instant cryptographic workstation binding.
             </p>
           </div>
         </div>
@@ -604,41 +619,56 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
 
   return (
     <DashboardLayout title="Dashboard" isAdmin={false} isActualAdmin={isActualAdmin}>
-      <div className="space-y-6 max-w-6xl mx-auto pb-8">
-        {/* Sleek, Professional Header Banner */}
-        <div className="rounded-xl bg-[#090d16] border border-slate-800 p-5 sm:p-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+      <div className="space-y-6 max-w-6xl mx-auto pb-8 ms-animate-in">
+        {/* Motionsites High-Impact Hero Banner */}
+        <div className="relative overflow-hidden rounded-3xl motionsites-glass p-6 sm:p-8 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
+          {/* Subtle Ambient Video Overlay (Tech Grid / Minimalist Cyber Core) */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover scale-110"
+              src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_063509_7d167302-4fd4-480b-8260-18ab572333d4.mp4"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#090d16] via-[#090d16]/90 to-transparent pointer-events-none" />
+
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+            <div className="space-y-2 max-w-2xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2 shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Safe Exam Browser Ready
+                  SEB v3.10.2 VERIFIED
                 </span>
-                <span className="text-[11px] text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-full font-mono">
-                  v3.10.2
+                <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/40 border border-cyan-500/30 px-3 py-1 rounded-full">
+                  1-PC HWID LOCKED
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Exam Assistant Dashboard
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                Candidate <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Exam Workstation</span>
               </h1>
-              <p className="text-xs text-slate-400 max-w-xl">
-                Manage your active license, download your secure workstation installer, and review hotkey shortcuts.
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+                Next-generation automated examination assistance with active memory safeguards, zero-trace execution, and live cryptographic authorization.
               </p>
             </div>
 
-            <div className="flex items-center gap-2.5 shrink-0">
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
               <Link 
                 to="/dashboard/packages" 
-                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+                className="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs sm:text-sm font-bold shadow-[0_4px_20px_rgba(16,185,129,0.3)] transition-all cursor-pointer active:scale-95 flex items-center gap-2"
               >
-                <Package className="w-3.5 h-3.5" />
-                <span>Buy Packages</span>
+                <Package className="w-4 h-4" />
+                <span>Browse Packages</span>
               </Link>
               <Link 
                 to="/dashboard/licenses" 
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-lg text-xs font-semibold border border-slate-800 transition-all flex items-center gap-1.5"
+                className="px-5 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs sm:text-sm font-semibold border border-white/15 transition-all flex items-center gap-2 backdrop-blur-md"
               >
-                <Key className="w-3.5 h-3.5 text-cyan-400" />
+                <Key className="w-4 h-4 text-cyan-400" />
                 <span>My License</span>
               </Link>
             </div>
@@ -648,70 +678,76 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         {/* Compact, Clean Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Card 1: License Status */}
-          <div className="rounded-xl bg-[#090d16] border border-slate-800 p-4 flex flex-col justify-between">
+          <div className="rounded-2xl motionsites-glass p-5 flex flex-col justify-between group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">License Status</span>
-              <Key className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">License Status</span>
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <Key className="w-4 h-4" />
+              </div>
             </div>
             <div className="my-3">
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-black text-white tracking-tight">
                 {checkingLicense ? 'Checking...' : hasActiveLicense ? `${activeLicenseCount} Active` : 'No License'}
               </div>
               <div className="text-xs text-slate-400 mt-1">
                 {checkingLicense ? 'Verifying status...' : hasActiveLicense ? (
-                  <span className="text-emerald-400 font-medium flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Bound to this account
+                  <span className="text-emerald-400 font-medium flex items-center gap-1.5 font-mono">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Bound &amp; Authorized
                   </span>
                 ) : 'Select a package to activate'}
               </div>
             </div>
-            <Link to="/dashboard/licenses" className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 pt-2 border-t border-slate-800/80">
+            <Link to="/dashboard/licenses" className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 pt-3 border-t border-white/10">
               <span>View license details</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
 
           {/* Card 2: Device Binding */}
-          <div className="rounded-xl bg-[#090d16] border border-slate-800 p-4 flex flex-col justify-between">
+          <div className="rounded-2xl motionsites-glass p-5 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Device Lock</span>
-              <Laptop className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Device Lock</span>
+              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                <Laptop className="w-4 h-4" />
+              </div>
             </div>
             <div className="my-3">
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-black text-white tracking-tight">
                 1 PC Device
               </div>
-              <div className="text-xs text-slate-400 mt-1">
-                {hasActiveLicense ? 'Registered to your computer' : 'Locks to your PC on install'}
+              <div className="text-xs text-slate-400 mt-1 font-mono">
+                {hasActiveLicense ? 'Bound to machine HWID' : 'Locks to PC on install'}
               </div>
             </div>
-            <div className="text-xs text-slate-500 pt-2 border-t border-slate-800/80">
-              Single-machine hardware binding
+            <div className="text-xs text-slate-500 pt-3 border-t border-white/10">
+              Motherboard &amp; CPU cryptographic guard
             </div>
           </div>
 
           {/* Card 3: SEB Compatibility */}
-          <div className="rounded-xl bg-[#090d16] border border-slate-800 p-4 flex flex-col justify-between">
+          <div className="rounded-2xl motionsites-glass p-5 flex flex-col justify-between group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Safe Exam Browser</span>
-              <ShieldCheck className="w-4 h-4 text-purple-400" />
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Safe Exam Browser</span>
+              <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
             </div>
             <div className="my-3">
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-black text-white tracking-tight">
                 SEB v3.10.2
               </div>
-              <div className="text-xs text-slate-400 mt-1">
-                Stealth overlay &amp; hotkey support
+              <div className="text-xs text-slate-400 mt-1 font-mono">
+                Stealth overlay &amp; hotkey triggers
               </div>
             </div>
             {hasActiveLicense ? (
-              <Link to="/dashboard/install" className="text-xs text-purple-400 hover:text-purple-300 font-medium flex items-center gap-1 pt-2 border-t border-slate-800/80">
+              <Link to="/dashboard/install" className="text-xs text-purple-400 hover:text-purple-300 font-medium flex items-center gap-1 pt-3 border-t border-white/10">
                 <span>View setup instructions</span>
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
               </Link>
             ) : (
-              <div className="text-xs text-slate-500 pt-2 border-t border-slate-800/80">
-                Manual unlocks after license activation
+              <div className="text-xs text-slate-500 pt-3 border-t border-white/10">
+                Manual unlocks after activation
               </div>
             )}
           </div>
@@ -726,7 +762,7 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
         )}
 
         {/* Clean, Compact Installer Download Section */}
-        <div className="rounded-xl bg-[#090d16] border border-slate-800 p-5 sm:p-6 space-y-4">
+        <div className="rounded-3xl motionsites-glass p-6 sm:p-7 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">

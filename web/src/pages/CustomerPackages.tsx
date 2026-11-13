@@ -403,20 +403,20 @@ export const CustomerPackages = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-16 px-3 sm:px-6">
+    <div className="max-w-6xl mx-auto space-y-8 pb-16 px-3 sm:px-6 ms-animate-in">
       {/* Header & Clean Stepper */}
-      <div className="relative rounded-2xl bg-slate-900/70 border border-white/10 p-5 sm:p-6 shadow-xl backdrop-blur-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="relative rounded-3xl motionsites-glass p-5 sm:p-7 border border-white/10 shadow-xl overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-medium">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-mono font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>Official Student License Portal</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
               <Package className="w-5 h-5 text-emerald-400 shrink-0" />
               Exam Assistant Packages
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-300">
               Select your required tool bundle, duration, and complete verification for instant license issuance.
             </p>
           </div>
@@ -424,12 +424,12 @@ export const CustomerPackages = () => {
           {/* Minimalist 3-Step Progress Indicator */}
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-mono">
             {/* Step 1 */}
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
               step === 1 
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold shadow-sm' 
+                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm' 
                 : step > 1
-                ? 'bg-slate-800/60 border-white/10 text-slate-300'
-                : 'bg-slate-900/60 border-white/5 text-slate-500'
+                ? 'bg-white/5 border-white/10 text-slate-300'
+                : 'bg-white/[0.02] border-white/5 text-slate-500'
             }`}>
               <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
                 step > 1 ? 'bg-emerald-500 text-slate-950 font-bold' : step === 1 ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
@@ -442,12 +442,12 @@ export const CustomerPackages = () => {
             <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
 
             {/* Step 2 */}
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
               step === 2 
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold shadow-sm' 
+                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm' 
                 : step > 2
-                ? 'bg-slate-800/60 border-white/10 text-slate-300'
-                : 'bg-slate-900/60 border-white/5 text-slate-500'
+                ? 'bg-white/5 border-white/10 text-slate-300'
+                : 'bg-white/[0.02] border-white/5 text-slate-500'
             }`}>
               <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
                 step > 2 ? 'bg-emerald-500 text-slate-950 font-bold' : step === 2 ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
@@ -460,10 +460,10 @@ export const CustomerPackages = () => {
             <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
 
             {/* Step 3 */}
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
               step === 3 
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-bold shadow-sm' 
-                : 'bg-slate-900/60 border-white/5 text-slate-500'
+                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm' 
+                : 'bg-white/[0.02] border-white/5 text-slate-500'
             }`}>
               <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
                 step === 3 ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-slate-800 text-slate-400'
@@ -506,18 +506,18 @@ export const CustomerPackages = () => {
               return (
                 <div 
                   key={pkg.id} 
-                  className={`rounded-2xl flex flex-col justify-between transition-all duration-200 relative overflow-hidden backdrop-blur-xl ${
+                  className={`rounded-3xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden motionsites-glass ${
                     isFeatured
-                      ? 'bg-slate-900/90 border-2 border-emerald-500/60 shadow-[0_0_35px_rgba(16,185,129,0.12)]'
-                      : 'bg-slate-900/60 border border-white/10 hover:border-slate-700 hover:bg-slate-900/80 shadow-lg'
+                      ? 'border-2 border-emerald-500/70 shadow-[0_0_40px_rgba(16,185,129,0.18)]'
+                      : 'border border-white/10 hover:border-white/20'
                   }`}
                 >
                   {/* Top Badge Ribbon */}
                   {guide.badge && (
-                    <div className={`py-1.5 px-4 text-center border-b ${
+                    <div className={`py-2 px-4 text-center border-b ${
                       isFeatured 
-                        ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300 font-semibold' 
-                        : 'bg-slate-950/60 border-white/5 text-slate-400'
+                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-bold' 
+                        : 'bg-black/40 border-white/5 text-slate-400'
                     }`}>
                       <span className="text-[11px] font-mono tracking-wider uppercase flex items-center justify-center gap-1.5">
                         {isFeatured && <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
@@ -526,7 +526,7 @@ export const CustomerPackages = () => {
                     </div>
                   )}
 
-                  <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-6">
                     <div className="space-y-4">
                       {/* Package Name & Code */}
                       <div>
