@@ -777,13 +777,24 @@ class InstallerApp(tk.Tk):
         self.minsize(740, 620)
         self.configure(padx=24, pady=18, bg="#060807")
 
-        # Set Application & Window Icon
+        # Set Application & Window Icon per Edition (L, T, A)
         try:
             bundle_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-            icon_ico = os.path.join(bundle_dir, "app_icon.ico")
+            icon_map = {
+                "LIFETIME": ("icon_lifetime.ico", "logo_lifetime.png"),
+                "TIMEBOMB": ("icon_timebomb.ico", "logo_timebomb.png"),
+                "ADMIN_CONTROLLED": ("icon_admin.ico", "logo_admin.png"),
+            }
+            ico_file, png_file = icon_map.get(self.mode, ("icon_lifetime.ico", "logo_lifetime.png"))
+            icon_ico = os.path.join(bundle_dir, ico_file)
+            if not os.path.exists(icon_ico):
+                icon_ico = os.path.join(bundle_dir, "app_icon.ico")
             if os.path.exists(icon_ico):
                 self.iconbitmap(default=icon_ico)
-            icon_png = os.path.join(bundle_dir, "app_logo.png")
+
+            icon_png = os.path.join(bundle_dir, png_file)
+            if not os.path.exists(icon_png):
+                icon_png = os.path.join(bundle_dir, "app_logo.png")
             if os.path.exists(icon_png):
                 self._app_icon_photo = tk.PhotoImage(file=icon_png)
                 self.iconphoto(False, self._app_icon_photo)

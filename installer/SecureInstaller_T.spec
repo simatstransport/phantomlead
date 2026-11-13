@@ -5,7 +5,7 @@ a = Analysis(
     ['C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/entry_timebomb.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/app_icon.ico', '.'), ('C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/app_logo.png', '.')],
+    datas=[('C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/icon_timebomb.ico', '.'), ('C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/logo_timebomb.png', '.')],
     hiddenimports=['wmi', 'requests', 'colorama', 'hashlib', 'winreg', 'tkinter', 'win32file', 'win32con', 'win32clipboard', 'win32gui', 'win32process'],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/app_icon.ico'],
+    icon=['C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/icon_timebomb.ico'],
 )

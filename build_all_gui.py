@@ -3,9 +3,9 @@ import os
 import shutil
 
 TARGETS = [
-    ("entry_timebomb.py", "SecureInstaller_T"),
-    ("entry_admin_ctrl.py", "SecureInstaller_A"),
-    ("entry_lifetime.py", "SecureInstaller_L"),
+    ("entry_timebomb.py", "SecureInstaller_T", "icon_timebomb.ico", "logo_timebomb.png"),
+    ("entry_admin_ctrl.py", "SecureInstaller_A", "icon_admin.ico", "logo_admin.png"),
+    ("entry_lifetime.py", "SecureInstaller_L", "icon_lifetime.ico", "logo_lifetime.png"),
 ]
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,10 +16,13 @@ VENV_PYINSTALLER = PYINSTALLER_313 if os.path.exists(PYINSTALLER_313) else os.pa
 
 os.makedirs(ROOT_DIST, exist_ok=True)
 
-for script, exe_name in TARGETS:
+for script, exe_name, ico_file, png_file in TARGETS:
     print(f"\n==========================================")
-    print(f"Building {exe_name}.exe from {script}...")
+    print(f"Building {exe_name}.exe from {script} with {ico_file}...")
     print(f"==========================================")
+
+    ico_path = os.path.join(INSTALLER_DIR, ico_file)
+    png_path = os.path.join(INSTALLER_DIR, png_file)
     
     cmd = [
         VENV_PYINSTALLER,
@@ -37,9 +40,9 @@ for script, exe_name in TARGETS:
         "--hidden-import", "win32clipboard",
         "--hidden-import", "win32gui",
         "--hidden-import", "win32process",
-        "--icon", os.path.join(INSTALLER_DIR, "app_icon.ico"),
-        "--add-data", f"{os.path.join(INSTALLER_DIR, 'app_icon.ico')};.",
-        "--add-data", f"{os.path.join(INSTALLER_DIR, 'app_logo.png')};.",
+        "--icon", ico_path,
+        "--add-data", f"{ico_path};.",
+        "--add-data", f"{png_path};.",
         "--distpath", ROOT_DIST,
         "--workpath", os.path.join(INSTALLER_DIR, "build"),
         "--specpath", INSTALLER_DIR,
