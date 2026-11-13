@@ -776,6 +776,19 @@ class InstallerApp(tk.Tk):
         self.geometry("760x650")
         self.minsize(740, 620)
         self.configure(padx=24, pady=18, bg="#060807")
+
+        # Set Application & Window Icon
+        try:
+            bundle_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+            icon_ico = os.path.join(bundle_dir, "app_icon.ico")
+            if os.path.exists(icon_ico):
+                self.iconbitmap(default=icon_ico)
+            icon_png = os.path.join(bundle_dir, "app_logo.png")
+            if os.path.exists(icon_png):
+                self._app_icon_photo = tk.PhotoImage(file=icon_png)
+                self.iconphoto(False, self._app_icon_photo)
+        except Exception:
+            pass
         
         # Monkey-patch print to log window
         self._original_print = builtins.print

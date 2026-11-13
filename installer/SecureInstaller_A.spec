@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['c:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/entry_admin_ctrl.py'],
+    ['C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/entry_admin_ctrl.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/app_icon.ico', '.'), ('C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/app_logo.png', '.')],
     hiddenimports=['wmi', 'requests', 'colorama', 'hashlib', 'winreg', 'tkinter', 'win32file', 'win32con', 'win32clipboard', 'win32gui', 'win32process'],
     hookspath=[],
     hooksconfig={},
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['C:/Users/Admin/Documents/phantomlead/secure-license-platform/installer/app_icon.ico'],
 )
