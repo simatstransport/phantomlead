@@ -1,22 +1,69 @@
 [
   {
     "package_code": "FULL_ACCESS",
+    "version": "2.2.0",
+    "alt_version": "2.3.0",
+    "extensions": [
+      "lms_mcq",
+      "reasoning_mcq",
+      "viva_paragraph",
+      "java_coding",
+      "python_coding",
+      "c_coding",
+      "skill_assess"
+    ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\FULL_ACCESS_version-2.2.0.zip",
-    "sha256": "02f7be60642618e1428978dd73664e840ceacb861e37bf67f5a16dc19a2b0c63"
+    "alt_zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\FULL_ACCESS_version-2.3.0.zip",
+    "sha256": "f856d38a25461808e4492b733c6d0092cb9a398c69bb2b7f4cb99310406642b5"
   },
   {
     "package_code": "PYTHON_C",
+    "version": "2.0.0",
+    "alt_version": null,
+    "extensions": [
+      "python_coding",
+      "c_coding"
+    ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\PYTHON_C_version-2.0.0.zip",
-    "sha256": "246e57c5ec655c86db0aee2d08186a71dc3b7a5ab9cb9f1de14c1ff671c136ad"
+    "alt_zip_path": null,
+    "sha256": "54fae4a3d80cce80fa8d8ab6b2a6ba08a29411b12cab6dcfb73f377fb0aec945"
   },
   {
     "package_code": "JAVA_VIVA",
+    "version": "2.0.0",
+    "alt_version": null,
+    "extensions": [
+      "viva_paragraph",
+      "java_coding"
+    ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\JAVA_VIVA_version-2.0.0.zip",
-    "sha256": "ca49a39de496b52c70c9ee24948f9b39cf2e62e9a0b37e66e4143a8bd440c0e3"
+    "alt_zip_path": null,
+    "sha256": "686bf09a946f4b45f879cb4dd4d958c1c0f7290f92799053b8068905fcb0d69a"
+  },
+  {
+    "package_code": "JAVA_QA",
+    "version": "1.0.0",
+    "alt_version": "1.1.0",
+    "extensions": [
+      "java_coding",
+      "viva_paragraph",
+      "lms_mcq",
+      "skill_assess"
+    ],
+    "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\JAVA_QA_version-1.0.0.zip",
+    "alt_zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\JAVA_QA_version-1.1.0.zip",
+    "sha256": "f2b355e323106e74f8cb9ddb9a6429ede2b558b5786077e66e6363be61474b39"
   },
   {
     "package_code": "QA_PLACEMENT",
+    "version": "2.2.0",
+    "alt_version": null,
+    "extensions": [
+      "lms_mcq",
+      "reasoning_mcq"
+    ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\QA_PLACEMENT_version-2.2.0.zip",
-    "sha256": "72c24e7397ea44a4548743fbd808ab085e0b60d6c15ee8405748e7865ceeaf9c"
+    "alt_zip_path": null,
+    "sha256": "54221e93f10495a5568ed63104a5a6d1d2fdbd168678296d9f6c7fa3b67038e8"
   }
 ]

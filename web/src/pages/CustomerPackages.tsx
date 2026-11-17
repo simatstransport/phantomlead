@@ -23,15 +23,15 @@ import {
 
 const packageGuides: Record<string, { purpose: string; badge: string; includes: string[]; highlight?: boolean }> = {
   FULL_ACCESS: {
-    purpose: 'Complete all-in-one assistant bundle with all 6 tools for MCQs, reasoning, viva, and multi-language programming.',
+    purpose: 'Complete all-in-one assistant bundle with all 7 tools for MCQs, reasoning, multi-question skill assessments, viva, and multi-language programming.',
     badge: 'Most Popular • All-in-One Suite',
-    includes: ['LMS MCQ Helper', 'LMS Reasoning MCQ Helper', 'Viva Paragraph Explainer', 'Java Coding Helper', 'Python 3 Coding Helper', 'C Coding Helper'],
+    includes: ['LMS MCQ Helper', 'LMS Reasoning MCQ Helper', 'LMS Skill Assess Helper', 'Viva Paragraph Explainer', 'Java Coding Helper', 'Python 3 Coding Helper', 'C Coding Helper'],
     highlight: true
   },
   JAVA_QA: {
-    purpose: 'Specialized bundle combining Java programming, oral viva answers, and automated LMS multiple-choice helpers.',
+    purpose: 'Specialized bundle combining Java programming, oral viva answers, LMS multiple-choice helpers, and multi-question skill assessments.',
     badge: 'Recommended for Java & Aptitude',
-    includes: ['Java Coding Helper', 'Viva Paragraph Explainer', 'LMS MCQ Helper'],
+    includes: ['Java Coding Helper', 'Viva Paragraph Explainer', 'LMS MCQ Helper', 'LMS Skill Assess Helper'],
     highlight: false
   },
   QA_PLACEMENT: {

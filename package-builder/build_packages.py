@@ -10,8 +10,9 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "dist_packages")
 
 PACKAGES = {
     "FULL_ACCESS": {
-        "extensions": ["lms_mcq", "reasoning_mcq", "viva_paragraph", "java_coding", "python_coding", "c_coding"],
-        "version": "2.2.0"
+        "extensions": ["lms_mcq", "reasoning_mcq", "viva_paragraph", "java_coding", "python_coding", "c_coding", "skill_assess"],
+        "version": "2.2.0",
+        "alt_version": "2.3.0"
     },
     "PYTHON_C": {
         "extensions": ["python_coding", "c_coding"],
@@ -22,8 +23,9 @@ PACKAGES = {
         "version": "2.0.0"
     },
     "JAVA_QA": {
-        "extensions": ["java_coding", "viva_paragraph", "lms_mcq"],
-        "version": "1.0.0"
+        "extensions": ["java_coding", "viva_paragraph", "lms_mcq", "skill_assess"],
+        "version": "1.0.0",
+        "alt_version": "1.1.0"
     },
     "QA_PLACEMENT": {
         "extensions": ["lms_mcq", "reasoning_mcq"],
@@ -36,7 +38,7 @@ APP_FOLDER = "Application"
 EXTENSIONS_DIR = os.path.join(APP_FOLDER, "Extensions")
 
 def build_package(package_code, config):
-    print(f"Building {package_code}...")
+    print(f"Building {package_code} with extensions: {', '.join(config['extensions'])}...")
     staging_dir = os.path.join(BASE_DIR, "staging", package_code)
     
     if os.path.exists(staging_dir):
@@ -53,12 +55,11 @@ def build_package(package_code, config):
             print(f"  Warning: Source folder not found: {src}")
             os.makedirs(dst)
 
-    # 2. Copy Application folder (excluding extensions initially or manually handling)
+    # 2. Copy Application folder (excluding extensions initially)
     app_src = os.path.join(SOURCE_BASE, APP_FOLDER)
     app_dst = os.path.join(staging_dir, APP_FOLDER)
     
     if os.path.exists(app_src):
-        # We need to copy Application but only the requested extensions
         shutil.copytree(app_src, app_dst, ignore=shutil.ignore_patterns('Extensions'))
     else:
         print(f"  Warning: Source folder not found: {app_src}")
@@ -74,9 +75,9 @@ def build_package(package_code, config):
         ext_dst = os.path.join(ext_dst_base, ext)
         if os.path.exists(ext_src):
             shutil.copytree(ext_src, ext_dst)
+            print(f"  + Included extension: {ext}")
         else:
             print(f"  Warning: Extension source not found: {ext_src}")
-            # Mock it for building purposes if not exists
             os.makedirs(ext_dst)
             with open(os.path.join(ext_dst, "background.js"), "w") as f:
                 f.write('const DEFAULT_API_KEY = "OLD_KEY";\nconsole.log("Mock");\n')
@@ -91,7 +92,6 @@ def build_package(package_code, config):
             for file in files:
                 file_path = os.path.join(root, file)
                 arcname = os.path.relpath(file_path, staging_dir)
-                # Ensure zip paths use forward slashes for cross-platform compatibility
                 arcname = arcname.replace('\\', '/')
                 zipf.write(file_path, arcname)
                 
@@ -100,12 +100,24 @@ def build_package(package_code, config):
     print(f"  Built: {zip_path}")
     print(f"  SHA-256: {sha256}")
     
+    # 6. Also create alternate version copy if defined
+    alt_zip_path = None
+    if "alt_version" in config:
+        alt_zip_name = f"{package_code}_version-{config['alt_version']}.zip"
+        alt_zip_path = os.path.join(OUTPUT_DIR, alt_zip_name)
+        shutil.copy2(zip_path, alt_zip_path)
+        print(f"  Also copied to: {alt_zip_path}")
+
     # Clean staging
     shutil.rmtree(staging_dir)
 
     return {
         "package_code": package_code,
+        "version": config["version"],
+        "alt_version": config.get("alt_version"),
+        "extensions": config["extensions"],
         "zip_path": zip_path,
+        "alt_zip_path": alt_zip_path,
         "sha256": sha256
     }
 
@@ -117,15 +129,16 @@ def calculate_sha256(file_path):
     return sha256_hash.hexdigest()
 
 def main():
-    print("Starting package builder...")
+    print("Starting package builder with skill_assess and updated extensions...")
     results = []
     for package_code, config in PACKAGES.items():
         res = build_package(package_code, config)
         results.append(res)
     
-    with open(os.path.join(BASE_DIR, "package_info.json"), "w") as f:
+    info_path = os.path.join(BASE_DIR, "package_info.json")
+    with open(info_path, "w") as f:
         json.dump(results, f, indent=2)
-    print("Done. See package_info.json for hashes.")
+    print(f"\nAll packages built successfully. Manifest written to {info_path}")
 
 if __name__ == "__main__":
     main()
