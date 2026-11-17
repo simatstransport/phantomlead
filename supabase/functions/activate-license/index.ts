@@ -42,47 +42,68 @@ serve(async (req) => {
       return new Response(JSON.stringify({ activated: false, error: 'License has expired.' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 })
     }
 
-    if (licenseData.device_id) {
-       // Already bound to a device, check if it's the same device or wiped
-       const { data: deviceData } = await supabaseClient
-         .from('devices')
-         .select('fingerprint, hostname')
-         .eq('id', licenseData.device_id)
-         .single()
-         
-       const isSameDevice = (deviceData && (deviceData.fingerprint === fingerprint || (deviceData.hostname && device_info?.hostname && deviceData.hostname === device_info.hostname))) || !!licenseData.uninstalled_at;
+    // Resolve or register the device by its unique hardware fingerprint
+    let deviceId: string;
+    const { data: existingDevice } = await supabaseClient
+      .from('devices')
+      .select('id, customer_id, fingerprint, hostname')
+      .eq('fingerprint', fingerprint)
+      .maybeSingle()
 
-       if (!isSameDevice) {
-         return new Response(JSON.stringify({ activated: false, error: 'License already bound to another device' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 })
-       }
-       
-       // Update fingerprint and reset uninstalled_at
-       await supabaseClient.from('devices').update({ fingerprint: fingerprint, last_active_at: new Date().toISOString() }).eq('id', licenseData.device_id)
-       if (licenseData.uninstalled_at) {
-         await supabaseClient.from('licenses').update({ uninstalled_at: null }).eq('id', licenseData.id)
-       }
+    if (existingDevice) {
+      deviceId = existingDevice.id;
+      // Refresh hardware metadata & touch last_active_at
+      await supabaseClient
+        .from('devices')
+        .update({
+          customer_id: licenseData.customer_id,
+          hostname: device_info?.hostname || existingDevice.hostname,
+          os_info: device_info?.os_info,
+          last_active_at: new Date().toISOString()
+        })
+        .eq('id', deviceId);
+    } else {
+      // Register new device row
+      const { data: newDevice, error: devError } = await supabaseClient
+        .from('devices')
+        .insert({
+          customer_id: licenseData.customer_id,
+          fingerprint: fingerprint,
+          hostname: device_info?.hostname,
+          os_info: device_info?.os_info,
+          last_active_at: new Date().toISOString()
+        })
+        .select('id')
+        .single()
 
-       return new Response(JSON.stringify({ activated: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 })
+      if (devError) throw devError
+      deviceId = newDevice.id;
     }
 
-    // Register new device
-    const { data: newDevice, error: devError } = await supabaseClient
-      .from('devices')
-      .insert({
-        customer_id: licenseData.customer_id,
-        fingerprint: fingerprint,
-        hostname: device_info?.hostname,
-        os_info: device_info?.os_info
-      })
-      .select('id')
-      .single()
+    // Verify 1-PC device binding lock
+    if (licenseData.device_id && licenseData.device_id !== deviceId) {
+      const { data: boundDevice } = await supabaseClient
+        .from('devices')
+        .select('fingerprint, hostname')
+        .eq('id', licenseData.device_id)
+        .maybeSingle()
 
-    if (devError) throw devError
+      const isSameHost = boundDevice && device_info?.hostname && boundDevice.hostname === device_info.hostname;
+      const isAllowedRebind = !!licenseData.uninstalled_at || isSameHost;
 
-    // Bind device to license and clear uninstalled_at
-    const updatePayload: Record<string, any> = { device_id: newDevice.id, uninstalled_at: null };
-    // If this is a 10-minute demo trial (-10), trigger the exact 10-minute countdown right from the moment of activation!
-    if (licenseData.duration_months === -10) {
+      if (!isAllowedRebind) {
+        return new Response(
+          JSON.stringify({ activated: false, error: 'License already bound to another device' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        );
+      }
+    }
+
+    // Bind device to license and clear uninstalled_at flag
+    const updatePayload: Record<string, any> = { device_id: deviceId, uninstalled_at: null };
+
+    // If 10-minute demo trial (-10), trigger 10-minute countdown on first activation
+    if (licenseData.duration_months === -10 && !licenseData.expires_at) {
       updatePayload.expires_at = new Date(Date.now() + 10 * 60 * 1000).toISOString();
     }
 

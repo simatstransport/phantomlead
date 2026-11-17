@@ -66,7 +66,7 @@ export const generateManualInstallationPDF = (customerName?: string): jsPDF => {
       { content: 'STEP 3: EXECUTE & HARDWARE BINDING (1-PC LOCK)\n• Double-click SecureInstaller.exe.\n• When prompted, copy and paste your Cryptographic License Key from your dashboard.\n• The installer registers your machine HWID. Your license is bound strictly to 1 PC.', styles: { textColor: [240, 245, 255] as [number, number, number] } }
     ],
     [
-      { content: 'STEP 4: OPERATIONAL KEYBOARD SHORTCUTS IN EXAM\n• Toggle Overlay / Helper: Ctrl + Shift + P (or custom hotkey)\n• Quick Hide / Panic Button: Esc or F9 (Instantly minimizes to tray background)\n• Telemetry Status: Automatically synced with Sentinel cloud.', styles: { textColor: [0, 255, 255] as [number, number, number], fontStyle: 'bold' as const } }
+      { content: 'STEP 4: OPERATIONAL KEYBOARD SHORTCUTS IN EXAM\n• LMS Skill Assess: Ctrl + U (Auto-solves all 10-20 questions on single page)\n• LMS MCQ Helper: Ctrl + J (or F8) | Reasoning MCQ: Ctrl + I\n• Java Coding: Ctrl + K (or F10) | Python: Ctrl + T | C Coding: Ctrl + Y\n• Viva Paragraph Explainer: Ctrl + L | Panic Minimize: Esc or F9', styles: { textColor: [0, 255, 255] as [number, number, number], fontStyle: 'bold' as const } }
     ],
     [
       { content: 'STEP 5: AUTOMATED UNINSTALL & CLEAN WIPE\n• After examination, navigate to Admin/User dashboard to trigger Remote Wipe.\n• Alternatively, running the uninstaller cleans all local registry entries and temp files.', styles: { textColor: [200, 215, 235] as [number, number, number] } }

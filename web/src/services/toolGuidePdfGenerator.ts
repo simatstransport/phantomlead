@@ -175,7 +175,7 @@ function drawExamProtocolBox(doc: jsPDF, y: number, pageWidth: number) {
   doc.setFillColor(254, 242, 242); // Soft red/amber alert box
   doc.setDrawColor(239, 68, 68);
   doc.setLineWidth(0.4);
-  doc.roundedRect(16, y, pageWidth - 32, 24, 2, 2, 'FD');
+  doc.roundedRect(16, y, pageWidth - 32, 28, 2, 2, 'FD');
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
@@ -187,5 +187,6 @@ function drawExamProtocolBox(doc: jsPDF, y: number, pageWidth: number) {
   doc.setTextColor(69, 10, 10);
   doc.text('1. Cursor Position: Place your mouse cursor inside the question prompt (NOT in the sandbox editor) before hotkey.', 20, y + 11);
   doc.text('2. MCQ Continuous Run: Press Ctrl+J once at start; click Next without re-pressing hotkeys across quiz.', 20, y + 16);
-  doc.text('3. Panic Minimize: Press Esc or F9 at any time to instantly hide assistant overlays into background system tray.', 20, y + 21);
+  doc.text('3. Skill Assessment Batch Solver: Press Ctrl+U once on any multi-question page to solve all 10-20 questions at once.', 20, y + 21);
+  doc.text('4. Panic Minimize: Press Esc or F9 at any time to instantly hide assistant overlays into background system tray.', 20, y + 26);
 }

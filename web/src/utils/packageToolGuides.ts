@@ -32,6 +32,24 @@ export const ALL_TOOLS: Record<string, ToolGuide> = {
     ],
     tips: 'Continuous Mode: Press Ctrl + J once at the start of the quiz section and navigate smoothly.'
   },
+  skill_assess: {
+    id: 'skill_assess',
+    name: 'LMS Skill Assess Helper',
+    icon: '⚡',
+    badge: 'Multi-Question Assessment Solver',
+    shortcut: 'Ctrl + U',
+    colorBorder: 'border-amber-500/40',
+    colorBg: 'bg-amber-500/10',
+    colorText: 'text-amber-400',
+    instructionTitle: 'How to use LMS Skill Assess Helper (Ctrl + U):',
+    instructions: [
+      'Open your multi-question skill assessment or comprehensive exam test page in Safe Exam Browser.',
+      'Press Ctrl + U once anywhere on the test page.',
+      'The AI engine reads all questions displayed on the screen simultaneously and automatically analyzes and selects the verified correct options.',
+      'Works seamlessly for single-page tests containing 10, 20, or more questions at once.'
+    ],
+    tips: 'One-Click Batch Solve: Press Ctrl + U on any skill assessment test page to auto-solve and select all options across the entire questionnaire.'
+  },
   reasoning: {
     id: 'reasoning',
     name: 'LMS Reasoning MCQ Helper',
@@ -128,10 +146,10 @@ export const getToolsForPackage = (packageCode?: string | null): ToolGuide[] => 
   const code = (packageCode || '').toUpperCase();
 
   if (code.includes('FULL') || code === 'FULL_ACCESS') {
-    return [ALL_TOOLS.mcq, ALL_TOOLS.reasoning, ALL_TOOLS.java, ALL_TOOLS.viva, ALL_TOOLS.c_code, ALL_TOOLS.python];
+    return [ALL_TOOLS.mcq, ALL_TOOLS.skill_assess, ALL_TOOLS.reasoning, ALL_TOOLS.java, ALL_TOOLS.viva, ALL_TOOLS.c_code, ALL_TOOLS.python];
   }
   if (code.includes('JAVA_QA') || (code.includes('JAVA') && code.includes('QA'))) {
-    return [ALL_TOOLS.java, ALL_TOOLS.viva, ALL_TOOLS.mcq];
+    return [ALL_TOOLS.java, ALL_TOOLS.viva, ALL_TOOLS.mcq, ALL_TOOLS.skill_assess];
   }
   if (code.includes('QA') || code.includes('PLACEMENT')) {
     return [ALL_TOOLS.mcq, ALL_TOOLS.reasoning];

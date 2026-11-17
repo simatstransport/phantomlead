@@ -9,6 +9,7 @@ import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { FeedbackSummaryCard } from '../components/FeedbackSummaryCard';
+import { PackageToolsUsageCard } from '../components/PackageToolsUsageCard';
 import { downloadInstaller } from '../utils/download';
 import { generatePhantomInvoicePDF } from '../services/invoiceGenerator';
 
@@ -803,6 +804,15 @@ export const CustomerLicenses = () => {
             </div>
           );
         })()
+      )}
+
+      {/* Package-Specific Assistant Tools & Hotkeys Manual Deck */}
+      {activeLicense && (
+        <PackageToolsUsageCard
+          packageCode={activeLicense.packages?.package_code}
+          packageName={activeLicense.packages?.package_name}
+          customerName={activeLicense.customers?.full_name}
+        />
       )}
 
       {/* Customer Feedback & Star Rating Showcase Box */}

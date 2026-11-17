@@ -16,9 +16,11 @@ import {
   Terminal,
   ShieldCheck,
   Zap,
-  Lock
+  Lock,
+  FileText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { generateManualInstallationPDF } from '../services/manualGenerator';
 
 export const CustomerInstallation = () => {
   const [lang, setLang] = useState<'default' | 'tanglish'>('default');
@@ -98,7 +100,21 @@ export const CustomerInstallation = () => {
             </div>
           </div>
 
-          <div className="inline-flex p-1.5 rounded-xl bg-slate-900/90 border border-white/10 shrink-0 gap-1.5 shadow-inner">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                const pdf = generateManualInstallationPDF();
+                pdf.save('PhantomLead-Setup-Manual.pdf');
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-mono font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+              title="Download PDF Installation & Protocol Manual"
+            >
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Download Manual (PDF)</span>
+            </button>
+
+            <div className="inline-flex p-1.5 rounded-xl bg-slate-900/90 border border-white/10 shrink-0 gap-1.5 shadow-inner">
             <button
               type="button"
               onClick={() => setLang('default')}
@@ -126,8 +142,9 @@ export const CustomerInstallation = () => {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Quick Jump Bar with Distinct Colors */}
+      {/* Quick Jump Bar with Distinct Colors */}
         <div className="mt-8 pt-5 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
           <span className="text-slate-400 font-mono text-[11px] uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1.5 font-bold">
             <Command className="w-3.5 h-3.5 text-emerald-400" /> Jump To:
@@ -647,6 +664,31 @@ export const CustomerInstallation = () => {
               </div>
               <p className="text-xs text-slate-400">
                 Logical, analytical, and visual reasoning questions with diagram extraction and radio option solver.
+              </p>
+            </div>
+
+            {/* LMS Skill Assess Helper */}
+            <div className="p-4 rounded-2xl bg-black/60 border border-amber-500/30 hover:border-amber-400/60 transition-all space-y-3 group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 text-base">
+                    ⚡
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
+                      LMS Skill Assess Helper
+                    </h4>
+                    <span className="text-[10px] font-mono text-slate-400">module: skill_assess</span>
+                  </div>
+                </div>
+                <kbd className="px-3 py-1 rounded-xl bg-amber-950/80 border border-amber-500/60 text-amber-300 font-mono text-xs font-bold shadow-[0_0_15px_rgba(245,158,11,0.35)]">
+                  Ctrl + U
+                </kbd>
+              </div>
+              <p className="text-xs text-slate-400">
+                {lang === 'tanglish'
+                  ? 'Orey page-la 10-20 questions irukura Skill Assessment test-ku Ctrl + U press pannunga. Full test page-ah scan panni ellathukum correct options auto-select aagidum.'
+                  : 'Automated multi-question skill assessment solver. Press Ctrl + U to scan all 10-20 questions on the page and auto-select verified correct options.'}
               </p>
             </div>
 

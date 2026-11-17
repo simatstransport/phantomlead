@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, HelpCircle, Laptop, Zap, BookOpen 
+  Sparkles, HelpCircle, Laptop, Zap, BookOpen, FileText 
 } from 'lucide-react';
 import { getToolsForPackage, ToolGuide } from '../utils/packageToolGuides';
+import { generateToolUsageGuidePDF } from '../services/toolGuidePdfGenerator';
 
 interface PackageToolsUsageCardProps {
   packageCode?: string | null;
   packageName?: string | null;
+  customerName?: string | null;
 }
 
 export const PackageToolsUsageCard: React.FC<PackageToolsUsageCardProps> = ({
   packageCode,
   packageName,
+  customerName,
 }) => {
   const tools: ToolGuide[] = getToolsForPackage(packageCode);
   const [activeToolId, setActiveToolId] = useState<string>(tools[0]?.id || 'java');
@@ -44,7 +47,24 @@ export const PackageToolsUsageCard: React.FC<PackageToolsUsageCardProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              const pdf = generateToolUsageGuidePDF(
+                customerName || 'Valued Client',
+                packageName || 'PhantomLead Security Package',
+                packageCode || 'ENTITLEMENT'
+              );
+              pdf.save(`PhantomLead-Tool-Manual-${packageCode || 'PACKAGE'}.pdf`);
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-mono font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Download printable PDF operational guide"
+          >
+            <FileText className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Download Tool Guide PDF</span>
+          </button>
+
           <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5" />
             {tools.length} Assistant{tools.length > 1 ? 's' : ''} Enabled

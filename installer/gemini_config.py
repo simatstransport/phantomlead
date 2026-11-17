@@ -104,7 +104,7 @@ def _replace_api_key(file_path, new_key):
         content = f.read()
 
     # 2. Find and replace declaration safely
-    pattern = r'(const\s+DEFAULT_API_KEY\s*=\s*["\']).*?(["\']\s*;)'
+    pattern = r'(const\s+(?:DEFAULT_API_KEY|DEFAULT_GEMINI_API_KEY|[A-Z0-9_]*API_KEY)\s*=\s*["\']).*?(["\']\s*;)'
     
     if not re.search(pattern, content):
         return False # Pattern not found
