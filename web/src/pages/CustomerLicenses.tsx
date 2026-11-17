@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Download, Copy, Check, Clock, Calendar, ShieldCheck, Laptop, 
   AlertTriangle, Sparkles, Cpu, RefreshCw, HardDrive, 
-  CheckCircle2, ArrowRight, Key, Loader2, FileText
+  CheckCircle2, ArrowRight, Key, Loader2, FileText, X
 } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { HowItWorksCard } from '../components/HowItWorksCard';
@@ -29,7 +29,7 @@ type CustomerLicense = {
     upi_transaction_id: string;
     submitted_at?: string;
   } | null;
-  packages: { package_name: string; package_code: string; price?: number };
+  packages: { package_name: string; package_code: string; price?: number; version?: string; updated_at?: string };
   customers: { full_name: string; email?: string };
   devices?: { registered_at: string; hostname?: string | null } | { registered_at: string; hostname?: string | null }[] | null;
 };
@@ -143,6 +143,16 @@ export const CustomerLicenses = () => {
   const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState<boolean>(false);
   const [hasRated, setHasRated] = useState<boolean>(false);
+  const [dismissedUpdateVersion, setDismissedUpdateVersion] = useState<string | null>(null);
+
+  const handleDismissUpdate = (pkgCode?: string, version?: string) => {
+    if (pkgCode && version) {
+      try {
+        localStorage.setItem(`phantomlead_dismissed_update_${pkgCode}_${version}`, 'true');
+      } catch {}
+      setDismissedUpdateVersion(version);
+    }
+  };
 
   // Check whether to show the feedback modal automatically after purchase
   useEffect(() => {
@@ -271,7 +281,7 @@ export const CustomerLicenses = () => {
           device_id,
           payment_id,
           payments (id, amount, upi_transaction_id, submitted_at),
-          packages (package_name, package_code, price),
+          packages (package_name, package_code, price, version, updated_at),
           customers (full_name, email),
           devices (registered_at, hostname)
         `)
@@ -529,8 +539,71 @@ export const CustomerLicenses = () => {
           const activatedFormatted = formatFullDateTime(deviceData?.registered_at);
           const expiresFormatted = formatFullDateTime(activeLicense.expires_at);
 
+          const pkgVersion = activeLicense.packages?.version || '2.0.0';
+          const pkgCode = activeLicense.packages?.package_code || 'FULL_ACCESS';
+          const isUpdateDismissed = 
+            dismissedUpdateVersion === pkgVersion || 
+            (typeof window !== 'undefined' && localStorage.getItem(`phantomlead_dismissed_update_${pkgCode}_${pkgVersion}`) === 'true');
+
           return (
             <div className="space-y-6">
+              {/* ========================================================================= */}
+              {/* MAJOR SOFTWARE UPDATE AVAILABLE BANNER FOR ACTIVE LICENSE HOLDERS        */}
+              {/* ========================================================================= */}
+              {!isUpdateDismissed && (
+                <div className="relative overflow-hidden rounded-2xl border border-cyan-500/40 bg-gradient-to-r from-cyan-950/50 via-slate-900/90 to-purple-950/40 p-5 sm:p-6 shadow-[0_0_35px_rgba(6,182,212,0.2)]">
+                  <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 shrink-0 shadow-[0_0_20px_rgba(6,182,212,0.35)]">
+                        <Sparkles className="w-5 h-5 animate-pulse" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                            UPDATE AVAILABLE &bull; v{pkgVersion}
+                          </span>
+                          <span className="text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 rounded-full font-bold">
+                            FREE IN-PLACE UPGRADE
+                          </span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                          New Release Live for {activeLicense.packages?.package_name || 'Your Security Suite'}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                          Version <strong>v{pkgVersion}</strong> is now deployed! Includes the new <strong>LMS Skill Assess Helper (Ctrl+U)</strong>, SEB Safe Exam Browser v3.10.x whitelist updates, and enhanced AI accuracy. Re-run your installer anytime to refresh your tools without losing your license.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                      <button
+                        onClick={() => handleDownload(installerName)}
+                        disabled={downloadingFile !== null}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download Update (v{pkgVersion})</span>
+                      </button>
+                      <Link
+                        to="/dashboard/installation"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white font-medium text-xs border border-white/10 transition-all shadow-sm"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Manual Guide</span>
+                      </Link>
+                      <button
+                        onClick={() => handleDismissUpdate(pkgCode, pkgVersion)}
+                        className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition-all cursor-pointer"
+                        title="Dismiss update announcement"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               {/* Tactical Main Card */}
               <div className="relative overflow-hidden rounded-3xl glass-panel border border-white/15 p-6 sm:p-8 shadow-2xl">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/10 via-purple-500/10 to-transparent blur-3xl pointer-events-none" />

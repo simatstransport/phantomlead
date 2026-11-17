@@ -66,6 +66,27 @@ serve(async (req) => {
       })
     }
 
+    if (action === 'GET_ACTIVE_USERS') {
+      const nowIso = new Date().toISOString()
+      const { data, error } = await serviceClient
+        .from('licenses')
+        .select(`
+          id,
+          status,
+          expires_at,
+          customers (id, full_name, email, status)
+        `)
+        .eq('package_id', package_id)
+        .eq('status', 'ACTIVE')
+        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+
+      if (error) throw error
+      return new Response(JSON.stringify({ success: true, count: data?.length || 0, users: data }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      })
+    }
+
     if (action === 'SAVE_PRICING_MATRIX') {
       // Save full pricing matrix into admin_settings
       const { error } = await serviceClient

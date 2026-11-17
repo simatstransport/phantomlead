@@ -93,6 +93,11 @@ export default async function handler(req, res) {
         // License Revocation / Deletion Alert to Customer
         isRevocationNotice,
         isDeletionNotice,
+        // Package Update Alert to Active Customers
+        isPackageUpdateAlert,
+        version,
+        releaseNotes,
+        downloadUrl,
         currency = 'INR' 
       } = req.body;
 
@@ -321,6 +326,110 @@ export default async function handler(req, res) {
         });
 
         return res.status(200).json({ success: true, message: 'Deletion notice delivered' });
+      }
+
+      // 4. Handle Customer Alert: Package Software Update Available
+      if (isPackageUpdateAlert) {
+        console.log(`[Customer Alert] Sending package update alert to: ${toEmail} for ${packageName} (v${version})`);
+        
+        const updateHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; }
+              .wrapper { max-width: 600px; margin: 30px auto; background-color: #0d111a; border: 1px solid #1a2333; border-radius: 8px; overflow: hidden; }
+              .header-bar { height: 4px; background: #00ffff; }
+              .content { padding: 32px; }
+              .brand { font-size: 22px; font-weight: 800; color: #00ffff; letter-spacing: 1px; }
+              .status-badge { display: inline-block; padding: 6px 14px; background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; border-radius: 4px; color: #00ffff; font-size: 12px; font-weight: 700; margin: 16px 0; }
+              .card { background: #131926; border: 1px solid #1e293b; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+              .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+              .label { color: #94a3b8; }
+              .val { color: #ffffff; font-weight: 600; text-align: right; }
+              .cyan-val { color: #00ffff; font-weight: 700; }
+              .highlights-box { background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 6px; padding: 16px; margin: 20px 0; }
+              .btn { display: inline-block; padding: 12px 24px; background: #00ffff; color: #000000; font-weight: 800; text-decoration: none; border-radius: 6px; font-size: 14px; letter-spacing: 0.5px; }
+              .footer { padding: 18px 32px; background: #090c14; border-top: 1px solid #1a2333; font-size: 11px; color: #64748b; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="wrapper">
+              <div class="header-bar"></div>
+              <div class="content">
+                <div class="brand">PHANTOMLEAD SYSTEM RELEASE SENTINEL</div>
+                <div class="status-badge">🚀 SOFTWARE UPDATE RELEASED &bull; v${version || '2.0.0'}</div>
+
+                <p style="font-size: 15px; color: #cbd5e1; line-height: 1.6;">
+                  Hello <strong>${toName || 'Valued Candidate'}</strong>,<br/>
+                  An official software update (<strong>v${version || '2.0.0'}</strong>) has been deployed for your active <strong>${packageName || 'PhantomLead Security Suite'}</strong> package.
+                </p>
+
+                <div class="card">
+                  <div class="row">
+                    <span class="label">Software Package:</span>
+                    <span class="val">${packageName || 'Security Workstation'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">Release Version:</span>
+                    <span class="cyan-val">v${version || '2.0.0'}</span>
+                  </div>
+                  <div class="row">
+                    <span class="label">License Status:</span>
+                    <span class="val" style="color: #10b981; font-weight: bold;">ACTIVE &bull; 100% ELIGIBLE FOR UPDATE</span>
+                  </div>
+                </div>
+
+                <div class="highlights-box">
+                  <div style="font-size: 12px; font-weight: bold; color: #00ffff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                    ⚡ What's New in This Release:
+                  </div>
+                  <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #e2e8f0; line-height: 1.7;">
+                    ${releaseNotes ? `<li>${releaseNotes.replace(/\n/g, '<br/>')}</li>` : `
+                    <li><strong>New LMS Skill Assess Helper:</strong> Seamless multi-question assessment solver with instant automated keyboard shortcut <code>Ctrl+U</code>.</li>
+                    <li><strong>SEB 3.10.x Compatibility:</strong> Updated integrity signatures and zero-detection background whitelist verification.</li>
+                    <li><strong>AI Engine Optimization:</strong> Low latency Gemini AI reasoning engine with enhanced code and viva answer generation.</li>
+                    <li><strong>Zero Data Loss Upgrade:</strong> Seamless in-place upgrade — keep your existing machine binding and license key without re-registration.</li>
+                    `}
+                  </ul>
+                </div>
+
+                <div style="background: #131926; border: 1px solid #1e293b; border-radius: 6px; padding: 16px; margin-bottom: 24px;">
+                  <div style="font-size: 12px; font-weight: bold; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                    🔧 Quick 60-Second Update Instructions:
+                  </div>
+                  <ol style="margin: 0; padding-left: 18px; font-size: 12px; color: #cbd5e1; line-height: 1.6;">
+                    <li>Log into your <strong>PhantomLead Dashboard</strong> and open the <strong>Licenses</strong> tab.</li>
+                    <li>Click <strong>Download Updated Installer</strong> (or run your edition-matched SecureInstaller.exe).</li>
+                    <li>Paste your existing active license key and click Install. All updated extensions will be refreshed instantly!</li>
+                  </ol>
+                </div>
+
+                <div style="text-align: center; margin: 28px 0 16px;">
+                  <a href="${downloadUrl || 'https://myphantolead.vercel.app/dashboard/licenses'}" class="btn">
+                    Access Dashboard &amp; Download Update &rarr;
+                  </a>
+                </div>
+              </div>
+              <div class="footer">
+                &copy; ${new Date().getFullYear()} PhantomLead Security Platforms &bull; Central Release Sentinel<br/>
+                Automated Release Notification &bull; support@phantomlead.com
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        await transporter.sendMail({
+          from: `"PhantomLead Release Sentinel" <billing-automated@phantomlead.com>`,
+          replyTo: `"PhantomLead Support Desk" <support@phantomlead.com>`,
+          to: toEmail,
+          subject: `[UPDATE AVAILABLE] Version v${version} Released for ${packageName} - PhantomLead`,
+          html: updateHtml,
+        });
+
+        return res.status(200).json({ success: true, message: `Package update alert delivered to ${toEmail}` });
       }
 
       // Handle Admin New User Enrollment Alert

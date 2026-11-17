@@ -12,8 +12,16 @@ import {
   X, 
   Calculator,
   Layers,
-  Sparkles
+  Sparkles,
+  Send,
+  Users,
+  Loader2
 } from 'lucide-react';
+import { 
+  fetchActiveUsersForPackage, 
+  broadcastPackageUpdate, 
+  ActivePackageUser 
+} from '../../services/packageUpdateService';
 
 export const calculateDurationPrice = (_basePrice: number, months: number | null, packageCode?: string): number => {
   // Lifetime Access (all packages: 5000 RS)
@@ -67,6 +75,19 @@ export const AdminPackages = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [autoNotifyOnSave, setAutoNotifyOnSave] = useState(false);
+  const [originalVersion, setOriginalVersion] = useState('1.0.0');
+
+  // Broadcast Modal State
+  const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
+  const [broadcastPkg, setBroadcastPkg] = useState<any | null>(null);
+  const [activeUsersLoading, setActiveUsersLoading] = useState(false);
+  const [activeUsers, setActiveUsers] = useState<ActivePackageUser[]>([]);
+  const [broadcastNotes, setBroadcastNotes] = useState('');
+  const [testOnlyAdmin, setTestOnlyAdmin] = useState(false);
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [broadcastProgress, setBroadcastProgress] = useState<{ current: number; total: number; email: string } | null>(null);
+  const [broadcastResult, setBroadcastResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     fetchPackages();
@@ -120,6 +141,8 @@ export const AdminPackages = () => {
 
   const handleOpenCreate = () => {
     setEditingPackageId(null);
+    setAutoNotifyOnSave(false);
+    setOriginalVersion('1.0.0');
     setModalForm({
       package_code: '',
       package_name: '',
@@ -139,6 +162,8 @@ export const AdminPackages = () => {
 
   const handleOpenEdit = (pkg: any) => {
     setEditingPackageId(pkg.id);
+    setOriginalVersion(pkg.version || '1.0.0');
+    setAutoNotifyOnSave(false);
     const custom = pricingMatrix[pkg.package_code] || {};
     const p1 = custom['1'] !== undefined ? String(custom['1']) : String(pkg.price || '2000');
     const p2 = custom['2'] !== undefined ? String(custom['2']) : String(calculateDurationPrice(pkg.price, 2, pkg.package_code));
@@ -160,6 +185,72 @@ export const AdminPackages = () => {
     setErrorMsg('');
     setSuccessMsg('');
     setIsModalOpen(true);
+  };
+
+  const handleOpenBroadcastModal = async (pkg: any) => {
+    setBroadcastPkg(pkg);
+    setBroadcastResult(null);
+    setBroadcastProgress(null);
+    setTestOnlyAdmin(false);
+
+    let defaultNotes = '• New LMS Skill Assess Helper integrated with automated Ctrl+U keyboard shortcut.\n• Updated Safe Exam Browser (SEB 3.10.x) zero-detection whitelist signatures.\n• Enhanced AI accuracy and low-latency response generation.\n• Seamless in-place upgrade — no license key reset required.';
+    if (pkg.package_code === 'FULL_ACCESS') {
+      defaultNotes = '• All 7 extensions upgraded: Skill Assess, LMS MCQs, Viva Explainer, Java, Python 3, and C coding helpers.\n• Full Ctrl+U multi-question auto-solver support for LMS skill tests.\n• Updated Safe Exam Browser (SEB 3.10.x) compatibility.\n• Faster Gemini AI inference engine with lower latency.';
+    } else if (pkg.package_code === 'JAVA_QA') {
+      defaultNotes = '• Skill Assess Helper (Ctrl+U) added alongside Java Coding, Viva Paragraphs, and LMS MCQs.\n• SEB 3.10.x whitelist signatures updated.\n• Enhanced code generation accuracy.';
+    }
+    setBroadcastNotes(defaultNotes);
+
+    setIsBroadcastModalOpen(true);
+    setActiveUsersLoading(true);
+
+    try {
+      const users = await fetchActiveUsersForPackage(pkg.id);
+      setActiveUsers(users);
+    } catch {
+      setActiveUsers([]);
+    } finally {
+      setActiveUsersLoading(false);
+    }
+  };
+
+  const handleSendBroadcast = async () => {
+    if (!broadcastPkg) return;
+    setIsBroadcasting(true);
+    setBroadcastResult(null);
+
+    try {
+      const res = await broadcastPackageUpdate({
+        packageId: broadcastPkg.id,
+        packageName: broadcastPkg.package_name,
+        packageCode: broadcastPkg.package_code,
+        version: broadcastPkg.version || '2.0.0',
+        releaseNotes: broadcastNotes,
+        targetEmails: testOnlyAdmin ? ['brokenvidplay0@gmail.com'] : undefined,
+        onProgress: (current, total, email) => {
+          setBroadcastProgress({ current, total, email });
+        }
+      });
+
+      if (res.success) {
+        setBroadcastResult({
+          type: 'success',
+          message: `✓ ${res.message}`
+        });
+      } else {
+        setBroadcastResult({
+          type: 'error',
+          message: res.message || 'Failed to dispatch broadcast emails.'
+        });
+      }
+    } catch (err: any) {
+      setBroadcastResult({
+        type: 'error',
+        message: err.message || 'Unexpected error dispatching emails.'
+      });
+    } finally {
+      setIsBroadcasting(false);
+    }
   };
 
   const handleModalSubmit = async (e: React.FormEvent) => {
@@ -226,12 +317,29 @@ export const AdminPackages = () => {
         setErrorMsg('Error updating package: ' + error.message);
       } else {
         setPricingMatrix(updatedMatrix);
-        setSuccessMsg('Package and month-wise prices updated successfully!');
+
+        if (autoNotifyOnSave) {
+          setSuccessMsg('Package updated! Dispatched automatic update emails to active users in background.');
+          broadcastPackageUpdate({
+            packageId: editingPackageId,
+            packageName: modalForm.package_name,
+            packageCode: code,
+            version: modalForm.version,
+            releaseNotes: `Version ${modalForm.version} deployed: Integrated new Skill Assess Helper (Ctrl+U), updated SEB 3.10.x whitelist signatures, and enhanced AI accuracy.`
+          }).then(res => {
+            console.log('[Auto-Notify Update Result]:', res);
+          }).catch(e => {
+            console.warn('[Auto-Notify Update Failed]:', e);
+          });
+        } else {
+          setSuccessMsg('Package and month-wise prices updated successfully!');
+        }
+
         setTimeout(() => {
           setIsModalOpen(false);
           fetchPackages();
           fetchPricingMatrix();
-        }, 800);
+        }, 900);
       }
     } else {
       // Create New Package
@@ -362,6 +470,13 @@ export const AdminPackages = () => {
                   </td>
                   <td className="py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => handleOpenBroadcastModal(p)}
+                        className="px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 hover:border-amber-400 text-amber-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                        title="Broadcast package update announcement email to valid active license holders"
+                      >
+                        <Send className="w-3.5 h-3.5 text-amber-400" /> Send Update Email
+                      </button>
                       <button
                         onClick={() => handleOpenEdit(p)}
                         className="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-700 hover:border-cyan-500 text-gray-200 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
@@ -605,6 +720,26 @@ export const AdminPackages = () => {
                 </div>
               </div>
 
+              {/* AUTOMATED EMAIL DISPATCH TOGGLE (SHOWN WHEN EDITING AN EXISTING PACKAGE) */}
+              {editingPackageId && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="auto_notify_users"
+                    checked={autoNotifyOnSave}
+                    onChange={e => setAutoNotifyOnSave(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded text-amber-500 focus:ring-amber-500 bg-black border-gray-700 cursor-pointer shrink-0"
+                  />
+                  <label htmlFor="auto_notify_users" className="text-xs text-amber-200 cursor-pointer select-none">
+                    <strong className="block text-white font-bold mb-1 flex items-center gap-1.5">
+                      <Send className="w-3.5 h-3.5 text-amber-400" />
+                      Automatically email update notification to all valid active package users
+                    </strong>
+                    When enabled, saving this package will immediately dispatch an official release notification email (v{modalForm.version}{modalForm.version !== originalVersion ? ` - updated from v${originalVersion}` : ''}) to all valid, non-expired license holders of this package in the background.
+                  </label>
+                </div>
+              )}
+
               {/* Form Buttons */}
               <div className="pt-4 flex gap-3">
                 <button
@@ -624,6 +759,167 @@ export const AdminPackages = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MANUAL TRIGGER: BROADCAST PACKAGE UPDATE EMAIL MODAL                      */}
+      {/* ========================================================================= */}
+      {isBroadcastModalOpen && broadcastPkg && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-[#0e131d] border border-amber-500/40 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative my-8">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-5 pb-4 border-b border-gray-800">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                    <Send className="w-4 h-4" />
+                  </span>
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-amber-400 font-bold">
+                    Release Broadcast Desk
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  Send Update Email to Active Users
+                </h3>
+                <p className="text-xs text-gray-400 mt-1">
+                  Dispatches official software release notifications exclusively to valid, active license holders.
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  setIsBroadcastModalOpen(false);
+                  setBroadcastResult(null);
+                  setBroadcastProgress(null);
+                }} 
+                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {broadcastResult && (
+              <div className={`p-4 mb-4 rounded-xl text-xs font-semibold flex items-center gap-2.5 ${
+                broadcastResult.type === 'success' 
+                  ? 'bg-emerald-950/60 border border-emerald-500/40 text-emerald-300' 
+                  : 'bg-rose-950/60 border border-rose-500/40 text-rose-300'
+              }`}>
+                {broadcastResult.type === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                )}
+                <span>{broadcastResult.message}</span>
+              </div>
+            )}
+
+            {/* Package Specs Card */}
+            <div className="p-4 rounded-xl bg-black/60 border border-white/10 mb-4 space-y-2.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-400">Target Package:</span>
+                <span className="text-white font-bold">
+                  {broadcastPkg.package_name} (<span className="text-cyan-400 font-mono">{broadcastPkg.package_code}</span>)
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-gray-400">Release Version:</span>
+                <span className="px-2 py-0.5 rounded bg-cyan-950/40 border border-cyan-800/50 text-cyan-300 font-mono font-bold">
+                  v{broadcastPkg.version || '1.0.0'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-xs pt-2 border-t border-gray-800">
+                <span className="text-gray-400 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-emerald-400" />
+                  Audience (Active &amp; Valid Licenses):
+                </span>
+                <span className="text-emerald-400 font-bold font-mono">
+                  {activeUsersLoading ? 'Scanning fleet...' : `${activeUsers.length} Active Customer${activeUsers.length !== 1 ? 's' : ''}`}
+                </span>
+              </div>
+            </div>
+
+            {/* Live Progress Bar during sending */}
+            {broadcastProgress && (
+              <div className="p-4 mb-4 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-xs space-y-2">
+                <div className="flex justify-between text-cyan-300 font-mono">
+                  <span>Dispatching Update Emails...</span>
+                  <span>{broadcastProgress.current} / {broadcastProgress.total}</span>
+                </div>
+                <div className="w-full bg-black/60 rounded-full h-2 overflow-hidden border border-cyan-500/30">
+                  <div 
+                    className="bg-cyan-400 h-full transition-all duration-300"
+                    style={{ width: `${(broadcastProgress.current / broadcastProgress.total) * 100}%` }}
+                  />
+                </div>
+                <div className="text-[11px] text-gray-400 truncate">
+                  Currently emailing: <span className="text-white font-mono">{broadcastProgress.email}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Release Notes Input */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1.5 uppercase tracking-wider">
+                  Release Highlights (Included in Email HTML)
+                </label>
+                <textarea
+                  rows={4}
+                  value={broadcastNotes}
+                  onChange={e => setBroadcastNotes(e.target.value)}
+                  disabled={isBroadcasting}
+                  className="w-full px-3.5 py-2.5 bg-black border border-gray-800 rounded-lg text-white text-xs focus:outline-none focus:border-amber-500 leading-relaxed font-sans"
+                  placeholder="Describe what's new (e.g. New Skill Assess tool, shortcuts, SEB whitelist)..."
+                />
+              </div>
+
+              {/* Safety Test Mode Toggle */}
+              <div className="p-3 rounded-lg bg-gray-900/80 border border-gray-800 flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="test_mode"
+                  checked={testOnlyAdmin}
+                  onChange={e => setTestOnlyAdmin(e.target.checked)}
+                  disabled={isBroadcasting}
+                  className="w-4 h-4 rounded text-amber-500 focus:ring-amber-500 bg-black border-gray-700 cursor-pointer"
+                />
+                <label htmlFor="test_mode" className="text-xs text-gray-300 cursor-pointer select-none">
+                  <span className="text-white font-semibold block">Safety Guard (Test Mode)</span>
+                  Send preview email only to Admin (<span className="text-cyan-400 font-mono">brokenvidplay0@gmail.com</span>)
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setIsBroadcastModalOpen(false)}
+                  disabled={isBroadcasting}
+                  className="px-4 py-2 rounded-lg bg-gray-900 hover:bg-gray-800 text-gray-300 text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendBroadcast}
+                  disabled={isBroadcasting || (activeUsers.length === 0 && !testOnlyAdmin)}
+                  className="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                >
+                  {isBroadcasting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Broadcasting Emails...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>{testOnlyAdmin ? 'Send Test Email to Admin' : `Broadcast to ${activeUsers.length} Active Users`}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
