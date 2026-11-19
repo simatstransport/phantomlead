@@ -143,7 +143,7 @@ export const broadcastPackageUpdate = async (
           packageCode,
           version,
           releaseNotes: releaseNotes || '',
-          downloadUrl: 'https://myphantolead.vercel.app/dashboard/licenses',
+          downloadUrl: 'https://myopphantom.vercel.app/dashboard/licenses',
         }),
       });
 

@@ -77,6 +77,7 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
         ? '/api/send-invoice'
         : 'http://localhost:3001/api/send-invoice';
 
+      // 1. Alert Admin about new enrolled candidate
       fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,6 +90,17 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
           timestamp: new Date().toISOString(),
         }),
       }).catch(err => console.warn('[Admin alert notice]:', err));
+
+      // 2. Dispatch Welcome & Protocol Guidelines Email to Candidate
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isWelcome: true,
+          toEmail: session.user.email,
+          toName: formData.full_name,
+        }),
+      }).catch(err => console.warn('[Candidate welcome mail error]:', err));
 
       setNeedsOnboarding(false);
       onComplete();
