@@ -14,7 +14,7 @@
     ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\FULL_ACCESS_version-2.2.0.zip",
     "alt_zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\FULL_ACCESS_version-2.3.0.zip",
-    "sha256": "0218015e969b4704f41d1b47badd7ac692e5b23d321d1fec77725ff5daf3ada4"
+    "sha256": "8073b20a30e0f249d6a1ecefde3349c839cb23dafee93908570d70aead2ac0db"
   },
   {
     "package_code": "PYTHON_C",
@@ -52,7 +52,7 @@
     ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\JAVA_QA_version-1.0.0.zip",
     "alt_zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\JAVA_QA_version-1.1.0.zip",
-    "sha256": "a1eaad426f54fcd1ea123305bff0ddd5f56e017fffbd998109fff57e8bfd7c09"
+    "sha256": "beae3678df75d3d538508fb18ca6dc2fbd1336f925f4ce8f20b2ddac99b25845"
   },
   {
     "package_code": "QA_PLACEMENT",
@@ -64,6 +64,6 @@
     ],
     "zip_path": "C:\\Users\\Admin\\Documents\\phantomlead\\secure-license-platform\\dist_packages\\QA_PLACEMENT_version-2.2.0.zip",
     "alt_zip_path": null,
-    "sha256": "e39760db877b47ba41b7beba9cac4c55c11180520bc2185766c02545d73b3a20"
+    "sha256": "35659c47a5dbae797b5ec9e4cc7a735605988f0d396dbe8ac6b59766e3ea59fc"
   }
 ]
