@@ -587,7 +587,7 @@ export const CustomerLicenses = () => {
                         <span>Download Update (v{pkgVersion})</span>
                       </button>
                       <Link
-                        to="/dashboard/installation"
+                        to="/dashboard/install"
                         className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white font-medium text-xs border border-white/10 transition-all shadow-sm"
                       >
                         <FileText className="w-3.5 h-3.5 text-cyan-400" />

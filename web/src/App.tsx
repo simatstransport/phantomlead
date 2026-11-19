@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 import { supabase } from './services/supabase';
 import { 
   Shield, Key, Package, LogOut, LayoutDashboard, User, CreditCard, 
-  Users, Download, Settings, Menu, X, BookOpen,
-  Sparkles, ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2,
-  Loader2, Radio, Star
+  Users, Settings, Menu, X, BookOpen,
+  ArrowRight, Laptop, Zap, ShieldCheck, Activity, CheckCircle2,
+  Radio, Star
 } from 'lucide-react';
-import { downloadInstaller } from './utils/download';
 import { AdminPayments } from './pages/admin/AdminPayments';
 import { AdminPackages } from './pages/admin/AdminPackages';
 import { AdminLicenses } from './pages/admin/AdminLicenses';
@@ -591,31 +590,6 @@ const DashboardLayout = ({ children, title, isAdmin, isActualAdmin }: { children
 const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
   const { hasActiveLicense, activeLicenseCount, checkingLicense } = useHasActiveLicense(false);
   const licenseDetails = (window as any).activeLicenseDetails;
-  const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
-  const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
-
-  const handleDownload = async (installerName: string) => {
-    setDownloadingFile(installerName);
-    setDownloadNotice(`Fetching ${installerName}...`);
-    try {
-      await downloadInstaller(installerName, (state) => {
-        if (state.status === 'downloading') {
-          setDownloadNotice(`Downloading ${installerName} (${state.progress}%)...`);
-        } else if (state.status === 'completed') {
-          setDownloadNotice(`✓ Download started for ${installerName}! Check your browser downloads.`);
-          setTimeout(() => setDownloadNotice(null), 5000);
-        } else if (state.status === 'error') {
-          setDownloadNotice(`Download warning: Direct save fallback activated.`);
-          setTimeout(() => setDownloadNotice(null), 5000);
-        }
-      });
-    } catch {
-      setDownloadNotice('Download initiated.');
-      setTimeout(() => setDownloadNotice(null), 4000);
-    } finally {
-      setDownloadingFile(null);
-    }
-  };
 
   return (
     <DashboardLayout title="Dashboard" isAdmin={false} isActualAdmin={isActualAdmin}>
@@ -760,119 +734,6 @@ const CustomerDashboard = ({ isActualAdmin }: { isActualAdmin?: boolean }) => {
             packageName={licenseDetails.packages.package_name}
           />
         )}
-
-        {/* Clean, Compact Installer Download Section */}
-        <div className="rounded-3xl motionsites-glass p-6 sm:p-7 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
-            <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Download className="w-4 h-4 text-emerald-400" />
-                Software Installer Download
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {hasActiveLicense 
-                  ? 'Your license is active. Download your matching executable installer below.' 
-                  : 'Select a package to receive your software installer and license key.'}
-              </p>
-            </div>
-
-            {hasActiveLicense && (
-              <Link 
-                to="/dashboard/install" 
-                className="text-xs text-slate-300 hover:text-white bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5 self-start sm:self-auto transition-colors"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Installation Manual</span>
-              </Link>
-            )}
-          </div>
-
-          {/* Download Notification Banner */}
-          {downloadNotice && (
-            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2 font-mono">
-              {downloadingFile ? (
-                <Loader2 className="w-4 h-4 animate-spin text-emerald-400 shrink-0" />
-              ) : (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              )}
-              <span>{downloadNotice}</span>
-            </div>
-          )}
-
-          {!checkingLicense && hasActiveLicense ? (() => {
-            let installerName = 'SecureInstaller_L.exe';
-            let editionLabel = 'Lifetime';
-            
-            if (licenseDetails) {
-              if (licenseDetails.duration_months === -10) {
-                installerName = 'SecureInstaller_T.exe';
-                editionLabel = '10-Min Demo';
-              } else if (licenseDetails.duration_months && licenseDetails.duration_months > 0) {
-                installerName = 'SecureInstaller_T.exe';
-                editionLabel = `${licenseDetails.duration_months}-Month`;
-              } else if (licenseDetails.expires_at) {
-                installerName = 'SecureInstaller_T.exe';
-                editionLabel = 'Timed Term';
-              } else if (licenseDetails.duration_months === 0) {
-                installerName = 'SecureInstaller_A.exe';
-                editionLabel = 'Admin Managed';
-              } else {
-                installerName = 'SecureInstaller_L.exe';
-                editionLabel = 'Lifetime';
-              }
-            }
-
-            return (
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <button 
-                    type="button"
-                    onClick={() => handleDownload(installerName)}
-                    disabled={downloadingFile === installerName}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-75"
-                  >
-                    {downloadingFile === installerName ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Download className="w-3.5 h-3.5" />
-                    )}
-                    <span>{downloadingFile === installerName ? 'Downloading...' : `Download ${installerName}`}</span>
-                    <span className="text-[10px] font-semibold bg-black/20 px-2 py-0.5 rounded ml-1">
-                      {editionLabel}
-                    </span>
-                  </button>
-                </div>
-
-                {(installerName === 'SecureInstaller_T.exe' || installerName === 'SecureInstaller_A.exe') && (
-                  <div className="p-3 border border-amber-500/20 bg-amber-500/5 rounded-lg text-xs text-slate-300">
-                    <span className="text-amber-400 font-semibold">Note:</span> This is a time-limited license that automatically expires at the end of your term.
-                  </div>
-                )}
-              </div>
-            );
-          })() : (
-            <div className="py-8 text-center space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 mx-auto">
-                <Sparkles className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-white">No Active License</h3>
-                <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                  Choose a package to unlock your license key and download your software installer.
-                </p>
-              </div>
-              <div className="pt-1">
-                <Link 
-                  to="/dashboard/packages" 
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg font-bold text-xs transition-all"
-                >
-                  <span>Browse Packages</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </DashboardLayout>
   );
