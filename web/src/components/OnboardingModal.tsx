@@ -103,7 +103,7 @@ export const OnboardingModal = ({ session, onComplete }: { session: any, onCompl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-7 sm:p-8 shadow-2xl border border-white/10">
+      <div className="w-full max-w-md relative overflow-hidden rounded-3xl glass-panel p-7 sm:p-8 shadow-2xl border border-white/10 modal-enter">
         <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 

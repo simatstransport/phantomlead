@@ -114,7 +114,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md rounded-2xl bg-[#09090b] border border-cyan-500/30 p-6 shadow-2xl shadow-cyan-500/10 space-y-5 text-white">
+      <div className="relative w-full max-w-md rounded-2xl bg-[#09090b] border border-cyan-500/30 p-6 shadow-2xl shadow-cyan-500/10 space-y-5 text-white modal-enter">
         
         {/* Glow accent */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent rounded-full" />

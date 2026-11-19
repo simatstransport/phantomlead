@@ -934,7 +934,7 @@ export const AdminLicenses = () => {
                         const countdown = formatExpiryCountdown(lic);
                         return (
                           <div>
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${countdown.badgeColor}`}>
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold tabular-nums border ${countdown.badgeColor}`}>
                               {countdown.icon === 'lifetime' ? (
                                 <InfinityIcon className="w-3 h-3 shrink-0" />
                               ) : countdown.icon === 'expired' ? (

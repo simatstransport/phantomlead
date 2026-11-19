@@ -762,7 +762,7 @@ export const CustomerLicenses = () => {
                           ? 'bg-amber-950/50 border border-amber-800/60'
                           : 'bg-black/70 border border-emerald-500/30'
                       }`}>
-                        <div className={`font-mono font-black text-xl sm:text-2xl tracking-wider ${
+                        <div className={`font-mono font-black text-xl sm:text-2xl tracking-wider tabular-nums ${
                           countdown.urgency === 'critical'
                             ? 'text-rose-400 animate-pulse'
                             : countdown.urgency === 'warning'
