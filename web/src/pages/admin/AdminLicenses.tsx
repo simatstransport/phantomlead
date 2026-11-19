@@ -3,7 +3,7 @@ import { supabase } from '../../services/supabase';
 import { 
   Trash2, AlertTriangle, Clock, Search, Plus, 
   Laptop, Shield, RefreshCw, X, Download, Loader2, Key, CheckCircle2, ShieldAlert,
-  CalendarPlus, Check, Mail
+  CalendarPlus, Check, Mail, Timer, Infinity as InfinityIcon
 } from 'lucide-react';
 import { downloadInstaller } from '../../utils/download';
 import { processAndSendInvoice } from '../../services/billingService';
@@ -14,6 +14,8 @@ export const AdminLicenses = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'REVOKED' | 'DEMO'>('ALL');
+  const [expiryCategoryFilter, setExpiryCategoryFilter] = useState<'ALL' | 'SUBSCRIPTION' | 'EXPIRING_SOON' | 'EXPIRED' | 'LIFETIME'>('ALL');
+  const [nowTimestamp, setNowTimestamp] = useState<number>(Date.now());
   
   // Notification toast message state
   const [actionAlert, setActionAlert] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
@@ -150,7 +152,11 @@ export const AdminLicenses = () => {
     fetchLicenses();
     fetchPackages();
     const interval = setInterval(fetchLicenses, 3000);
-    return () => clearInterval(interval);
+    const clockInterval = setInterval(() => setNowTimestamp(Date.now()), 1000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(clockInterval);
+    };
   }, []);
 
   const fetchPackages = async () => {
@@ -476,6 +482,96 @@ export const AdminLicenses = () => {
     }
   };
 
+  // Helper to categorize expiry status
+  const getExpiryCategory = (lic: any) => {
+    const isLifetime = !lic.expires_at && (lic.duration_months === 0 || lic.duration_months === null || lic.duration_months === -1);
+    
+    if (isLifetime) return 'LIFETIME';
+    
+    if (lic.expires_at) {
+      const exp = new Date(lic.expires_at).getTime();
+      const diffMs = exp - nowTimestamp;
+      if (diffMs <= 0 || lic.status === 'EXPIRED') return 'EXPIRED';
+      if (diffMs <= 3 * 24 * 60 * 60 * 1000) return 'EXPIRING_SOON'; // within 3 days
+      return 'SUBSCRIPTION';
+    }
+
+    if (lic.duration_months && lic.duration_months > 0) return 'SUBSCRIPTION';
+    if (lic.duration_months === -10) return 'SUBSCRIPTION';
+
+    return 'LIFETIME';
+  };
+
+  const formatExpiryCountdown = (lic: any) => {
+    const isLifetime = !lic.expires_at && (lic.duration_months === 0 || lic.duration_months === null || lic.duration_months === -1);
+    if (isLifetime) {
+      return {
+        label: 'Perpetual Lifetime',
+        subtext: 'No Expiration Date',
+        badgeColor: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300 dark:text-emerald-300 light:text-emerald-800',
+        icon: 'lifetime',
+        isExpired: false
+      };
+    }
+
+    if (!lic.expires_at) {
+      const termDesc = lic.duration_months === -10 ? '10-Min Trial' : `${lic.duration_months} Month Term`;
+      return {
+        label: termDesc,
+        subtext: 'Starts on 1st PC activation',
+        badgeColor: 'bg-amber-500/15 border-amber-500/30 text-amber-300 dark:text-amber-300 light:text-amber-800',
+        icon: 'pending',
+        isExpired: false
+      };
+    }
+
+    const expTime = new Date(lic.expires_at).getTime();
+    const diffMs = expTime - nowTimestamp;
+    const formattedDate = new Date(lic.expires_at).toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+    const formattedTime = new Date(lic.expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (diffMs <= 0 || lic.status === 'EXPIRED') {
+      const agoDays = Math.abs(Math.floor(diffMs / (24 * 60 * 60 * 1000)));
+      return {
+        label: 'Expired',
+        subtext: agoDays === 0 ? `Passed today (${formattedTime})` : `${agoDays} day${agoDays > 1 ? 's' : ''} ago (${formattedDate})`,
+        badgeColor: 'bg-rose-500/20 border-rose-500/40 text-rose-300 dark:text-rose-300 light:text-rose-800',
+        icon: 'expired',
+        isExpired: true
+      };
+    }
+
+    // Still active countdown
+    const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((diffMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    const mins = Math.floor((diffMs % (60 * 60 * 1000)) / (60 * 1000));
+
+    let countdownStr = '';
+    if (days > 0) {
+      countdownStr = `${days}d ${hours}h left`;
+    } else if (hours > 0) {
+      countdownStr = `${hours}h ${mins}m left`;
+    } else {
+      const secs = Math.floor((diffMs % (60 * 1000)) / 1000);
+      countdownStr = `${mins}m ${secs}s left`;
+    }
+
+    const isUrgent = diffMs <= 3 * 24 * 60 * 60 * 1000;
+    return {
+      label: countdownStr,
+      subtext: `${formattedDate} • ${formattedTime}`,
+      badgeColor: isUrgent 
+        ? 'bg-amber-500/20 border-amber-500/40 text-amber-300 dark:text-amber-300 light:text-amber-800 animate-pulse'
+        : 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300 dark:text-cyan-300 light:text-cyan-800',
+      icon: isUrgent ? 'urgent' : 'active',
+      isExpired: false
+    };
+  };
+
   const filteredLicenses = useMemo(() => {
     return licenses.filter(l => {
       const customerName = (l.customers?.full_name || '').toLowerCase();
@@ -487,18 +583,43 @@ export const AdminLicenses = () => {
 
       if (!matchesSearch) return false;
 
-      if (statusFilter === 'ACTIVE') return l.status === 'ACTIVE';
-      if (statusFilter === 'REVOKED') return l.status === 'REVOKED' || l.uninstalled_at;
-      if (statusFilter === 'DEMO') return l.duration_months === -10;
+      // Status Filter
+      if (statusFilter === 'ACTIVE' && !(l.status === 'ACTIVE')) return false;
+      if (statusFilter === 'REVOKED' && !(l.status === 'REVOKED' || l.uninstalled_at)) return false;
+      if (statusFilter === 'DEMO' && !(l.duration_months === -10)) return false;
+
+      // Expiry Category Filter
+      if (expiryCategoryFilter !== 'ALL') {
+        const cat = getExpiryCategory(l);
+        if (expiryCategoryFilter === 'SUBSCRIPTION') {
+          // All subscription/timed users (active or expiring)
+          if (cat !== 'SUBSCRIPTION' && cat !== 'EXPIRING_SOON') return false;
+        } else if (expiryCategoryFilter === 'EXPIRING_SOON') {
+          if (cat !== 'EXPIRING_SOON') return false;
+        } else if (expiryCategoryFilter === 'EXPIRED') {
+          if (cat !== 'EXPIRED') return false;
+        } else if (expiryCategoryFilter === 'LIFETIME') {
+          if (cat !== 'LIFETIME') return false;
+        }
+      }
 
       return true;
     });
-  }, [licenses, searchQuery, statusFilter]);
+  }, [licenses, searchQuery, statusFilter, expiryCategoryFilter, nowTimestamp]);
 
   const activeCount = licenses.filter(l => l.status === 'ACTIVE').length;
   const boundNodesCount = licenses.filter(l => l.devices && l.devices.hostname).length;
   const demoCount = licenses.filter(l => l.duration_months === -10).length;
   const wipedCount = licenses.filter(l => l.uninstalled_at).length;
+
+  // Subscription users expiry breakdown stats
+  const subscriptionActiveCount = licenses.filter(l => {
+    const cat = getExpiryCategory(l);
+    return cat === 'SUBSCRIPTION' || cat === 'EXPIRING_SOON';
+  }).length;
+  const expiringSoonCount = licenses.filter(l => getExpiryCategory(l) === 'EXPIRING_SOON').length;
+  const expiredCount = licenses.filter(l => getExpiryCategory(l) === 'EXPIRED').length;
+  const lifetimeCount = licenses.filter(l => getExpiryCategory(l) === 'LIFETIME').length;
 
   if (loading) {
     return (
@@ -661,37 +782,84 @@ export const AdminLicenses = () => {
       {/* Main Table Card */}
       <div className="rounded-2xl border border-slate-800/80 dark:border-white/10 light:border-slate-200 bg-[#0d1117] dark:bg-[#0d1117] light:bg-white backdrop-blur-2xl p-6 shadow-xl space-y-4">
         {/* Search & Filter Toolbar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80 dark:border-white/10 light:border-slate-200">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search by candidate name, email, or package..."
-              className="w-full pl-10 pr-9 py-2.5 bg-black/50 dark:bg-black/50 light:bg-slate-50 border border-slate-800/80 dark:border-white/10 light:border-slate-300 focus:border-emerald-500 rounded-xl text-xs sm:text-sm text-white dark:text-white light:text-slate-900 placeholder-slate-500 focus:outline-none transition-all font-mono"
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
+        <div className="space-y-3 pb-4 border-b border-slate-800/80 dark:border-white/10 light:border-slate-200">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search by candidate name, email, or package..."
+                className="w-full pl-10 pr-9 py-2.5 bg-black/50 dark:bg-black/50 light:bg-slate-50 border border-slate-800/80 dark:border-white/10 light:border-slate-300 focus:border-emerald-500 rounded-xl text-xs sm:text-sm text-white dark:text-white light:text-slate-900 placeholder-slate-500 focus:outline-none transition-all font-mono"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/40 dark:bg-black/40 light:bg-slate-100 border border-slate-800/80 dark:border-white/10 light:border-slate-200 shrink-0">
+              {(['ALL', 'ACTIVE', 'DEMO', 'REVOKED'] as const).map(filter => (
+                <button
+                  key={filter}
+                  onClick={() => setStatusFilter(filter)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    statusFilter === filter
+                      ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                      : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 hover:bg-white/[0.04] light:hover:bg-white'
+                  }`}
+                >
+                  {filter === 'ALL' ? 'All' : filter === 'ACTIVE' ? 'Active' : filter === 'DEMO' ? '10-Min Demos' : 'Wiped / Revoked'}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/40 dark:bg-black/40 light:bg-slate-100 border border-slate-800/80 dark:border-white/10 light:border-slate-200 shrink-0">
-            {(['ALL', 'ACTIVE', 'DEMO', 'REVOKED'] as const).map(filter => (
-              <button
-                key={filter}
-                onClick={() => setStatusFilter(filter)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  statusFilter === filter
-                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
-                    : 'text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 hover:bg-white/[0.04] light:hover:bg-white'
-                }`}
-              >
-                {filter === 'ALL' ? 'All' : filter === 'ACTIVE' ? 'Active' : filter === 'DEMO' ? '10-Min Demos' : 'Wiped / Revoked'}
-              </button>
-            ))}
+          {/* Subscription Expiry Category Filter Deck */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/40 dark:border-white/5 light:border-slate-200">
+            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
+              <Timer className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-semibold uppercase tracking-wider text-[11px]">Subscription Expiry Category:</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              {[
+                { key: 'ALL', label: 'All Fleet', count: licenses.length },
+                { key: 'SUBSCRIPTION', label: 'Active Subscriptions', count: subscriptionActiveCount },
+                { key: 'EXPIRING_SOON', label: 'Expiring Soon (≤3d)', count: expiringSoonCount, alert: expiringSoonCount > 0 },
+                { key: 'EXPIRED', label: 'Expired', count: expiredCount, danger: expiredCount > 0 },
+                { key: 'LIFETIME', label: 'Lifetime Users', count: lifetimeCount }
+              ].map(cat => (
+                <button
+                  key={cat.key}
+                  onClick={() => setExpiryCategoryFilter(cat.key as any)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                    expiryCategoryFilter === cat.key
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-sm'
+                      : cat.alert
+                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20'
+                      : cat.danger
+                      ? 'bg-rose-500/10 text-rose-300 border-rose-500/30 hover:bg-rose-500/20'
+                      : 'bg-black/30 dark:bg-black/30 light:bg-slate-100 text-slate-400 dark:text-slate-400 light:text-slate-600 border-slate-800/80 dark:border-white/10 light:border-slate-300 hover:text-white light:hover:text-slate-900'
+                  }`}
+                >
+                  <span>{cat.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                    expiryCategoryFilter === cat.key
+                      ? 'bg-emerald-400 text-slate-950'
+                      : cat.alert
+                      ? 'bg-amber-400/20 text-amber-300'
+                      : cat.danger
+                      ? 'bg-rose-400/20 text-rose-300'
+                      : 'bg-white/10 text-slate-300'
+                  }`}>
+                    {cat.count}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -703,6 +871,7 @@ export const AdminLicenses = () => {
                 <th className="py-3 px-4 font-bold">Candidate / Account</th>
                 <th className="py-3 px-4 font-bold">Package &amp; Edition</th>
                 <th className="py-3 px-4 font-bold">Type</th>
+                <th className="py-3 px-4 font-bold">Subscription Expiry</th>
                 <th className="py-3 px-4 font-bold">Hardware Node</th>
                 <th className="py-3 px-4 font-bold">Status / Sentinel</th>
                 <th className="py-3 px-4 font-bold text-right">Actions</th>
@@ -757,6 +926,32 @@ export const AdminLicenses = () => {
                           {lic.duration_months === 0 ? 'A.exe' : (lic.duration_months === -10 || (lic.duration_months && lic.duration_months > 0)) ? 'T.exe' : 'L.exe'}
                         </span>
                       </div>
+                    </td>
+
+                    {/* Subscription Expiry Category & Time */}
+                    <td className="py-4 px-4 space-y-1">
+                      {(() => {
+                        const countdown = formatExpiryCountdown(lic);
+                        return (
+                          <div>
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${countdown.badgeColor}`}>
+                              {countdown.icon === 'lifetime' ? (
+                                <InfinityIcon className="w-3 h-3 shrink-0" />
+                              ) : countdown.icon === 'expired' ? (
+                                <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" />
+                              ) : countdown.icon === 'urgent' ? (
+                                <Timer className="w-3 h-3 text-amber-400 shrink-0" />
+                              ) : (
+                                <Clock className="w-3 h-3 text-cyan-400 shrink-0" />
+                              )}
+                              <span>{countdown.label}</span>
+                            </span>
+                            <div className="text-[10px] font-mono text-slate-400 dark:text-slate-400 light:text-slate-500 mt-0.5">
+                              {countdown.subtext}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </td>
 
                     {/* Hardware Node */}
