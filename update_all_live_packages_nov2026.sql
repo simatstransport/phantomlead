@@ -1,12 +1,12 @@
 UPDATE packages 
 SET version = '2.3.0',
-    sha256 = '32edd31e763bb0eaabd08198272cf9e45489e9fb00cf7b5c1bc7482683b6635b',
+    sha256 = '0218015e969b4704f41d1b47badd7ac692e5b23d321d1fec77725ff5daf3ada4',
     updated_at = NOW()
 WHERE package_code = 'FULL_ACCESS';
 
 UPDATE packages 
 SET version = '1.1.0',
-    sha256 = 'f2b355e323106e74f8cb9ddb9a6429ede2b558b5786077e66e6363be61474b39',
+    sha256 = 'a1eaad426f54fcd1ea123305bff0ddd5f56e017fffbd998109fff57e8bfd7c09',
     updated_at = NOW()
 WHERE package_code = 'JAVA_QA';
 
@@ -24,7 +24,7 @@ WHERE package_code = 'PYTHON_C';
 
 UPDATE packages 
 SET version = '2.2.0',
-    sha256 = '54221e93f10495a5568ed63104a5a6d1d2fdbd168678296d9f6c7fa3b67038e8',
+    sha256 = 'e39760db877b47ba41b7beba9cac4c55c11180520bc2185766c02545d73b3a20',
     updated_at = NOW()
 WHERE package_code = 'QA_PLACEMENT';
 
